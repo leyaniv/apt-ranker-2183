@@ -1,0 +1,46 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment / local config
+.env
+.env.local
+.env.*.local
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Scraper artefacts (downloaded PDFs are large and regenerable)
+tools/scraper/pdfs/
+tools/scraper/__pycache__/
+tools/scraper/.venv/
+tools/scraper/venv/
+**/__pycache__/
+*.pyc
+
+# Cloudflare Wrangler (if/when used for direct uploads)
+.wrangler/
+
+# Internal planning docs (not for public repo)
+docs/

@@ -1,0 +1,243 @@
+{
+  "app": {
+    "title": "Raffle 2183 (Eshel Hayarden) - Apartment Ranker",
+    "subtitle": "Score your preferences to rank {{count}} apartments"
+  },
+  "header": {
+    "disclaimer": "Disclaimer"
+  },
+  "tabs": {
+    "scoring": "Scoring",
+    "results": "Results",
+    "history": "History",
+    "combine": "Combine",
+    "compare": "Compare"
+  },
+  "profile": {
+    "currentProfile": "Profile:",
+    "select": "Select profile",
+    "profileTip": "A profile stores your scoring preferences, importance weights, manual order, and notes. Create multiple profiles to compare different priorities.",
+    "create": "New Profile",
+    "rename": "Rename",
+    "delete": "Delete",
+    "export": "Export",
+    "import": "Import",
+    "duplicate": "Duplicate",
+    "copy": "Copy",
+    "defaultName": "My Preferences",
+    "namePrompt": "Profile name:",
+    "confirmDelete": "Delete profile \"{{name}}\"?",
+    "importSuccess": "Profile imported successfully",
+    "importError": "Invalid profile file",
+    "importError_invalid": "Invalid profile file",
+    "importError_legacy": "This file was exported by an older version and is no longer supported. Please re-export it from the previous installation.",
+    "importError_newer": "This file was exported by a newer version of the app. Please update before importing.",
+    "importError_wrong-kind": "This file contains multiple profiles. Bulk-import is not supported here — export a single profile instead.",
+    "editProfiles": "Edit Profiles",
+    "exportAll": "Export All",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "noProfiles": "No profiles yet. Create one to get started."
+  },
+  "scoring": {
+    "weight": "Importance",
+    "valueScore": "Value preference",
+    "resetParam": "Reset",
+    "resetAll": "Reset All Scores",
+    "randomize": "Random Scoring",
+    "roundToInteger": "Round to nearest integer",
+    "confirmRound": "Round all scores and weights to the nearest integer?",
+    "advanced": "Advanced Parameters",
+    "weightTip": "How much does this parameter matter? (1 = not at all, 5 = very important)",
+    "scoreTip": "How much do you prefer this value? (1 = dislike, 5 = strongly prefer)",
+    "title": "Set Your Preferences",
+    "howToUse": "Set the importance (1–5) for each parameter to control how much it affects the ranking. Then score each value (1–5) to express your preference: 1 = dislike, 5 = strongly prefer."
+  },
+  "results": {
+    "rank": "#",
+    "originalRank": "Score rank: {{rank}}",
+    "building": "Building",
+    "apt": "Apt",
+    "rooms": "Rooms",
+    "floor": "Floor",
+    "price": "Price",
+    "area": "Area",
+    "score": "Score",
+    "noResults": "No apartments match your filters",
+    "filterRooms": "Rooms",
+    "filterBuilding": "Building",
+    "filterLayout": "Layout",
+    "filterType": "Apt Type",
+    "layout": "Layout",
+    "type": "Type",
+    "layout_regular": "Regular",
+    "layout_garden": "Garden",
+    "layout_garden_duplex": "Garden Duplex",
+    "layout_roof_duplex": "Roof Duplex",
+    "filterPrice": "Price Range",
+    "clearFilters": "Clear Filters",
+    "showingOf": "Showing {{shown}} of {{total}}",
+    "expandDetails": "Show details",
+    "collapseDetails": "Hide details",
+    "manuallyReordered": "Manually reordered",
+    "resetOrder": "Reset",
+    "resetOrderTip": "Discard the manual order and go back to the scored ranking",
+    "confirmResetOrder": "Reset to scored order? This will remove your saved manual order.",
+    "saveToProfile": "Save",
+    "saveToProfileTip": "Save the current manual order to the active profile",
+    "saveAsProfile": "Save as",
+    "saveAsProfileTip": "Save the current order as a new profile",
+    "dragHint": "Drag rows to reorder manually",
+    "randomOrder": "Randomize order",
+    "unsavedOrderTitle": "Unsaved Manual Order",
+    "unsavedOrderMessage": "You have unsaved changes to the manual order. Would you like to save or discard them before leaving?",
+    "discardOrder": "Discard",
+    "title": "Ranked Apartments",
+    "howToUse": "Browse your ranked apartments. Use the filters to narrow the list, click a row to see full details and add notes, or drag rows to set a manual order."
+  },
+  "detail": {
+    "balcony": "Balcony",
+    "storage": "Storage",
+    "storageId": "Storage ID",
+    "parking": "Parking spots",
+    "type": "Type",
+    "airDirection": "Air Direction",
+    "pricePerSqm": "Price/m²",
+    "pdfApartment": "Apartment Plan",
+    "pdfFloor": "Floor Plan",
+    "pdfParking": "Parking & Storage",
+    "pdfDevelopment": "Development Plan",
+    "openOnSite": "View on site",
+    "notes": "Notes",
+    "notesPlaceholder": "Add notes about this apartment...",
+    "hasNote": "This apartment has a note"
+  },
+  "compare": {
+    "selectProfiles": "Select profiles to compare",
+    "combined": "Combined Ranking",
+    "sideBySide": "Side by Side",
+    "noProfiles": "Create at least 2 profiles to compare",
+    "avgScore": "Avg Score",
+    "profileRank": "{{name}} rank",
+    "clear": "Clear Compare",
+    "clearCombine": "Clear Combine",
+    "title": "Side-by-Side Profile Comparison",
+    "howToUse": "See how different profiles rank the same apartments side by side. Select up to 3 profiles, then click an apartment in any column to highlight where it ranks in the others."
+  },
+  "combine": {
+    "profileImportance": "Profile importance",
+    "title": "Merge Profiles Into One Ranking",
+    "howToUse": "Merge several profiles into a single ranking. Select up to 3 profiles and set each one's importance — apartments are ranked by the weighted average of their scores across profiles.",
+    "createMergedProfile": "Create merged profile",
+    "createMergedProfileTip": "Save the current combination as a new profile you can edit",
+    "lockRanking": "Lock current combined ranking as manual order",
+    "lockRankingTip": "Freeze the ranking you see now into the new profile's manual order, so it matches exactly even after editing scores",
+    "mergedNameJoiner": " + ",
+    "mergedNamePrefix": "Combined: ",
+    "mergedCreated": "Created merged profile \"{{name}}\" and switched to it.",
+    "previewTitle": "Preview of the combined profile"
+  },
+  "changeHistory": {
+    "unset": "unset",
+    "scoreChanged": "{{param}}: {{value}} — score changed from {{from}} to {{to}}",
+    "weightChanged": "{{param}} — importance changed from {{from}} to {{to}}",
+    "paramReset": "{{param}} — scores reset to default",
+    "allReset": "All scores reset to default",
+    "allRandomized": "All scores randomized",
+    "allRounded": "All scores rounded to nearest integer",
+    "manualOrderChanged": "Manual apartment order changed",
+    "manualOrderReset": "Manual order reset to scored order",
+    "unknownChange": "Unknown change"
+  },
+  "history": {
+    "title": "Change History",
+    "empty": "No changes yet. Start scoring to see your history.",
+    "current": "Current",
+    "restore": "Restore",
+    "confirmRestore": "Are you sure? All changes after this point will be discarded.",
+    "title": "Change History",
+    "howToUse": "A log of changes you've made to the active profile's scores and manual order. Click Restore on an earlier entry to revert back to that state."
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "loading": "Loading...",
+    "language": "עברית",
+    "undo": "Undo",
+    "redo": "Redo",
+    "edit": "Edit"
+  },
+  "settings": {
+    "title": "Settings",
+    "maxResults": "Your place at the raffle",
+    "maxResultsHint": "Only show the top N apartments you could get. Leave empty to show all {{total}}.",
+    "language": "Language",
+    "theme": "Theme",
+    "themeSystem": "System (auto)",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "developerTools": "Developer Tools",
+    "useSliderForScoring": "Use slider for scoring"
+  },
+  "about": {
+    "title": "About",
+    "description": "A tool for scoring and ranking apartments in Raffle 2183 (Eshel Hayarden) based on your personal preferences.",
+    "version": "Version",
+    "changelog": "Changelog",
+    "viewChangelog": "View",
+    "disclaimer": "The creator of this tool is not responsible for any mistakes, inaccuracies, or data inconsistencies. Use this tool at your own risk. The creator shall not be held accountable for any decisions made based on the information presented.",
+    "sourceCode": "Source Code",
+    "sourceCodeLink": "GitHub",
+    "developer": "Project developer",
+    "developerLink": "Eshel Haifa website",
+    "contact": "Contact",
+    "contactLink": "GitHub Discussions",
+    "reportIssue": "Report a bug",
+    "reportIssueLink": "Open an issue",
+    "donate": "Support this project",
+    "donateLink": "Buy me a coffee"
+  },
+  "onboarding": {
+    "helpButton": "Replay onboarding tour",
+    "demoProfile1": "Demo Preferences",
+    "demoProfile2": "Alternative Demo",
+    "skip": "Skip tour",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "progress": "Step {{current}} of {{total}}",
+    "welcome": {
+      "title": "Welcome to the Apartment Ranker!",
+      "body": "This short tour (about a minute) will walk you through the basics: how to score your preferences, see your ranked results, and compare different priorities. You can replay it anytime from the ? icon in the top bar."
+    },
+    "profile": {
+      "title": "Create and manage profiles",
+      "body": "A profile stores a complete set of scoring preferences — weights, scores, manual order, and notes. Create multiple profiles to compare different priorities, and export/import them to share or back up."
+    },
+    "scoring": {
+      "title": "Set your preferences",
+      "body": "For each parameter, set how important it is (Importance, 1–5) and score the values you prefer (1 = dislike, 5 = strongly prefer). The ranking updates automatically."
+    },
+    "results": {
+      "title": "See your ranked results",
+      "body": "Apartments are ranked from best to worst based on your scores. Use the filters to narrow the list, or drag rows to define a manual order that overrides the score-based ranking."
+    },
+    "apartmentRow": {
+      "title": "Explore apartment details",
+      "body": "Click any row to expand it and view full details: floor plans, parking, balcony, and more. You can also add personal notes to each apartment."
+    },
+    "compare": {
+      "title": "Compare profiles side-by-side",
+      "body": "Use the Compare tab to view two or three profiles next to each other. Click an apartment in one column to highlight its rank in the others — handy for spotting agreements and disagreements between preferences."
+    },
+    "combine": {
+      "title": "Combine profiles into one ranking",
+      "body": "The Combine tab merges several profiles into a single weighted ranking. Set each profile's importance and see a unified list — great when two people want to agree on a shared shortlist."
+    },
+    "done": {
+      "title": "You're all set!",
+      "body": "You'll find Settings, About, and this Help icon in the top bar. Click the ? anytime to replay this tour. Happy ranking!"
+    }
+  }
+}
