@@ -209,7 +209,7 @@ export function SideBySideRanking({
 
       {/* Columns */}
       <div className="flex gap-6 flex-1 min-h-0">
-        {profiles.map((profile, colIdx) => {
+        {profiles.map((profile) => {
           const ranked = profileRankedLists.get(profile.id) ?? [];
           return (
             <div key={profile.id} className="flex-1 min-w-0 flex flex-col min-h-0">
