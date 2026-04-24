@@ -1,0 +1,180 @@
+﻿@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #2563eb;
+    --color-primary-hover: #1d4ed8;
+    --color-score-1: #ef4444;
+    --color-score-2: #f97316;
+    --color-score-3: #eab308;
+    --color-score-4: #84cc16;
+    --color-score-5: #22c55e;
+  }
+  .dark {
+    color-scheme: dark;
+
+    /* Gray scale — GitHub Dark inspired */
+    --color-gray-50: #0d1117;
+    --color-gray-100: #21262d;
+    --color-gray-200: #30363d;
+    --color-gray-300: #484f58;
+    --color-gray-400: #7d8590;
+    --color-gray-500: #8b949e;
+    --color-gray-600: #c9d1d9;
+    --color-gray-700: #d2dae4;
+    --color-gray-800: #e6edf3;
+    --color-gray-900: #f0f6fc;
+
+    /* Tinted backgrounds — darker versions for dark mode */
+    --color-amber-50: #261f0d;
+    --color-amber-200: #854d0e;
+    --color-blue-50: #0c1929;
+    --color-blue-100: #122240;
+    --color-blue-200: #1e3a5f;
+    --color-red-50: #290c0c;
+    --color-red-100: #3b1212;
+    --color-red-200: #5f1e1e;
+    --color-orange-100: #3b2112;
+    --color-orange-300: #9a3412;
+    --color-yellow-100: #3b3112;
+    --color-yellow-300: #a16207;
+    --color-lime-100: #1e3b12;
+    --color-lime-300: #4d7c0f;
+    --color-green-100: #123b1e;
+    --color-green-300: #15803d;
+    --color-green-800: #4ade80;
+    --color-lime-800: #84cc16;
+    --color-yellow-800: #d4a017;
+    --color-orange-800: #d4874d;
+    --color-red-800: #e07070;
+
+    /* Darker active score button colors */
+    --color-score-1: #b91c1c;
+    --color-score-2: #c2410c;
+    --color-score-3: #a16207;
+    --color-score-4: #4d7c0f;
+    --color-score-5: #15803d;
+  }
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  }
+  [dir="rtl"] {
+    font-family: "Segoe UI", "Arial", sans-serif;
+  }
+  button:not(:disabled),
+  select,
+  a[href],
+  [role="tab"],
+  [data-radix-collection-item] {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .score-btn {
+    @apply w-9 h-9 rounded-md text-sm font-medium border transition-colors
+      cursor-pointer flex items-center justify-center;
+  }
+  .score-btn[data-active="true"] {
+    @apply text-white border-transparent;
+  }
+  .score-btn[data-score="1"] { @apply data-[active=true]:bg-[var(--color-score-1)] border-red-300 bg-red-50 hover:bg-red-100 text-red-700; }
+  .score-btn[data-score="2"] { @apply data-[active=true]:bg-[var(--color-score-2)] border-orange-300 bg-orange-50 hover:bg-orange-100 text-orange-700; }
+  .score-btn[data-score="3"] { @apply data-[active=true]:bg-[var(--color-score-3)] border-yellow-300 bg-yellow-50 hover:bg-yellow-100 text-yellow-700; }
+  .score-btn[data-score="4"] { @apply data-[active=true]:bg-[var(--color-score-4)] border-lime-300 bg-lime-50 hover:bg-lime-100 text-lime-700; }
+  .score-btn[data-score="5"] { @apply data-[active=true]:bg-[var(--color-score-5)] border-green-300 bg-green-50 hover:bg-green-100 text-green-700; }
+
+  :is(.dark) .score-btn[data-score="1"] { @apply border-red-200 bg-red-50 hover:bg-red-100 text-red-800 data-[active=true]:bg-[var(--color-score-1)] data-[active=true]:text-white; }
+  :is(.dark) .score-btn[data-score="2"] { @apply border-orange-200 bg-[#1f130a] hover:bg-orange-100 text-orange-800 data-[active=true]:bg-[var(--color-score-2)] data-[active=true]:text-white; }
+  :is(.dark) .score-btn[data-score="3"] { @apply border-yellow-200 bg-[#1f1c0a] hover:bg-yellow-100 text-yellow-800 data-[active=true]:bg-[var(--color-score-3)] data-[active=true]:text-white; }
+  :is(.dark) .score-btn[data-score="4"] { @apply border-lime-200 bg-[#121f0a] hover:bg-lime-100 text-lime-800 data-[active=true]:bg-[var(--color-score-4)] data-[active=true]:text-white; }
+  :is(.dark) .score-btn[data-score="5"] { @apply border-green-200 bg-[#0a1f12] hover:bg-green-100 text-green-800 data-[active=true]:bg-[var(--color-score-5)] data-[active=true]:text-white; }
+
+  /* Continuous slider variant (used when scoringInputStyle === "slider"). */
+  .score-slider-range[data-score="1"] { background-color: var(--color-score-1); }
+  .score-slider-range[data-score="2"] { background-color: var(--color-score-2); }
+  .score-slider-range[data-score="3"] { background-color: var(--color-score-3); }
+  .score-slider-range[data-score="4"] { background-color: var(--color-score-4); }
+  .score-slider-range[data-score="5"] { background-color: var(--color-score-5); }
+
+  .score-slider-thumb[data-score="1"] { border-color: var(--color-score-1); }
+  .score-slider-thumb[data-score="2"] { border-color: var(--color-score-2); }
+  .score-slider-thumb[data-score="3"] { border-color: var(--color-score-3); }
+  .score-slider-thumb[data-score="4"] { border-color: var(--color-score-4); }
+  .score-slider-thumb[data-score="5"] { border-color: var(--color-score-5); }
+
+  .score-slider-value[data-score="1"] { color: var(--color-score-1); }
+  .score-slider-value[data-score="2"] { color: var(--color-score-2); }
+  .score-slider-value[data-score="3"] { color: var(--color-score-3); }
+  .score-slider-value[data-score="4"] { color: var(--color-score-4); }
+  .score-slider-value[data-score="5"] { color: var(--color-score-5); }
+}
+
+/* Weight-tip tooltip */
+.weight-tip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.weight-tip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  border: 1.5px solid #d1d5db;
+  cursor: help;
+  flex-shrink: 0;
+}
+.weight-tip-popup {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: max-content;
+  max-width: 220px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #fff;
+  background: #1f2937;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+  z-index: 50;
+  pointer-events: none;
+}
+.weight-tip-popup::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 4px;
+  border: 5px solid transparent;
+  border-top-color: #1f2937;
+}
+.weight-tip-wrapper:hover .weight-tip-popup {
+  display: block;
+}
+
+/* Dark mode: override bg-white for surface elements.
+   Unlayered so it beats the utilities layer. */
+.dark .bg-white,
+.dark.bg-white {
+  background-color: #161b22;
+}
+
+.dark .weight-tip-icon {
+  color: #9ca3af;
+  border-color: #4b5563;
+}
+.dark .weight-tip-popup {
+  background: #e5e7eb;
+  color: #111827;
+}
+.dark .weight-tip-popup::after {
+  border-top-color: #e5e7eb;
+}
