@@ -52,6 +52,10 @@
     "advanced": "Advanced Parameters",
     "weightTip": "How much does this parameter matter? (1 = not at all, 5 = very important)",
     "scoreTip": "How much do you prefer this value? (1 = dislike, 5 = strongly prefer)",
+    "paramTooltip": {
+      "air_direction": "Each apartment faces 1–3 cardinal directions (N/E/S/W). The score for a multi-direction apartment is the average of the directions it actually faces — so an NE-corner apartment's score = (N + E) / 2.\n\nUse 'Number of Air Directions' alongside this to express whether you prefer single-sided, corner (2-direction), or through (3-direction) apartments.\n\nExample: to prefer NE corner apartments, score N and E high here, and score '2' high under Number of Air Directions.",
+      "air_direction_count": "How many cardinal directions the apartment faces (1 = single-sided, 2 = corner, 3 = through-apartment).\n\nThis works together with 'Air Direction': that parameter scores which directions you like, while this one scores how many exposures you want. Score both to fully express a preference like 'I want a NE corner apartment'."
+    },
     "title": "Set Your Preferences",
     "howToUse": "Set the importance (1–5) for each parameter to control how much it affects the ranking. Then score each value (1–5) to express your preference: 1 = dislike, 5 = strongly prefer."
   },

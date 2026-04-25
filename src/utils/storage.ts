@@ -33,12 +33,42 @@ export function randomUUID(): string {
 
 /* ─── Profile CRUD ────────────────────────────── */
 
+/**
+ * Valid keys for the `air_direction` scoring parameter.
+ *
+ * The direction model was simplified in schema v2 from 6 (N/NE/NW/S/SE/SW)
+ * to 4 cardinals (N/E/S/W). Any saved scores keyed by the old composite
+ * directions (NE/NW/SE/SW) are stripped on load so the user re-scores them.
+ */
+const VALID_AIR_DIRECTION_KEYS = new Set(["N", "E", "S", "W"]);
+
+/** Drop air_direction score keys that are no longer valid in the current schema. */
+function stripStaleDirectionScores(profile: Profile): Profile {
+  const dirScores = profile.scores?.air_direction;
+  if (!dirScores) return profile;
+  const cleaned: Record<string, number> = {};
+  let changed = false;
+  for (const [key, value] of Object.entries(dirScores)) {
+    if (VALID_AIR_DIRECTION_KEYS.has(key)) {
+      cleaned[key] = value;
+    } else {
+      changed = true;
+    }
+  }
+  if (!changed) return profile;
+  return {
+    ...profile,
+    scores: { ...profile.scores, air_direction: cleaned },
+  };
+}
+
 /** Load all profiles from LocalStorage */
 export function loadProfiles(): Profile[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    return JSON.parse(raw) as Profile[];
+    const profiles = (JSON.parse(raw) as Profile[]).map(stripStaleDirectionScores);
+    return profiles;
   } catch {
     return [];
   }
@@ -150,7 +180,7 @@ export function reorderProfiles(orderedIds: string[]): void {
  * `migrateProfileEnvelope` so files exported by previous versions can still
  * be read.
  */
-export const PROFILE_SCHEMA_VERSION = 1;
+export const PROFILE_SCHEMA_VERSION = 2;
 
 /** Discriminator for the kind of payload contained in an export file */
 type EnvelopeKind = "profile" | "profiles";
@@ -240,10 +270,25 @@ function isValidProfilePayload(parsed: unknown): parsed is Profile {
 /**
  * Run any schema migrations on the envelope's inner payload.
  *
- * Currently a no-op since we are at v1. When introducing v2, add a branch
- * here that transforms the v1 payload into the v2 shape before validation.
+ * v1 → v2: the `air_direction` scoring parameter switched from 6 directions
+ * (N/NE/NW/S/SE/SW) to 4 cardinals (N/E/S/W). Stale keys are dropped so the
+ * user re-scores them; valid keys (N, S) carry over unchanged.
  */
 function migrateProfileEnvelope<T extends ProfileEnvelope | ProfilesEnvelope>(envelope: T): T {
+  if (envelope.schemaVersion < 2) {
+    if (envelope.kind === "profile") {
+      return {
+        ...envelope,
+        schemaVersion: 2,
+        profile: stripStaleDirectionScores(envelope.profile),
+      };
+    }
+    return {
+      ...envelope,
+      schemaVersion: 2,
+      profiles: envelope.profiles.map(stripStaleDirectionScores),
+    };
+  }
   return envelope;
 }
 

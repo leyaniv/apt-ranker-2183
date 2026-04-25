@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import packageJson from "../../../package.json";
 import { ChangelogModal } from "./ChangelogModal";
+import { track } from "../../utils/analytics";
 
 interface AboutModalProps {
   onClose: () => void;
@@ -43,7 +44,10 @@ export function AboutModal({ onClose }: AboutModalProps) {
             <button
               type="button"
               className="text-blue-600 hover:underline"
-              onClick={() => setChangelogOpen(true)}
+              onClick={() => {
+                track("changelog_opened");
+                setChangelogOpen(true);
+              }}
             >
               {t("about.viewChangelog")}
             </button>
@@ -68,6 +72,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
+              onClick={() => track("external_link_clicked", { target: "repo" })}
             >
               {t("about.sourceCodeLink")}
             </a>
@@ -81,6 +86,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
+              onClick={() => track("external_link_clicked", { target: "discussions" })}
             >
               {t("about.contactLink")}
             </a>
@@ -94,6 +100,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
+              onClick={() => track("external_link_clicked", { target: "report_bug" })}
             >
               {t("about.reportIssueLink")}
             </a>
@@ -107,6 +114,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
+              onClick={() => track("external_link_clicked", { target: "donation" })}
             >
               {t("about.donateLink")} ☕
             </a>
@@ -126,6 +134,7 @@ export function AboutModal({ onClose }: AboutModalProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
+              onClick={() => track("external_link_clicked", { target: "developer" })}
             >
               {t("about.developerLink")}
             </a>

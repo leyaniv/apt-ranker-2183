@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2026-04-25
+
+- Simplified air-direction scoring to four cardinals (N/E/S/W).
+- Cleaner, more stable price/area buckets with friendlier labels (e.g. "< €1.2M", "≥ 130 m²").
+- Anonymous, aggregate usage events (no personal data) to help guide future improvements.
+
 ## [1.1.0] - 2026-04-25
 
 - The app now works well on phones — tighter layout and collapsible filters.

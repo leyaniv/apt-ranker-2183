@@ -5,6 +5,7 @@ import type { ParameterConfig } from "../../types";
 import { WeightSlider } from "./ScoreButtonGroup";
 import { CategoricalScorer } from "./CategoricalScorer";
 import { BucketedScorer } from "./BucketedScorer";
+import { InfoTooltip } from "../Layout/InfoTooltip";
 import { useApp } from "../../context/AppContext";
 import { resolveLocale } from "../../utils/locale";
 
@@ -16,6 +17,10 @@ interface ParameterCardProps {
  * Collapsible card for a single parameter.
  * Shows the parameter name + importance weight in the header,
  * and the value scoring grid when expanded.
+ *
+ * If a per-parameter tooltip translation exists at
+ * `scoring.paramTooltip.<paramId>`, an info tooltip is rendered next to
+ * the parameter name. Add a translation entry to enable it for any param.
  */
 export function ParameterCard({ config }: ParameterCardProps) {
   const { i18n, t } = useTranslation();
@@ -23,22 +28,28 @@ export function ParameterCard({ config }: ParameterCardProps) {
   const lang = resolveLocale(i18n.language);
   const [open, setOpen] = useState(!config.advanced);
 
+  const tooltipKey = `scoring.paramTooltip.${config.id}`;
+  const hasTooltip = i18n.exists(tooltipKey);
+
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen}>
       <div className="bg-white rounded-lg border border-gray-200 overflow-visible">
         {/* Header — always visible */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 px-4 py-3">
-          <Collapsible.Trigger className="flex items-center gap-2 flex-1 min-w-0 text-start">
-            <span
-              className="text-xs text-gray-400 transition-transform duration-200"
-              style={{ transform: open ? "rotate(90deg)" : lang === "he" ? "rotate(180deg)" : "rotate(0deg)" }}
-            >
-              ▶
-            </span>
-            <span className="font-medium text-gray-900 truncate">
-              {config.label[lang]}
-            </span>
-          </Collapsible.Trigger>
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <Collapsible.Trigger className="flex items-center gap-2 min-w-0 text-start">
+              <span
+                className="text-xs text-gray-400 transition-transform duration-200"
+                style={{ transform: open ? "rotate(90deg)" : lang === "he" ? "rotate(180deg)" : "rotate(0deg)" }}
+              >
+                ▶
+              </span>
+              <span className="font-medium text-gray-900 truncate">
+                {config.label[lang]}
+              </span>
+            </Collapsible.Trigger>
+            {hasTooltip && <InfoTooltip text={t(tooltipKey)} />}
+          </div>
 
           <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
             <span className="sm:hidden text-xs text-gray-500">

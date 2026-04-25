@@ -33,7 +33,7 @@ export function ScoringPanel() {
   const advancedParams = parameterConfigs.filter((c) => c.advanced);
 
   return (
-    <div className="p-4 sm:p-6 space-y-3 max-w-3xl mx-auto w-full">
+    <div className="p-4 sm:p-6 pb-20 sm:pb-6 space-y-3 max-w-3xl mx-auto w-full">
       <TabHeader title={t("scoring.title")} tooltip={t("scoring.howToUse")} />
 
       <div className="flex items-center justify-end gap-3 mb-2">

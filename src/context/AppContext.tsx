@@ -16,6 +16,7 @@ import type { ImportResult } from "../utils/storage";
 import { rankApartments } from "../utils/scoring";
 import { useSettings, type AppSettings } from "../hooks/useSettings";
 import { useChangeHistory } from "../hooks/useChangeHistory";
+import { track } from "../utils/analytics";
 import type { RankedApartment } from "../types";
 
 interface AppContextValue {
@@ -189,6 +190,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const openOnboarding = useCallback(() => {
+    track("onboarding_started");
     setOnboardingStep(0);
     setOnboardingOpen(true);
   }, []);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { AppSettings } from "../../hooks/useSettings";
+import { track } from "../../utils/analytics";
 
 interface SettingsModalProps {
   settings: AppSettings;
@@ -35,8 +36,11 @@ export function SettingsModal({
     const parsed = parseInt(localMax, 10);
     if (localMax === "" || isNaN(parsed)) {
       onUpdate({ maxResults: null });
+      track("setting_changed", { key: "maxResults", value: "unlimited" });
     } else {
-      onUpdate({ maxResults: Math.max(1, Math.min(parsed, totalApartments)) });
+      const newValue = Math.max(1, Math.min(parsed, totalApartments));
+      onUpdate({ maxResults: newValue });
+      track("setting_changed", { key: "maxResults", value: newValue });
     }
     onClose();
   };
@@ -98,7 +102,10 @@ export function SettingsModal({
           <select
             id="language"
             value={i18n.language}
-            onChange={(e) => i18n.changeLanguage(e.target.value)}
+            onChange={(e) => {
+              track("language_switched", { to: e.target.value });
+              i18n.changeLanguage(e.target.value);
+            }}
             className="w-32 rounded-md border border-gray-300 px-3 py-1.5 text-sm
                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white"
           >
@@ -121,9 +128,11 @@ export function SettingsModal({
           <select
             id="theme"
             value={settings.theme}
-            onChange={(e) =>
-              onUpdate({ theme: e.target.value as "system" | "light" | "dark" })
-            }
+            onChange={(e) => {
+              const value = e.target.value as "system" | "light" | "dark";
+              onUpdate({ theme: value });
+              track("setting_changed", { key: "theme", value });
+            }}
             className="w-32 rounded-md border border-gray-300 px-3 py-1.5 text-sm
                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none bg-white"
           >
@@ -148,12 +157,12 @@ export function SettingsModal({
             type="button"
             role="switch"
             aria-checked={settings.scoringInputStyle === "slider"}
-            onClick={() =>
-              onUpdate({
-                scoringInputStyle:
-                  settings.scoringInputStyle === "slider" ? "buttons" : "slider",
-              })
-            }
+            onClick={() => {
+              const value =
+                settings.scoringInputStyle === "slider" ? "buttons" : "slider";
+              onUpdate({ scoringInputStyle: value });
+              track("setting_changed", { key: "scoringInputStyle", value });
+            }}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
               settings.scoringInputStyle === "slider"
                 ? "bg-blue-600"
@@ -183,9 +192,11 @@ export function SettingsModal({
             type="button"
             role="switch"
             aria-checked={settings.developerTools}
-            onClick={() =>
-              onUpdate({ developerTools: !settings.developerTools })
-            }
+            onClick={() => {
+              const value = !settings.developerTools;
+              onUpdate({ developerTools: value });
+              track("setting_changed", { key: "developerTools", value });
+            }}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
               settings.developerTools ? "bg-blue-600" : "bg-gray-300"
             }`}

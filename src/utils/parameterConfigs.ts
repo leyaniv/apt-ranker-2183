@@ -33,11 +33,9 @@ const FLOOR_LABELS: Record<string, { en: string; he: string }> = {
 
 const DIRECTION_LABELS: Record<string, { en: string; he: string }> = {
   N: { en: "North", he: "צפון" },
-  NE: { en: "North-East", he: "צפון-מזרח" },
-  NW: { en: "North-West", he: "צפון-מערב" },
+  E: { en: "East", he: "מזרח" },
   S: { en: "South", he: "דרום" },
-  SE: { en: "South-East", he: "דרום-מזרח" },
-  SW: { en: "South-West", he: "דרום-מערב" },
+  W: { en: "West", he: "מערב" },
 };
 
 const DIR_COUNT_LABELS: Record<string, { en: string; he: string }> = {
@@ -102,7 +100,7 @@ export const PARAMETER_CONFIGS: ParameterConfig[] = [
     id: "air_direction",
     kind: "categorical",
     label: { en: "Air Direction", he: "כיוון אוויר" },
-    values: ["N", "NE", "NW", "S", "SE", "SW"],
+    values: ["N", "E", "S", "W"],
     valueLabels: DIRECTION_LABELS,
   },
   {

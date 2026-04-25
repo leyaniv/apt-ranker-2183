@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useApp } from "../../context/AppContext";
 import { AboutModal } from "../Settings/AboutModal";
 import { SettingsModal } from "../Settings/SettingsModal";
+import { track } from "../../utils/analytics";
 
 export function Header() {
   const { t } = useTranslation();
@@ -29,7 +30,10 @@ export function Header() {
         {/* Warning + Settings + About */}
         <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0" data-tour-id="header-actions">
           <button
-            onClick={() => setShowDisclaimer(true)}
+            onClick={() => {
+              track("disclaimer_opened");
+              setShowDisclaimer(true);
+            }}
             title={t("about.disclaimer")}
             aria-label={t("header.disclaimer")}
             className="p-1.5 rounded-md text-amber-500 hover:bg-amber-50 hover:text-amber-600 transition-colors"
@@ -49,7 +53,10 @@ export function Header() {
             </svg>
           </button>
           <button
-            onClick={() => setShowSettings(true)}
+            onClick={() => {
+              track("settings_opened");
+              setShowSettings(true);
+            }}
             title={t("settings.title")}
             aria-label={t("settings.title")}
             className="p-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-colors"
@@ -59,7 +66,10 @@ export function Header() {
             </svg>
           </button>
           <button
-            onClick={() => setShowAbout(true)}
+            onClick={() => {
+              track("about_opened");
+              setShowAbout(true);
+            }}
             title={t("about.title")}
             aria-label={t("about.title")}
             className="p-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-colors"

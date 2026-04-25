@@ -7,6 +7,7 @@ import { Header } from "./components/Layout/Header";
 import { ProfileSelector } from "./components/ProfileManager/ProfileSelector";
 import { ScoringPanel } from "./components/Scoring/ScoringPanel";
 import { OnboardingTour } from "./components/Onboarding/OnboardingTour";
+import { track } from "./utils/analytics";
 
 // Lazy-load heavy tab contents so they don't block initial render and so
 // subsequent tab switches can be wrapped in a transition.
@@ -48,6 +49,7 @@ function AppContent() {
         setPendingTab(newTab);
         return;
       }
+      track("tab_viewed", { tab: newTab });
       startTabTransition(() => {
         setActiveTab(newTab);
       });

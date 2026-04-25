@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useApp } from "../../context/AppContext";
 import { TourPopover } from "./TourPopover";
 import { TOUR_STEPS } from "./tourSteps";
+import { track } from "../../utils/analytics";
 import type { ImportanceWeights, ValueScores } from "../../types";
 
 /** localStorage key for tracking demo-profile IDs across reloads. */
@@ -194,14 +195,17 @@ export function OnboardingTour() {
 
   if (!onboarding.isOpen || !step) return null;
 
-  const handleFinish = () => {
+  const handleFinish = (reason: "completed" | "skipped") => {
+    track(reason === "completed" ? "onboarding_completed" : "onboarding_skipped", {
+      step: onboarding.stepIndex,
+    });
     requestTabChange("scoring");
     onboarding.close();
   };
 
   const handleNext = () => {
     if (onboarding.stepIndex >= TOUR_STEPS.length - 1) {
-      handleFinish();
+      handleFinish("completed");
     } else {
       onboarding.next();
     }
@@ -218,7 +222,7 @@ export function OnboardingTour() {
       totalSteps={TOUR_STEPS.length}
       onNext={handleNext}
       onPrev={onboarding.prev}
-      onSkip={handleFinish}
+      onSkip={() => handleFinish("skipped")}
     />
   );
 }

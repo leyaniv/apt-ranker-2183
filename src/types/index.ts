@@ -36,7 +36,7 @@ export interface RawApartment {
 }
 
 /** Base direction extracted from composite air_direction strings */
-export type BaseDirection = "N" | "NE" | "NW" | "S" | "SE" | "SW";
+export type BaseDirection = "N" | "E" | "S" | "W";
 
 /** Cleaned apartment with derived fields ready for scoring */
 export interface Apartment extends RawApartment {

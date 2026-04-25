@@ -59,7 +59,7 @@ export function InfoTooltip({ text }: InfoTooltipProps) {
           ref={popoverRef}
           style={{ position: "fixed", top: pos.top, left: pos.left, width: pos.width }}
           className="z-50 bg-white border border-gray-200 rounded-lg shadow-lg
-                     px-3 py-2 text-sm text-gray-600 leading-relaxed"
+                     px-3 py-2 text-sm text-gray-600 leading-relaxed whitespace-pre-line"
         >
           {text}
         </div>

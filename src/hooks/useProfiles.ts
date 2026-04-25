@@ -15,6 +15,7 @@ import {
   importProfileFromJson,
   type ImportResult,
 } from "../utils/storage";
+import { track } from "../utils/analytics";
 
 interface UseProfilesResult {
   profiles: Profile[];
@@ -56,12 +57,14 @@ export function useProfiles(): UseProfilesResult {
   const activeProfile = profiles.find((p) => p.id === activeId) ?? null;
 
   const selectProfile = useCallback((id: string) => {
+    track("profile_switched");
     setActiveId(id);
     setActiveProfileId(id);
   }, []);
 
   const addProfile = useCallback((name: string): Profile => {
     const profile = createProfile(name);
+    track("profile_created");
     setProfiles(loadProfiles());
     setActiveId(profile.id);
     setActiveProfileId(profile.id);
@@ -71,6 +74,7 @@ export function useProfiles(): UseProfilesResult {
   const doDuplicate = useCallback((sourceId: string, newName: string): Profile | null => {
     const cloned = duplicateProfileInStorage(sourceId, newName);
     if (cloned) {
+      track("profile_duplicated");
       setProfiles(loadProfiles());
       setActiveId(cloned.id);
       setActiveProfileId(cloned.id);
@@ -80,6 +84,7 @@ export function useProfiles(): UseProfilesResult {
 
   const removeProfile = useCallback(
     (id: string) => {
+      track("profile_deleted");
       deleteProfileFromStorage(id);
       const remaining = loadProfiles();
       setProfiles(remaining);
@@ -108,15 +113,18 @@ export function useProfiles(): UseProfilesResult {
   }, []);
 
   const doExport = useCallback((profile: Profile) => {
+    track("profile_exported", { scope: "single" });
     exportProfile(profile);
   }, []);
 
   const doExportAll = useCallback(() => {
+    track("profile_exported", { scope: "all" });
     exportAllProfiles();
   }, []);
 
   const doImport = useCallback((json: string): ImportResult => {
     const result = importProfileFromJson(json);
+    track("profile_import_attempted", { ok: result.ok, reason: result.ok ? undefined : result.reason });
     if (result.ok) {
       setProfiles(loadProfiles());
       setActiveId(result.profile.id);

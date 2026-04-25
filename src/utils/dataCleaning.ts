@@ -12,64 +12,35 @@ import type { RawApartment, Apartment, BaseDirection } from "../types";
 
 /* ─── Hebrew → English direction mapping ────── */
 
-const DIRECTION_MAP: Record<string, BaseDirection> = {
-  צפון: "N",
-  דרום: "S",
-  מזרח: "NE", // Actually "East" but in this project's context it maps to NE/SE
-  מערב: "NW", // Same — "West" maps to NW/SW
-  "צפון-מזרח": "NE",
-  "צפון-מערב": "NW",
-  "דרום-מזרח": "SE",
-  "דרום-מערב": "SW",
-};
-
-/** Single Hebrew direction component → BaseDirection */
+/**
+ * Map a single Hebrew direction word to its cardinal direction.
+ * Each hyphen-separated component in the raw `air_direction` string
+ * represents one wall/exposure of the apartment.
+ */
 const COMPONENT_MAP: Record<string, BaseDirection> = {
   צפון: "N",
   דרום: "S",
-  מזרח: "NE", // Contextually NE when alone; re-derived from pairs below
-  מערב: "NW",
+  מזרח: "E",
+  מערב: "W",
 };
 
 /**
  * Parse a Hebrew composite direction string into an array of BaseDirections.
- * E.g., "צפון-מזרח-דרום" → ["N", "NE", "S"]
+ * E.g., "צפון-מזרח-דרום" → ["N", "E", "S"] (three exposures: N wall, E wall, S wall).
  *
- * The raw data uses hyphen-separated Hebrew direction words. Single words are
- * cardinal (N/S) or ordinal (NE/NW/SE/SW). Multi-word strings represent
- * apartments that face multiple directions.
+ * The raw data uses hyphen-separated Hebrew direction words. Each component
+ * corresponds to one cardinal exposure of the apartment.
  */
 export function parseDirections(raw: string): BaseDirection[] {
-  // Fix known typos
-  let cleaned = raw
+  // Fix known typos and strip whitespace
+  const cleaned = raw
     .replace("דרופ", "דרום") // typo: דרופ → דרום
-    .replace(/\s+/g, ""); // remove extra whitespace
+    .replace(/\s+/g, "");
 
-  // If the whole string is a known composite, return it directly
-  if (DIRECTION_MAP[cleaned]) {
-    return [DIRECTION_MAP[cleaned]];
-  }
-
-  // Split by hyphen and process pairs/singles
-  const parts = cleaned.split("-");
   const directions: BaseDirection[] = [];
-
-  let i = 0;
-  while (i < parts.length) {
-    // Try two-part composite first (e.g., "צפון-מזרח" → NE)
-    if (i + 1 < parts.length) {
-      const pair = `${parts[i]}-${parts[i + 1]}`;
-      if (DIRECTION_MAP[pair]) {
-        directions.push(DIRECTION_MAP[pair]);
-        i += 2;
-        continue;
-      }
-    }
-    // Single component
-    if (COMPONENT_MAP[parts[i]]) {
-      directions.push(COMPONENT_MAP[parts[i]]);
-    }
-    i++;
+  for (const part of cleaned.split("-")) {
+    const dir = COMPONENT_MAP[part];
+    if (dir) directions.push(dir);
   }
 
   // Deduplicate (shouldn't happen, but safe)

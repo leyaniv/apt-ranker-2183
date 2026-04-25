@@ -1,18 +1,20 @@
 /**
  * Privacy-friendly analytics helper.
  *
- * Traffic-level stats (pageviews, referrers, country, browsers, Core Web
- * Vitals) are handled automatically by Cloudflare Web Analytics, which is
- * enabled at the Cloudflare Pages project level — no script tag, no cookies,
- * no PII. See README "Analytics".
+ * Two providers are layered:
  *
- * This module provides a tiny `track(event, props?)` helper for **custom
- * product events** (e.g. "profile_created", "tour_completed"). It is a
- * no-op by default so calls are safe to sprinkle through the codebase.
+ * 1. **Cloudflare Web Analytics** — auto-injected by Cloudflare Pages.
+ *    Handles pageviews, referrers, country, browser and Core Web Vitals.
+ *    Cookieless, no PII, no script tag of our own. Cloudflare's beacon does
+ *    NOT expose a custom-event API, so this module does not call it.
  *
- * To wire it to a provider later (Plausible, Umami, PostHog, Cloudflare
- * `sendEvent`, …), implement `dispatch` below or set a global
- * `window.__eshelTrack` from a provider snippet in `index.html`.
+ * 2. **Umami Cloud** — loaded via a `<script>` tag in index.html. Provides
+ *    `window.umami.track(name, props)` for custom product events. Also
+ *    cookieless and GDPR-friendly.
+ *
+ * Use `track(event, props?)` for custom product events (e.g.
+ * "profile_created", "tab_viewed"). Calls before Umami loads are silently
+ * dropped — acceptable for our purposes.
  *
  * Rules:
  * - Never pass PII, apartment data, profile contents, notes, or anything
@@ -24,18 +26,55 @@ type TrackProps = Record<string, string | number | boolean | undefined>;
 
 declare global {
   interface Window {
+    /** Test / dev override hook (also useful for swapping providers). */
     __eshelTrack?: (event: string, props?: TrackProps) => void;
+    /** Umami Cloud tracker. Loaded asynchronously via the script tag. */
+    umami?: {
+      track: (
+        nameOrFn:
+          | string
+          | ((props: Record<string, unknown>) => Record<string, unknown>),
+        data?: Record<string, unknown>
+      ) => void;
+    };
   }
+}
+
+/**
+ * Strip undefined props so they don't show up as the literal string
+ * "undefined" in the analytics dashboard.
+ */
+function cleanProps(
+  props?: TrackProps
+): Record<string, string | number | boolean> | undefined {
+  if (!props) return undefined;
+  const out: Record<string, string | number | boolean> = {};
+  for (const [k, v] of Object.entries(props)) {
+    if (v !== undefined) out[k] = v;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 function dispatch(event: string, props?: TrackProps): void {
   if (typeof window === 'undefined') return;
+  const cleaned = cleanProps(props);
+
+  // 1) Test / dev override hook.
   const fn = window.__eshelTrack;
   if (typeof fn === 'function') {
-    fn(event, props);
+    fn(event, cleaned);
   }
-  // No-op otherwise. Cloudflare Web Analytics already records pageviews
-  // automatically; custom events are opt-in via a provider hookup.
+
+  // 2) Umami Cloud. The tracker exposes `window.umami.track` once the script
+  // tag in index.html has loaded. Calls before load are dropped silently.
+  const umami = window.umami;
+  if (umami && typeof umami.track === 'function') {
+    if (cleaned) {
+      umami.track(event, cleaned);
+    } else {
+      umami.track(event);
+    }
+  }
 }
 
 export function track(event: string, props?: TrackProps): void {

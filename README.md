@@ -2,7 +2,7 @@
 
 A local-first web app for scoring and ranking the apartments offered in the **Eshel Hayarden** housing lottery (Raffle 2183, project 208 in Haifa). Set how important each parameter is, tell the app which values you prefer, and get a personalised ranking of every available apartment. Nothing leaves your browser.
 
-> **Status:** v1.1.0 — mobile-friendly release. See [CHANGELOG.md](CHANGELOG.md).
+> **Status:** v1.1.1 — see [CHANGELOG.md](CHANGELOG.md).
 
 ![Stack: React 19 · TypeScript · Vite 8 · Tailwind 4](https://img.shields.io/badge/stack-React%2019%20%C2%B7%20TypeScript%20%C2%B7%20Vite%208%20%C2%B7%20Tailwind%204-0b7285)
 
@@ -84,13 +84,18 @@ The app is **100% local-first**. Everything you do — profiles, weights, scores
 
 ### Analytics
 
-The site uses **[Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/)** for aggregate traffic stats only. It is:
+The site uses two complementary, privacy-respecting trackers:
 
-- **Cookieless** and does not use any client-side storage for tracking.
-- **Privacy-first by design** — no IP addresses stored, no cross-site tracking, no fingerprinting, no personal data.
-- Limited to coarse aggregates (pageviews, referrers, country, browser, Core Web Vitals).
+- **[Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/)** — auto-injected by Cloudflare Pages. Handles pageviews, referrers, country, browser and Core Web Vitals.
+- **[Umami Cloud](https://umami.is/)** — loaded via a `<script>` tag in `index.html`. Handles a small set of anonymous custom events (e.g. `tab_viewed`, `profile_created`, `onboarding_completed`, `setting_changed`, `external_link_clicked`).
 
-No profile data, apartment data, scores, notes, or settings are ever transmitted. See [src/utils/analytics.ts](src/utils/analytics.ts) for the (currently no-op) custom-event helper used for optional product analytics.
+Both are:
+
+- **Cookieless** — no client-side storage used for tracking.
+- **Privacy-first by design** — no IP addresses stored long-term, no cross-site tracking, no fingerprinting, no personal data.
+- Limited to coarse aggregates and low-cardinality event categories.
+
+No profile data, apartment data, scores, notes, or settings are ever transmitted. See [src/utils/analytics.ts](src/utils/analytics.ts) for the implementation.
 
 ## Disclaimer
 

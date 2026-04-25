@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { Apartment } from "../../types";
 import { resolveLocale } from "../../utils/locale";
+import { useApp } from "../../context/AppContext";
 
 interface ApartmentDetailProps {
   apartment: Apartment;
@@ -15,6 +16,7 @@ interface ApartmentDetailProps {
  */
 export function ApartmentDetail({ apartment, breakdown, note, onNoteChange }: ApartmentDetailProps) {
   const { t, i18n } = useTranslation();
+  const { settings } = useApp();
   const lang = resolveLocale(i18n.language);
 
   const directionLabel =
@@ -52,6 +54,9 @@ export function ApartmentDetail({ apartment, breakdown, note, onNoteChange }: Ap
             maximumFractionDigits: 0,
           })}`}
         />
+        {settings.developerTools && (
+          <DetailRow label="property_slug" value={apartment.property_slug} />
+        )}
       </div>
 
       {/* Score breakdown */}
