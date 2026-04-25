@@ -55,6 +55,12 @@
     --color-score-4: #4d7c0f;
     --color-score-5: #15803d;
   }
+  html,
+  body {
+    overflow: hidden;
+    overscroll-behavior: none;
+    height: 100%;
+  }
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
     font-family: system-ui, "Segoe UI", Roboto, sans-serif;
@@ -73,7 +79,7 @@
 
 @layer components {
   .score-btn {
-    @apply w-9 h-9 rounded-md text-sm font-medium border transition-colors
+    @apply w-8 h-8 sm:w-9 sm:h-9 rounded-md text-sm font-medium border transition-colors
       cursor-pointer flex items-center justify-center;
   }
   .score-btn[data-active="true"] {

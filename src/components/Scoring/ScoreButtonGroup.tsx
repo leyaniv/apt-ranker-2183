@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { useState, useRef, useEffect } from "react";
 import * as Slider from "@radix-ui/react-slider";
 import { useApp } from "../../context/AppContext";
 
@@ -38,18 +39,42 @@ interface RangeSliderProps {
   ariaLabel: string;
 }
 
-/** Shared 1–5 continuous slider used for both scores and weights. */
+/**
+ * Shared 1–5 continuous slider used for both scores and weights.
+ *
+ * The visual position is driven by purely-local state so the thumb tracks
+ * the finger/cursor with no React re-render of the parent tree on each
+ * tick. The upstream `onChange` (which triggers re-ranking of all
+ * apartments + a localStorage write) is only fired once on drag end.
+ */
 function RangeSlider({ value, onChange, ariaLabel }: RangeSliderProps) {
-  const bucket = colorBucket(value);
+  const [localValue, setLocalValue] = useState(value);
+  const draggingRef = useRef(false);
+
+  // Sync external value when not dragging.
+  useEffect(() => {
+    if (!draggingRef.current) setLocalValue(value);
+  }, [value]);
+
+  const bucket = colorBucket(localValue);
   return (
     <div className="flex items-center gap-2">
       <Slider.Root
         className="score-slider-root relative flex items-center select-none touch-none w-[140px] h-5"
-        value={[value]}
+        value={[localValue]}
         min={SLIDER_MIN}
         max={SLIDER_MAX}
         step={SLIDER_STEP}
-        onValueChange={(vs) => onChange(roundTo1(vs[0]))}
+        onValueChange={(vs) => {
+          draggingRef.current = true;
+          setLocalValue(roundTo1(vs[0]));
+        }}
+        onValueCommit={(vs) => {
+          draggingRef.current = false;
+          const next = roundTo1(vs[0]);
+          setLocalValue(next);
+          if (next !== value) onChange(next);
+        }}
         aria-label={ariaLabel}
         dir="ltr"
       >
@@ -60,7 +85,7 @@ function RangeSlider({ value, onChange, ariaLabel }: RangeSliderProps) {
           />
         </Slider.Track>
         <Slider.Thumb
-          className="score-slider-thumb block w-4 h-4 bg-white border-2 rounded-full shadow
+          className="score-slider-thumb block w-5 h-5 bg-white border-2 rounded-full shadow
                      focus:outline-none focus:ring-2 focus:ring-blue-400"
           data-score={bucket}
         />
@@ -69,7 +94,7 @@ function RangeSlider({ value, onChange, ariaLabel }: RangeSliderProps) {
         className="score-slider-value text-xs font-mono tabular-nums min-w-[24px] text-end"
         data-score={bucket}
       >
-        {value.toFixed(1)}
+        {localValue.toFixed(1)}
       </span>
     </div>
   );
@@ -99,7 +124,7 @@ export function ScoreButtonGroup({ paramId, valueKey }: ScoreButtonGroupProps) {
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-0.5 sm:gap-1">
       {[1, 2, 3, 4, 5].map((score) => (
         <button
           key={score}
@@ -132,7 +157,7 @@ export function WeightSlider({ paramId }: WeightSliderProps) {
   if (resolvedScoringInputStyle === "slider") {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-500 min-w-[60px]">
+        <span className="hidden sm:inline text-xs text-gray-500 min-w-[60px]">
           {t("scoring.weight")}:
         </span>
         <RangeSlider
@@ -146,7 +171,7 @@ export function WeightSlider({ paramId }: WeightSliderProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-gray-500 min-w-[60px]">
+      <span className="hidden sm:inline text-xs text-gray-500 min-w-[60px]">
         {t("scoring.weight")}:
       </span>
       <div className="flex gap-1">

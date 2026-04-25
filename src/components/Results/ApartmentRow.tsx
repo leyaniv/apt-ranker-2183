@@ -58,7 +58,7 @@ export const ApartmentRow = memo(function ApartmentRow({
         <div className="border-b border-gray-100 last:border-b-0">
           {isDesktop ? (
             <div
-              className={`grid grid-cols-[28px_50px_80px_60px_70px_70px_80px_60px_110px_90px_80px]
+              className={`grid grid-cols-[28px_50px_80px_60px_70px_70px_80px_60px_90px_110px_80px]
                           items-center gap-1 px-4 py-2.5 hover:bg-gray-50 transition-colors text-sm
                           ${isOpen ? "bg-gray-50" : ""}`}
             >
@@ -114,14 +114,14 @@ export const ApartmentRow = memo(function ApartmentRow({
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-end">
-                <span className="font-mono text-gray-700 text-xs">
-                  ₪{apartment.price.toLocaleString("en")}
+                <span className="text-gray-700 text-xs">
+                  {apartment.area_sqm} {t("results.areaUnit")}
                 </span>
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-end">
-                <span className="text-gray-700 text-xs">
-                  {apartment.area_sqm} m²
+                <span className="font-mono text-gray-700 text-xs">
+                  ₪{apartment.price.toLocaleString("en")}
                 </span>
               </Collapsible.Trigger>
 
@@ -145,52 +145,48 @@ export const ApartmentRow = memo(function ApartmentRow({
             </div>
           ) : (
             <div
-              className={`flex flex-col gap-0.5 px-3 py-2.5 hover:bg-gray-50 transition-colors
+              className={`flex items-center gap-1.5 px-3 py-2 hover:bg-gray-50 transition-colors
                           ${isOpen ? "bg-gray-50" : ""}`}
             >
-              <div className="flex items-center gap-2">
-                <span
-                  draggable
-                  onDragStart={(e) => {
-                    e.dataTransfer.effectAllowed = "move";
-                    e.dataTransfer.setData("text/plain", slug);
-                    onDragStart?.(slug);
-                  }}
-                  className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 shrink-0"
-                  title={t("results.dragHint")}
-                >
-                  ⠿
-                </span>
-                <Collapsible.Trigger className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer">
-                  <span className="font-mono text-xs text-gray-400 w-7 shrink-0">
-                    {rank}
-                    {originalRank != null && originalRank !== rank && (
-                      <span className="text-gray-300 ms-0.5">({originalRank})</span>
-                    )}
-                  </span>
-                  <span className="font-medium text-sm text-gray-800 truncate flex-1">
-                    {apartment.buildingKey} #{apartment.apartment_number}
-                  </span>
-                  <span
-                    className={`text-xs font-bold rounded-full px-2 py-0.5 shrink-0 ${scoreColor(totalScore)}`}
-                  >
-                    {totalScore.toFixed(2)}
-                  </span>
-                  {hasNote && (
-                    <span className="text-amber-500 text-base font-bold leading-none shrink-0" title={t("detail.hasNote")}>*</span>
+              <span
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", slug);
+                  onDragStart?.(slug);
+                }}
+                className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 shrink-0"
+                title={t("results.dragHint")}
+              >
+                ⠿
+              </span>
+              <Collapsible.Trigger className="flex items-center gap-1.5 flex-1 min-w-0 cursor-pointer">
+                <span className="font-mono text-[11px] text-gray-400 shrink-0">
+                  {rank}
+                  {originalRank != null && originalRank !== rank && (
+                    <span className="text-gray-300">({originalRank})</span>
                   )}
-                </Collapsible.Trigger>
-              </div>
-              <Collapsible.Trigger className="cursor-pointer">
-                <div className="flex items-center gap-2 text-[11px] text-gray-500 ps-9">
-                  <span>{apartment.rooms} {t("results.rooms")}</span>
+                </span>
+                <span className="font-medium text-sm text-gray-800 truncate min-w-0">
+                  {apartment.buildingKey}#{apartment.apartment_number}
+                </span>
+                <span className="flex items-center gap-1 text-[11px] text-gray-500 shrink-0 whitespace-nowrap">
+                  <span>{apartment.rooms} {t("results.roomsShort")}</span>
                   <span className="opacity-40">·</span>
-                  <span>{t("results.floor")} {apartment.floor}</span>
+                  <span>{t("results.floorShort")} {apartment.floor}</span>
                   <span className="opacity-40">·</span>
-                  <span>₪{apartment.price.toLocaleString("en")}</span>
+                  <span>{apartment.area_sqm} {t("results.areaUnit")}</span>
                   <span className="opacity-40">·</span>
-                  <span>{apartment.area_sqm} m²</span>
-                </div>
+                  <span>{(apartment.price / 1_000_000).toFixed(3)} {t("results.priceMillions")}</span>
+                </span>
+                <span
+                  className={`text-xs font-bold rounded-full px-2 py-0.5 shrink-0 ms-auto ${scoreColor(totalScore)}`}
+                >
+                  {totalScore.toFixed(2)}
+                </span>
+                {hasNote && (
+                  <span className="text-amber-500 text-base font-bold leading-none shrink-0" title={t("detail.hasNote")}>*</span>
+                )}
               </Collapsible.Trigger>
             </div>
           )}

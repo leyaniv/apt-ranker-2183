@@ -10,6 +10,27 @@ import type { Profile, ValueScores, ImportanceWeights } from "../types";
 const STORAGE_KEY = "eshel-profiles";
 const ACTIVE_PROFILE_KEY = "eshel-active-profile";
 
+/**
+ * Generate a UUID. Uses `crypto.randomUUID()` in secure contexts (https / localhost),
+ * falls back to `crypto.getRandomValues` (RFC4122 v4) when served over plain http
+ * (e.g. local network IP for mobile testing).
+ */
+export function randomUUID(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+    bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant
+    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0"));
+    return `${hex.slice(0, 4).join("")}-${hex.slice(4, 6).join("")}-${hex.slice(6, 8).join("")}-${hex.slice(8, 10).join("")}-${hex.slice(10, 16).join("")}`;
+  }
+  // Last-resort fallback (non-cryptographic).
+  return `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}-${Math.random().toString(16).slice(2, 10)}`;
+}
+
 /* ─── Profile CRUD ────────────────────────────── */
 
 /** Load all profiles from LocalStorage */
@@ -36,7 +57,7 @@ export function getProfile(id: string): Profile | undefined {
 /** Create a new profile with default scores/weights */
 export function createProfile(name: string): Profile {
   const profile: Profile = {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     name,
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -55,7 +76,7 @@ export function duplicateProfile(sourceId: string, newName: string): Profile | n
   const source = profiles.find((p) => p.id === sourceId);
   if (!source) return null;
   const clone: Profile = {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     name: newName,
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -228,7 +249,7 @@ function migrateProfileEnvelope<T extends ProfileEnvelope | ProfilesEnvelope>(en
 
 function materializeImportedProfile(source: Profile): Profile {
   return {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     name: source.name + " (imported)",
     createdAt: Date.now(),
     updatedAt: Date.now(),

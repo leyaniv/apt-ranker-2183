@@ -33,10 +33,10 @@ export function CombinedRanking({
 
   return (
     <div className="flex flex-col items-center h-full min-h-0 w-full">
-      <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto w-fit max-w-full flex flex-col min-h-0">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-auto w-fit max-w-full flex flex-col items-start min-h-0">
         {/* Header */}
         <div
-          className="flex-shrink-0 grid items-center gap-2 px-4 py-2 bg-gray-50 text-xs font-medium text-gray-500 uppercase"
+          className="sticky top-0 z-10 flex-shrink-0 grid items-center gap-2 px-4 py-2 bg-gray-50 text-xs font-medium text-gray-500 uppercase w-max"
           style={{ gridTemplateColumns: gridCols }}
         >
           <span>#</span>
@@ -58,7 +58,7 @@ export function CombinedRanking({
         </div>
 
         {/* Rows */}
-        <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="flex-1 min-h-0 w-max">
           {combined.slice(0, 50).map((item, idx) => (
             <div
               key={item.apartment.property_slug}

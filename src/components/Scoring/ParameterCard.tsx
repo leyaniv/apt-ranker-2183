@@ -27,7 +27,7 @@ export function ParameterCard({ config }: ParameterCardProps) {
     <Collapsible.Root open={open} onOpenChange={setOpen}>
       <div className="bg-white rounded-lg border border-gray-200 overflow-visible">
         {/* Header — always visible */}
-        <div className="flex items-center justify-between gap-3 px-4 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 px-4 py-3">
           <Collapsible.Trigger className="flex items-center gap-2 flex-1 min-w-0 text-start">
             <span
               className="text-xs text-gray-400 transition-transform duration-200"
@@ -40,16 +40,21 @@ export function ParameterCard({ config }: ParameterCardProps) {
             </span>
           </Collapsible.Trigger>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <WeightSlider paramId={config.id} />
-            <button
-              onClick={() => resetScores(config.id)}
-              className="text-xs text-gray-400 hover:text-gray-600 px-1"
-              title={t("scoring.resetParam")}
-              aria-label={`${t("scoring.resetParam")} ${config.label[lang]}`}
-            >
-              ↺
-            </button>
+          <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+            <span className="sm:hidden text-xs text-gray-500">
+              {t("scoring.weight")}:
+            </span>
+            <div className="flex items-center gap-2">
+              <WeightSlider paramId={config.id} />
+              <button
+                onClick={() => resetScores(config.id)}
+                className="text-xs text-gray-400 hover:text-gray-600 px-1"
+                title={t("scoring.resetParam")}
+                aria-label={`${t("scoring.resetParam")} ${config.label[lang]}`}
+              >
+                ↺
+              </button>
+            </div>
           </div>
         </div>
 

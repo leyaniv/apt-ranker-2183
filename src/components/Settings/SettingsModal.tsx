@@ -81,7 +81,6 @@ export function SettingsModal({
             onChange={(e) => setLocalMax(e.target.value)}
             className="w-32 rounded-md border border-gray-300 px-3 py-1.5 text-sm
                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-            autoFocus
           />
         </div>
         <p className="text-xs text-gray-500 mt-1">

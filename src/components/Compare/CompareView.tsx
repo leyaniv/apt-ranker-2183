@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../../context/AppContext";
 import { SideBySideRanking } from "./SideBySideRanking";
-import { TabHeader } from "../Layout/TabHeader";
+import { InfoTooltip } from "../Layout/InfoTooltip";
 
 const COMPARE_STORAGE_KEY = "eshel-compare-state";
 
@@ -84,10 +84,27 @@ export function CompareView() {
 
   return (
     <div className="p-4 sm:p-6 max-w-5xl mx-auto w-full h-full flex flex-col gap-4 min-h-0">
-      <TabHeader title={t("compare.title")} tooltip={t("compare.howToUse")} />
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <h2 className="text-base font-semibold text-gray-700">
+            <span className="sm:hidden">{t("compare.titleShort")}</span>
+            <span className="hidden sm:inline">{t("compare.title")}</span>
+          </h2>
+          <InfoTooltip text={t("compare.howToUse")} />
+        </div>
+        {selectedIds.size > 0 && (
+          <button
+            onClick={clearCompare}
+            className="sm:hidden shrink-0 px-3 py-1 text-xs rounded-md border border-gray-200
+                       text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+          >
+            {t("compare.clear")}
+          </button>
+        )}
+      </div>
       {/* Profile checkboxes */}
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-700 mb-2">
             {t("compare.selectProfiles")}
           </p>
@@ -117,7 +134,7 @@ export function CompareView() {
         {selectedIds.size > 0 && (
           <button
             onClick={clearCompare}
-            className="shrink-0 px-3 py-1.5 text-xs rounded-md border border-gray-200
+            className="hidden sm:block shrink-0 px-3 py-1.5 text-xs rounded-md border border-gray-200
                        text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
           >
             {t("compare.clear")}

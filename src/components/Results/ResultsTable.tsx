@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { List, useDynamicRowHeight, useListRef, type RowComponentProps } from "react-window";
 import { useTranslation } from "react-i18next";
+import * as Collapsible from "@radix-ui/react-collapsible";
 import { useApp } from "../../context/AppContext";
 import { ApartmentRow } from "./ApartmentRow";
 import { TabHeader } from "../Layout/TabHeader";
@@ -103,12 +104,13 @@ export function ResultsTable() {
   const autoScrollRafRef = useRef<number | null>(null);
   const autoScrollSpeedRef = useRef(0);
   const [confirmResetOrderOpen, setConfirmResetOrderOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Virtualization state
   const isDesktop = useIsDesktop();
   const [openSlugs, setOpenSlugs] = useState<Set<string>>(() => new Set());
   const listRef = useListRef(null);
-  const rowHeight = useDynamicRowHeight({ defaultRowHeight: isDesktop ? 45 : 55 });
+  const rowHeight = useDynamicRowHeight({ defaultRowHeight: isDesktop ? 45 : 40 });
 
   const toggleOpen = useCallback((slug: string) => {
     setOpenSlugs((prev) => {
@@ -425,7 +427,7 @@ export function ResultsTable() {
 
   return (
     <div
-      className="mx-auto w-fit flex flex-col h-full min-h-0 pb-4 sm:pb-6"
+      className="mx-auto w-full sm:w-fit max-w-full flex flex-col h-full min-h-0 pb-4 sm:pb-6"
       onDragEnd={() => { dragSlugRef.current = null; setDropTargetSlug(null); stopAutoScroll(); }}
     >
       <div className="px-4 sm:px-6 pt-4 sm:pt-6 mb-2 flex-shrink-0">
@@ -433,7 +435,7 @@ export function ResultsTable() {
       </div>
       {/* Manual reorder banner */}
       {manualOrder && (
-        <div className="flex-shrink-0 flex items-center gap-3 px-4 sm:px-6 py-2 bg-amber-50 border-b border-amber-200">
+        <div className="flex-shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 bg-amber-50 border-b border-amber-200">
           <span className="text-sm font-medium text-amber-700 flex-shrink-0">
             ⚠ {t("results.manuallyReordered")}
           </span>
@@ -472,7 +474,7 @@ export function ResultsTable() {
               </button>
             </div>
           )}
-          <div className="flex gap-2 ms-auto">
+          <div className="flex flex-wrap gap-2 ms-auto">
             <button
               onClick={resetManualOrder}
               title={t("results.resetOrderTip")}
@@ -508,9 +510,31 @@ export function ResultsTable() {
       {/* Filters + table wrapper */}
       <div className="flex-1 min-h-0 flex flex-col rounded-lg border border-gray-200 bg-white overflow-hidden">
       {/* Filters */}
-      <div
+      <Collapsible.Root
+        open={isDesktop || filtersOpen}
+        onOpenChange={setFiltersOpen}
         data-tour-id="results-filters"
-        className="flex-shrink-0 flex flex-wrap items-center gap-3 px-4 sm:px-6 py-3 bg-white border-b border-gray-200"
+        className="flex-shrink-0 bg-white border-b border-gray-200"
+      >
+        <Collapsible.Trigger className="sm:hidden w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <span className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
+              <path fillRule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clipRule="evenodd" />
+            </svg>
+            {t("results.filters")}
+            {hasFilters && (
+              <span className="text-xs text-blue-600 font-normal">
+                ({t("results.filtersActive", { count: [filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice].filter(Boolean).length })})
+              </span>
+            )}
+          </span>
+          <span className="text-xs text-gray-400">
+            {t("results.showingOf", { shown: displayed.length, total: rankedApartments.length })}
+          </span>
+        </Collapsible.Trigger>
+        <Collapsible.Content className="data-[state=open]:block">
+      <div
+        className="flex flex-wrap items-center gap-3 px-4 sm:px-6 py-3"
       >
         {/* Rooms filter */}
         <select
@@ -612,10 +636,12 @@ export function ResultsTable() {
           </button>
         )}
       </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
 
       {/* Table header (desktop only) */}
       <div
-        className="flex-shrink-0 hidden md:grid grid-cols-[28px_50px_80px_60px_70px_70px_80px_60px_110px_90px_80px]
+        className="flex-shrink-0 hidden md:grid grid-cols-[28px_50px_80px_60px_70px_70px_80px_60px_90px_110px_80px]
                     items-center gap-1 px-4 py-2 bg-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wider"
       >
         <span></span>
@@ -626,8 +652,8 @@ export function ResultsTable() {
         <span className="text-center">{t("results.floor")}</span>
         <span className="text-center">{t("results.layout")}</span>
         <span className="text-center">{t("results.type")}</span>
-        <span className="text-center">{t("results.price")}</span>
         <span className="text-center">{t("results.area")}</span>
+        <span className="text-center">{t("results.price")}</span>
         <span className="text-center">{t("results.score")}</span>
       </div>
 

@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import type { ChangeHistoryEntry, ValueScores, ImportanceWeights, ParameterConfig, UndoAction } from "../types";
 import i18n from "../i18n";
+import { randomUUID } from "../utils/storage";
 
 const STORAGE_PREFIX = "eshel-change-history-";
 const MAX_ENTRIES = 50;
@@ -185,7 +186,7 @@ export function useChangeHistory(): UseChangeHistoryResult {
       currentSnapshot: HistorySnapshot
     ) => {
       const entry: ChangeHistoryEntry = {
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         timestamp: Date.now(),
         type: action.type,
         profileId: action.profileId,

@@ -40,8 +40,8 @@ export function ApartmentDetail({ apartment, breakdown, note, onNoteChange }: Ap
     <div className="px-4 pb-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
       {/* Details grid */}
       <div className="space-y-1.5">
-        <DetailRow label={t("detail.balcony")} value={`${apartment.balcony_area_sqm} m²`} />
-        <DetailRow label={t("detail.storage")} value={`${apartment.storage_area_sqm} m²`} />
+        <DetailRow label={t("detail.balcony")} value={`${apartment.balcony_area_sqm} ${t("results.areaUnit")}`} />
+        <DetailRow label={t("detail.storage")} value={`${apartment.storage_area_sqm} ${t("results.areaUnit")}`} />
         <DetailRow label={t("detail.storageId")} value={apartment.storage_id} />
         <DetailRow label={t("detail.parking")} value={String(apartment.parking_count)} />
         <DetailRow label={t("detail.type")} value={apartment.type} />

@@ -1,7 +1,9 @@
 {
   "app": {
     "title": "Raffle 2183 (Eshel Hayarden) - Apartment Ranker",
-    "subtitle": "Score your preferences to rank {{count}} apartments"
+    "titleShort": "2183 - Apartment Ranker",
+    "subtitle": "Score your preferences to rank {{count}} apartments",
+    "subtitleShort": "Score to rank {{count}} apartments"
   },
   "header": {
     "disclaimer": "Disclaimer"
@@ -59,7 +61,11 @@
     "building": "Building",
     "apt": "Apt",
     "rooms": "Rooms",
+    "roomsShort": "rm",
     "floor": "Floor",
+    "floorShort": "fl",
+    "priceMillions": "m₪",
+    "areaUnit": "m²",
     "price": "Price",
     "area": "Area",
     "score": "Score",
@@ -76,6 +82,8 @@
     "layout_roof_duplex": "Roof Duplex",
     "filterPrice": "Price Range",
     "clearFilters": "Clear Filters",
+    "filters": "Filters",
+    "filtersActive": "{{count}} active",
     "showingOf": "Showing {{shown}} of {{total}}",
     "expandDetails": "Show details",
     "collapseDetails": "Hide details",
@@ -122,13 +130,21 @@
     "clear": "Clear Compare",
     "clearCombine": "Clear Combine",
     "title": "Side-by-Side Profile Comparison",
+    "titleShort": "Side-by-Side Comparison",
     "howToUse": "See how different profiles rank the same apartments side by side. Select up to 3 profiles, then click an apartment in any column to highlight where it ranks in the others."
   },
   "combine": {
     "profileImportance": "Profile importance",
+    "profilesToCombine": "Profiles to combine",
+    "profilesToCombineHint": "Add up to 3 profiles, then adjust each one's importance.",
+    "addProfile": "Add",
+    "removeProfile": "Remove",
+    "importanceLabel": "Importance",
     "title": "Merge Profiles Into One Ranking",
+    "titleShort": "Merge Profiles",
     "howToUse": "Merge several profiles into a single ranking. Select up to 3 profiles and set each one's importance — apartments are ranked by the weighted average of their scores across profiles.",
     "createMergedProfile": "Create merged profile",
+    "createMergedProfileShort": "Create profile",
     "createMergedProfileTip": "Save the current combination as a new profile you can edit",
     "lockRanking": "Lock current combined ranking as manual order",
     "lockRankingTip": "Freeze the ranking you see now into the new profile's manual order, so it matches exactly even after editing scores",

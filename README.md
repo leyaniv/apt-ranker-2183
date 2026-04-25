@@ -2,7 +2,7 @@
 
 A local-first web app for scoring and ranking the apartments offered in the **Eshel Hayarden** housing lottery (Raffle 2183, project 208 in Haifa). Set how important each parameter is, tell the app which values you prefer, and get a personalised ranking of every available apartment. Nothing leaves your browser.
 
-> **Status:** v1.0.0 — first public release. See [CHANGELOG.md](CHANGELOG.md).
+> **Status:** v1.1.0 — mobile-friendly release. See [CHANGELOG.md](CHANGELOG.md).
 
 ![Stack: React 19 · TypeScript · Vite 8 · Tailwind 4](https://img.shields.io/badge/stack-React%2019%20%C2%B7%20TypeScript%20%C2%B7%20Vite%208%20%C2%B7%20Tailwind%204-0b7285)
 

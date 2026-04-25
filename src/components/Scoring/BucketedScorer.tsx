@@ -22,9 +22,9 @@ export function BucketedScorer({ config }: BucketedScorerProps) {
         return (
           <div
             key={value}
-            className="flex items-center justify-between gap-3 py-1"
+            className="flex items-center justify-between gap-2 sm:gap-3 py-1"
           >
-            <span className="text-sm text-gray-700 min-w-[140px] font-mono">
+            <span className="text-sm text-gray-700 sm:min-w-[140px] font-mono truncate">
               {label}
             </span>
             <ScoreButtonGroup paramId={config.id} valueKey={value} />

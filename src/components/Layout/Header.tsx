@@ -13,19 +13,21 @@ export function Header() {
 
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-3 sm:px-6">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-start justify-between gap-2 sm:gap-4 sm:flex-wrap">
         {/* Title */}
-        <div className="min-w-0">
-          <h1 className="text-xl font-bold text-gray-900 truncate">
-            {t("app.title")}
+        <div className="min-w-0 flex-1">
+          <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">
+            <span className="sm:hidden">{t("app.titleShort")}</span>
+            <span className="hidden sm:inline">{t("app.title")}</span>
           </h1>
-          <p className="text-sm text-gray-500">
-            {t("app.subtitle", { count: apartments.length })}
+          <p className="text-xs sm:text-sm text-gray-500 truncate">
+            <span className="sm:hidden">{t("app.subtitleShort", { count: apartments.length })}</span>
+            <span className="hidden sm:inline">{t("app.subtitle", { count: apartments.length })}</span>
           </p>
         </div>
 
         {/* Warning + Settings + About */}
-        <div className="flex items-center gap-3" data-tour-id="header-actions">
+        <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0" data-tour-id="header-actions">
           <button
             onClick={() => setShowDisclaimer(true)}
             title={t("about.disclaimer")}

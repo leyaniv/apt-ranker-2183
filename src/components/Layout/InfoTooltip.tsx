@@ -6,7 +6,7 @@ interface InfoTooltipProps {
 
 export function InfoTooltip({ text }: InfoTooltipProps) {
   const [open, setOpen] = useState(false);
-  const [alignEnd, setAlignEnd] = useState(false);
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -14,8 +14,15 @@ export function InfoTooltip({ text }: InfoTooltipProps) {
     const btn = wrapperRef.current;
     if (!btn) return;
     const rect = btn.getBoundingClientRect();
-    // Use physical directions: if less room on the right, anchor to the right edge
-    setAlignEnd(window.innerWidth - rect.right < 300);
+    const margin = 8;
+    const maxWidth = Math.min(window.innerWidth - margin * 2, 320);
+    // Try to align to button's start edge, then clamp inside viewport
+    let left = rect.left;
+    if (left + maxWidth > window.innerWidth - margin) {
+      left = window.innerWidth - margin - maxWidth;
+    }
+    if (left < margin) left = margin;
+    setPos({ top: rect.bottom + 4, left, width: maxWidth });
   }, []);
 
   useEffect(() => {
@@ -27,7 +34,13 @@ export function InfoTooltip({ text }: InfoTooltipProps) {
       }
     };
     document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    window.addEventListener("resize", reposition);
+    window.addEventListener("scroll", reposition, true);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      window.removeEventListener("resize", reposition);
+      window.removeEventListener("scroll", reposition, true);
+    };
   }, [open, reposition]);
 
   return (
@@ -41,13 +54,12 @@ export function InfoTooltip({ text }: InfoTooltipProps) {
       >
         ?
       </button>
-      {open && (
+      {open && pos && (
         <div
           ref={popoverRef}
-          className={`absolute top-full mt-1 z-20 w-64 sm:w-80
-                      bg-white border border-gray-200 rounded-lg shadow-lg
-                      px-3 py-2 text-sm text-gray-600 leading-relaxed
-                      ${alignEnd ? "right-0" : "left-0"}`}
+          style={{ position: "fixed", top: pos.top, left: pos.left, width: pos.width }}
+          className="z-50 bg-white border border-gray-200 rounded-lg shadow-lg
+                     px-3 py-2 text-sm text-gray-600 leading-relaxed"
         >
           {text}
         </div>

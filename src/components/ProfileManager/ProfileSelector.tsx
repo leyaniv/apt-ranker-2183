@@ -64,7 +64,7 @@ export function ProfileSelector() {
           }}
           aria-label={t("profile.currentProfile")}
           className="border border-gray-300 rounded-md px-2 py-1.5 text-sm
-                     bg-white min-w-[140px]"
+                     bg-white max-w-[40vw] sm:min-w-[140px] truncate"
         >
           {profiles.length === 0 && (
             <option value="">{t("profile.select")}</option>

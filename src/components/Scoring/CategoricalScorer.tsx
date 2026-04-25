@@ -42,9 +42,9 @@ export function CategoricalScorer({ config }: CategoricalScorerProps) {
         return (
           <div
             key={value}
-            className="flex items-center justify-between gap-3 py-1"
+            className="flex items-center justify-between gap-2 sm:gap-3 py-1"
           >
-            <div className="flex items-center gap-2 min-w-[120px]">
+            <div className="flex items-center gap-2 min-w-0 sm:min-w-[120px]">
               <span className="text-sm text-gray-700 truncate">{label}</span>
               {pdfInfo && (
                 <a
