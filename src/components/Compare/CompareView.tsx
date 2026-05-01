@@ -83,7 +83,7 @@ export function CompareView() {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-5xl mx-auto w-full h-full flex flex-col gap-4 min-h-0">
+    <div className="p-4 sm:p-6 pb-16 sm:pb-6 max-w-5xl mx-auto w-full h-full flex flex-col gap-4 min-h-0">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <h2 className="text-base font-semibold text-gray-700">

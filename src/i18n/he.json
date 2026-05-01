@@ -113,7 +113,7 @@
     "storageId": "מספר מחסן",
     "parking": "חניות",
     "type": "טיפוס",
-    "airDirection": "כיוון אוויר",
+    "airDirection": "כיווני אוויר",
     "pricePerSqm": "מחיר/מ״ר",
     "pdfApartment": "תכנית דירה",
     "pdfFloor": "תכנית קומה",
@@ -122,7 +122,13 @@
     "openOnSite": "צפה באתר",
     "notes": "הערות",
     "notesPlaceholder": "הוסיפו הערות על דירה זו...",
-    "hasNote": "לדירה זו יש הערה"
+    "hasNote": "לדירה זו יש הערה",
+    "scoreBreakdown": "פירוט ציון",
+    "colField": "שדה",
+    "colValue": "ערך",
+    "colScore": "ציון",
+    "totalScore": "התאמה כוללת",
+    "propertySlug": "מזהה דירה"
   },
   "compare": {
     "selectProfiles": "בחרו פרופילים להשוואה",

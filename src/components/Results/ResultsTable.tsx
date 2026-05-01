@@ -427,7 +427,7 @@ export function ResultsTable() {
 
   return (
     <div
-      className="mx-auto w-full sm:w-fit max-w-full flex flex-col h-full min-h-0 pb-4 sm:pb-6"
+      className="mx-auto w-full sm:w-fit max-w-full flex flex-col h-full min-h-0 pb-18 sm:pb-6"
       onDragEnd={() => { dragSlugRef.current = null; setDropTargetSlug(null); stopAutoScroll(); }}
     >
       <div className="px-4 sm:px-6 pt-4 sm:pt-6 mb-2 flex-shrink-0">

@@ -42,7 +42,7 @@ export const ApartmentRow = memo(function ApartmentRow({
   onDragStart, onDragOver, onDrop,
 }: ApartmentRowProps) {
   const { t } = useTranslation();
-  const { apartment, totalScore, breakdown } = ranked;
+  const { apartment, totalScore, totalWeight, breakdown } = ranked;
   const slug = apartment.property_slug;
   const isDropTarget = dropTargetSlug === slug;
 
@@ -193,7 +193,9 @@ export const ApartmentRow = memo(function ApartmentRow({
 
           <Collapsible.Content>
             {isOpen && (
-              <ApartmentDetail apartment={apartment} breakdown={breakdown} note={note} onNoteChange={onNoteChange} />
+              <div className="bg-gray-50 sm:bg-transparent mx-2 sm:mx-0 mb-2 sm:mb-0 rounded-md sm:rounded-none border sm:border-0 border-gray-200 shadow-inner sm:shadow-none">
+                <ApartmentDetail apartment={apartment} breakdown={breakdown} totalWeight={totalWeight} note={note} onNoteChange={onNoteChange} />
+              </div>
             )}
           </Collapsible.Content>
         </div>

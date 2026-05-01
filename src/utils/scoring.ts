@@ -109,7 +109,7 @@ export function computeApartmentScore(
   scores: ValueScores,
   weights: ImportanceWeights,
   buckets: BucketMap
-): { totalScore: number; breakdown: Record<string, number> } {
+): { totalScore: number; totalWeight: number; breakdown: Record<string, number> } {
   let weightedSum = 0;
   let totalWeight = 0;
   const breakdown: Record<string, number> = {};
@@ -127,7 +127,7 @@ export function computeApartmentScore(
   }
 
   const totalScore = totalWeight > 0 ? weightedSum / totalWeight : DEFAULT_SCORE;
-  return { totalScore, breakdown };
+  return { totalScore, totalWeight, breakdown };
 }
 
 /**
@@ -140,13 +140,13 @@ export function rankApartments(
   buckets: BucketMap
 ): RankedApartment[] {
   const ranked = apartments.map((apt) => {
-    const { totalScore, breakdown } = computeApartmentScore(
+    const { totalScore, totalWeight, breakdown } = computeApartmentScore(
       apt,
       scores,
       weights,
       buckets
     );
-    return { apartment: apt, totalScore, breakdown };
+    return { apartment: apt, totalScore, totalWeight, breakdown };
   });
 
   // Normalize scores to the full 1–5 range

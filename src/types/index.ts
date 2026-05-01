@@ -129,6 +129,8 @@ export interface Profile {
 export interface RankedApartment {
   apartment: Apartment;
   totalScore: number;
+  /** Sum of effective importance weights actually used in scoring (matches breakdown keys). */
+  totalWeight: number;
   /** Per-parameter breakdown: paramId → weighted contribution */
   breakdown: Record<string, number>;
 }

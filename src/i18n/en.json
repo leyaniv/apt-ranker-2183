@@ -113,7 +113,7 @@
     "storageId": "Storage ID",
     "parking": "Parking spots",
     "type": "Type",
-    "airDirection": "Air Direction",
+    "airDirection": "Air Directions",
     "pricePerSqm": "Price/m²",
     "pdfApartment": "Apartment Plan",
     "pdfFloor": "Floor Plan",
@@ -122,7 +122,13 @@
     "openOnSite": "View on site",
     "notes": "Notes",
     "notesPlaceholder": "Add notes about this apartment...",
-    "hasNote": "This apartment has a note"
+    "hasNote": "This apartment has a note",
+    "scoreBreakdown": "Score Breakdown",
+    "colField": "Field",
+    "colValue": "Value",
+    "colScore": "Score",
+    "totalScore": "Overall Match",
+    "propertySlug": "Property ID"
   },
   "compare": {
     "selectProfiles": "Select profiles to compare",

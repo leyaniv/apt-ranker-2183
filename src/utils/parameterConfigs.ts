@@ -106,7 +106,7 @@ export const PARAMETER_CONFIGS: ParameterConfig[] = [
   {
     id: "air_direction_count",
     kind: "categorical",
-    label: { en: "Number of Air Directions", he: "מספר כיווני אוויר" },
+    label: { en: "# of Air Directions", he: "מספר כיווני אוויר" },
     values: ["1", "2", "3"],
     valueLabels: DIR_COUNT_LABELS,
   },
@@ -140,7 +140,7 @@ export const PARAMETER_CONFIGS: ParameterConfig[] = [
   {
     id: "area_sqm",
     kind: "bucketed",
-    label: { en: "Area", he: "שטח דירה" },
+    label: { en: "Apartment Area", he: "שטח דירה" },
     values: [],
     valueLabels: {},
   },
