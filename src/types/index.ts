@@ -26,11 +26,6 @@ export interface RawApartment {
   pdf_floor_plan?: string;
   pdf_parking_storage?: string;
   pdf_development?: string;
-  pdf_apartment_plan_url?: string;
-  pdf_floor_plan_url?: string;
-  pdf_parking_storage_url?: string;
-  pdf_development_url?: string;
-  pdf_other_urls: string[];
   pdf_other: string[];
   remarks: string;
 }

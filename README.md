@@ -65,7 +65,13 @@ All state lives in your browser's `localStorage`. Clearing site data resets the 
 
 ## Data Pipeline
 
-The apartment dataset is produced by the scraper in [tools/scraper/](tools/scraper/), which queries the WordPress REST API of `haifa.eshelltd.co.il`, scrapes each apartment's detail page, and downloads the associated PDFs (apartment plans, specifications). Output is written to [data/apartments.json](data/apartments.json) and mirrored to [public/data/apartments.json](public/data/apartments.json) for the app to consume.
+The apartment dataset is produced by the scraper in [tools/scraper/](tools/scraper/), which queries the WordPress REST API of `haifa.eshelltd.co.il`, scrapes each apartment's detail page, and downloads the associated PDFs (apartment plans, specifications). Output is written to [data/apartments.json](data/apartments.json) and must be mirrored to [public/data/apartments.json](public/data/apartments.json) for the app to consume.
+
+Before each scrape, the previous `data/apartments.json` is automatically copied to `data/archive/apartments-YYYY-MM-DD.json` (date taken from the file's mtime). If an archive for that date already exists, a `-2`, `-3`, ... suffix is appended. Use [tools/scraper/diff_apartments.py](tools/scraper/diff_apartments.py) to compare any two snapshots:
+
+```bash
+python tools/scraper/diff_apartments.py data/archive/apartments-2026-04-27.json data/apartments.json
+```
 
 ```bash
 cd tools/scraper

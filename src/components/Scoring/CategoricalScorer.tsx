@@ -24,9 +24,9 @@ export function CategoricalScorer({ config }: CategoricalScorerProps) {
     if (config.id !== "type") return null;
     const map = new Map<string, { url: string; label: string }>();
     for (const apt of apartments) {
-      if (!map.has(apt.type) && apt.pdf_apartment_plan_url) {
+      if (!map.has(apt.type) && apt.pdf_apartment_plan) {
         map.set(apt.type, {
-          url: apt.pdf_apartment_plan_url,
+          url: apt.pdf_apartment_plan,
           label: `${apt.buildingKey} #${apt.apartment_number}`,
         });
       }

@@ -110,10 +110,10 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
   const totalPercent = maxPossible > 0 ? (totalContribution / maxPossible) * 100 : null;
 
   const pdfs = [
-    { label: t("detail.pdfApartment"), url: apartment.pdf_apartment_plan_url },
-    { label: t("detail.pdfFloor"), url: apartment.pdf_floor_plan_url },
-    { label: t("detail.pdfParking"), url: apartment.pdf_parking_storage_url },
-    { label: t("detail.pdfDevelopment"), url: apartment.pdf_development_url },
+    { label: t("detail.pdfApartment"), url: apartment.pdf_apartment_plan },
+    { label: t("detail.pdfFloor"), url: apartment.pdf_floor_plan },
+    { label: t("detail.pdfParking"), url: apartment.pdf_parking_storage },
+    { label: t("detail.pdfDevelopment"), url: apartment.pdf_development },
   ].filter((p) => p.url);
 
   return (

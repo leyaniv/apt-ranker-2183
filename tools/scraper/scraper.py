@@ -26,6 +26,7 @@ SCRAPER_DIR = Path(__file__).parent
 REPO_ROOT = SCRAPER_DIR.parent.parent
 PDFS_DIR = SCRAPER_DIR / "pdfs"
 OUTPUT_JSON = REPO_ROOT / "data" / "apartments.json"
+ARCHIVE_DIR = REPO_ROOT / "data" / "archive"
 
 session = requests.Session()
 session.headers.update({
@@ -368,8 +369,37 @@ def enrich_with_taxonomy_labels(apartments: list[dict], taxonomies: dict[str, di
             apt["price_per_sqm"] = None
 
 
+def archive_existing_output() -> None:
+    """Snapshot the existing apartments.json to data/archive/ before overwriting.
+
+    The archive filename is ``apartments-YYYY-MM-DD.json`` where the date
+    comes from the file's mtime (when it was last scraped). If a file with
+    the same name already exists, a numeric counter suffix is appended
+    (``-2``, ``-3``, ...).
+    """
+    import datetime
+    import shutil
+
+    if not OUTPUT_JSON.exists():
+        return
+
+    ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
+    mtime = datetime.datetime.fromtimestamp(OUTPUT_JSON.stat().st_mtime)
+    date_str = mtime.strftime("%Y-%m-%d")
+
+    candidate = ARCHIVE_DIR / f"apartments-{date_str}.json"
+    counter = 2
+    while candidate.exists():
+        candidate = ARCHIVE_DIR / f"apartments-{date_str}-{counter}.json"
+        counter += 1
+
+    shutil.copy2(OUTPUT_JSON, candidate)
+    print(f"Archived previous snapshot to {candidate}")
+
+
 def export_json(apartments: list[dict]) -> None:
     """Export apartment data to JSON."""
+    archive_existing_output()
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
         json.dump(apartments, f, ensure_ascii=False, indent=2)
     print(f"\nExported {len(apartments)} apartments to {OUTPUT_JSON}")
