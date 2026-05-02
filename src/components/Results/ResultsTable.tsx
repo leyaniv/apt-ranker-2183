@@ -7,6 +7,7 @@ import { ApartmentRow } from "./ApartmentRow";
 import { TabHeader } from "../Layout/TabHeader";
 import { ConfirmDialog } from "../Layout/ConfirmDialog";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
+import { useTableTier, TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
 import type { RankedApartment } from "../../types";
 
 /** Per-row props supplied to every virtualized row via `List.rowProps`. */
@@ -15,6 +16,7 @@ interface RowData {
   openSlugs: Set<string>;
   toggleOpen: (slug: string) => void;
   isDesktop: boolean;
+  tier: TableTier;
   notes: Record<string, string>;
   setNote: (slug: string, text: string) => void;
   manualOrder: string[] | null;
@@ -27,7 +29,7 @@ interface RowData {
 }
 
 const VirtualRow = function VirtualRow({
-  index, style, displayed, openSlugs, toggleOpen, isDesktop,
+  index, style, displayed, openSlugs, toggleOpen, isDesktop, tier,
   notes, setNote, manualOrder, scoreRankMap, rankLabelMap, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: RowComponentProps<RowData>) {
@@ -48,6 +50,7 @@ const VirtualRow = function VirtualRow({
         isOpen={openSlugs.has(slug)}
         onToggle={toggleOpen}
         isDesktop={isDesktop}
+        tier={tier}
         hasNote={!!notes[slug]}
         note={notes[slug]}
         onNoteChange={setNote}
@@ -112,6 +115,10 @@ export function ResultsTable() {
 
   // Virtualization state
   const isDesktop = useIsDesktop();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  // Measure the parent's width (the tab panel) since the wrapper itself uses
+  // `sm:w-fit` and would shrink-wrap to the table's fixed-px columns.
+  const tier = useTableTier(containerRef, { useParent: true });
   const [openSlugs, setOpenSlugs] = useState<Set<string>>(() => new Set());
   const listRef = useListRef(null);
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: isDesktop ? 45 : 40 });
@@ -459,7 +466,8 @@ export function ResultsTable() {
 
   return (
     <div
-      className="mx-auto w-full sm:w-fit max-w-full flex flex-col h-full min-h-0 pb-18 sm:pb-6"
+      ref={containerRef}
+      className="mx-auto w-full sm:w-fit max-w-full flex flex-col h-full min-h-0 px-2 sm:px-0 pb-18 sm:pb-6"
       onDragEnd={() => { dragSlugRef.current = null; setDropTargetSlug(null); stopAutoScroll(); }}
     >
       <div className="px-4 sm:px-6 pt-4 sm:pt-6 mb-2 flex-shrink-0">
@@ -702,10 +710,20 @@ export function ResultsTable() {
         </Collapsible.Content>
       </Collapsible.Root>
 
-      {/* Table header (desktop only) */}
+      {/* Table header (desktop only). Rendered conditionally on `isDesktop`
+          so it stays in lockstep with the row layout — preventing the header
+          from showing while rows have already collapsed to the compact layout.
+
+          The extra `paddingInlineEnd` reserves space for the virtualized
+          List's vertical scrollbar (~15px). Because the outer wrapper uses
+          `sm:w-fit`, it shrink-wraps to the header's natural width — so this
+          padding pushes the wrapper wide enough that the List can host both
+          the rows (fixed-px grid) AND its own scrollbar without overflow. */}
+      {isDesktop && (
       <div
-        className="flex-shrink-0 hidden md:grid grid-cols-[28px_50px_80px_60px_70px_70px_80px_60px_90px_110px_80px]
-                    items-center gap-1 px-4 py-2 bg-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wider"
+        className={`flex-shrink-0 grid ${TIER_LAYOUTS[tier].grid} ${TIER_LAYOUTS[tier].padX}
+                    items-center gap-1 py-2 bg-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wider`}
+        style={{ paddingInlineEnd: "calc(0.5rem + 16px)" }}
       >
         <span></span>
         <span>{t("results.rank")}</span>
@@ -713,12 +731,19 @@ export function ResultsTable() {
         <span className="text-center">{t("results.apt")}</span>
         <span className="text-center">{t("results.rooms")}</span>
         <span className="text-center">{t("results.floor")}</span>
+        {TIER_LAYOUTS[tier].showDirections && (
+          <span className="text-center">{t("results.airDirection")}</span>
+        )}
         <span className="text-center">{t("results.layout")}</span>
         <span className="text-center">{t("results.type")}</span>
         <span className="text-center">{t("results.area")}</span>
+        {TIER_LAYOUTS[tier].showBalcony && (
+          <span className="text-center">{t("results.balcony")}</span>
+        )}
         <span className="text-center">{t("results.price")}</span>
         <span className="text-center">{t("results.score")}</span>
       </div>
+      )}
 
       {/* Rows */}
       <div
@@ -741,6 +766,7 @@ export function ResultsTable() {
               openSlugs,
               toggleOpen,
               isDesktop,
+              tier,
               notes,
               setNote,
               manualOrder,

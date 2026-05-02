@@ -2,6 +2,7 @@ import { memo, useCallback } from "react";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { useTranslation } from "react-i18next";
 import type { RankedApartment } from "../../types";
+import { TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
 import { ApartmentDetail } from "./ApartmentDetail";
 
 interface ApartmentRowProps {
@@ -11,6 +12,8 @@ interface ApartmentRowProps {
   isOpen: boolean;
   onToggle: (slug: string) => void;
   isDesktop: boolean;
+  /** Current desktop column tier (1=compact, 2=+balcony, 3=+directions). */
+  tier?: TableTier;
   hasNote?: boolean;
   note?: string;
   onNoteChange?: (slug: string, text: string) => void;
@@ -38,7 +41,7 @@ function scoreColor(score: number): string {
  * Renders only the matching layout for the current viewport.
  */
 export const ApartmentRow = memo(function ApartmentRow({
-  ranked, rank, isOpen, onToggle, isDesktop,
+  ranked, rank, isOpen, onToggle, isDesktop, tier = 1,
   hasNote, note, onNoteChange, originalRank, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: ApartmentRowProps) {
@@ -66,8 +69,8 @@ export const ApartmentRow = memo(function ApartmentRow({
         >
           {isDesktop ? (
             <div
-              className={`grid grid-cols-[28px_50px_80px_60px_70px_70px_80px_60px_90px_110px_80px]
-                          items-center gap-1 px-4 py-2.5 hover:bg-gray-50 transition-colors text-sm
+              className={`grid ${TIER_LAYOUTS[tier].grid} ${TIER_LAYOUTS[tier].padX}
+                          items-center gap-1 py-2.5 hover:bg-gray-50 transition-colors text-sm
                           ${isOpen ? "bg-gray-50" : ""}`}
             >
               <span
@@ -124,6 +127,18 @@ export const ApartmentRow = memo(function ApartmentRow({
                 <span className="text-gray-700">{apartment.floor}</span>
               </Collapsible.Trigger>
 
+              {TIER_LAYOUTS[tier].showDirections && (
+                <Collapsible.Trigger className="text-center">
+                  <span className="text-gray-600 text-xs whitespace-nowrap">
+                    {apartment.directions.length > 0
+                      ? apartment.directions
+                          .map((d) => t(`results.directionShort_${d}`))
+                          .join("·")
+                      : "—"}
+                  </span>
+                </Collapsible.Trigger>
+              )}
+
               <Collapsible.Trigger className="text-center">
                 <span className="text-gray-600 text-xs truncate">
                   {t(`results.layout_${apartment.layout}`)}
@@ -139,6 +154,16 @@ export const ApartmentRow = memo(function ApartmentRow({
                   {apartment.area_sqm} {t("results.areaUnit")}
                 </span>
               </Collapsible.Trigger>
+
+              {TIER_LAYOUTS[tier].showBalcony && (
+                <Collapsible.Trigger className="text-end">
+                  <span className="text-gray-700 text-xs">
+                    {apartment.balcony_area_sqm > 0
+                      ? `${apartment.balcony_area_sqm} ${t("results.areaUnit")}`
+                      : "—"}
+                  </span>
+                </Collapsible.Trigger>
+              )}
 
               <Collapsible.Trigger className="text-end">
                 <span className="font-mono text-gray-700 text-xs">
@@ -227,7 +252,13 @@ export const ApartmentRow = memo(function ApartmentRow({
 
           <Collapsible.Content>
             {isOpen && (
-              <div className="bg-gray-50 sm:bg-transparent mx-2 sm:mx-0 mb-2 sm:mb-0 rounded-md sm:rounded-none border sm:border-0 border-gray-200 shadow-inner sm:shadow-none">
+              <div
+                className={
+                  isDesktop
+                    ? ""
+                    : "bg-gray-50 mx-2 mb-2 rounded-md border border-gray-200 shadow-inner"
+                }
+              >
                 <ApartmentDetail apartment={apartment} breakdown={breakdown} totalWeight={totalWeight} note={note} onNoteChange={onNoteChange} />
               </div>
             )}

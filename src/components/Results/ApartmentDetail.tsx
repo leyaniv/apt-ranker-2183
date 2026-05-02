@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import type { Apartment, ParameterId } from "../../types";
@@ -6,6 +6,16 @@ import { resolveLocale } from "../../utils/locale";
 import { useApp } from "../../context/AppContext";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { PARAMETER_CONFIGS } from "../../utils/parameterConfigs";
+
+/** Default importance weight when a parameter has no explicit weight set
+ *  (kept in sync with `DEFAULT_WEIGHT` in `utils/scoring.ts`). */
+const DEFAULT_WEIGHT = 3;
+
+/** Minimum width (px) for the scoring column at which the breakdown is
+ *  rendered with separate Score / Weight / Weighted columns instead of a
+ *  single combined Score column. Below this we fall back to the compact
+ *  layout to avoid horizontal scrolling. */
+const EXPANDED_BREAKDOWN_MIN_PX = 460;
 
 interface ApartmentDetailProps {
   apartment: Apartment;
@@ -29,10 +39,27 @@ interface DetailRowDef {
  */
 export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNoteChange }: ApartmentDetailProps) {
   const { t, i18n } = useTranslation();
-  const { settings, toggleUserSoldMark } = useApp();
+  const { settings, toggleUserSoldMark, weights } = useApp();
   const lang = resolveLocale(i18n.language);
   const isDesktop = useIsDesktop();
   const [notesOpen, setNotesOpen] = useState(false);
+
+  // Watch the scoring column's width so we can switch between the compact
+  // "weighted only" breakdown and the expanded Score · Weight · Weighted
+  // layout based on actual available room — not a viewport breakpoint.
+  const scoringColRef = useRef<HTMLDivElement | null>(null);
+  const [expandedBreakdown, setExpandedBreakdown] = useState(false);
+  useEffect(() => {
+    const el = scoringColRef.current;
+    if (!el) return;
+    const update = (w: number) => setExpandedBreakdown(w >= EXPANDED_BREAKDOWN_MIN_PX);
+    update(el.clientWidth);
+    const obs = new ResizeObserver((entries) => {
+      for (const entry of entries) update(entry.contentRect.width);
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   const directionLabel =
     lang === "he" ? apartment.air_direction : apartment.directions.join(", ");
 
@@ -123,24 +150,46 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
   ].filter((p) => p.url);
 
   return (
-    <div className="px-4 pt-3 pb-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
-      <div className="space-y-2">
+    <div className={`px-4 pt-3 pb-4 grid grid-cols-1 gap-x-8 gap-y-3 text-sm ${isDesktop ? "grid-cols-2" : ""}`}>
+      <div ref={scoringColRef} className="space-y-2">
         {/* Column header */}
-        <div className="grid grid-cols-[1fr_1fr_2.5rem] items-baseline gap-x-2 px-1 pb-1 border-b border-gray-200 text-[10px] font-medium uppercase tracking-wide text-gray-500">
+        <div
+          className={`grid items-baseline gap-x-2 px-1 pb-1 border-b border-gray-200 text-[10px] font-medium uppercase tracking-wide text-gray-500 ${
+            expandedBreakdown
+              ? "grid-cols-[1fr_1fr_2.5rem_2.5rem_2.5rem]"
+              : "grid-cols-[1fr_1fr_2.5rem]"
+          }`}
+        >
           <span>{t("detail.colField")}</span>
           <span>{t("detail.colValue")}</span>
-          <span className="text-end">{t("detail.colScore")}</span>
+          {expandedBreakdown ? (
+            <>
+              <span className="text-end">{t("detail.colScore")}</span>
+              <span className="text-end">{t("detail.colWeight")}</span>
+              <span className="text-end">{t("detail.colWeighted")}</span>
+            </>
+          ) : (
+            <span className="text-end">{t("detail.colScore")}</span>
+          )}
         </div>
-        {/* Merged rows: label | value | score */}
+        {/* Merged rows: label | value | score [| weight | weighted] */}
         <div className="space-y-1">
           {rows.filter((r) => r.paramId).map((row) => {
-            const score = row.paramId ? breakdown[row.paramId] : undefined;
+            const contribution = row.paramId ? breakdown[row.paramId] : undefined;
+            const weight = row.paramId ? weights[row.paramId] ?? DEFAULT_WEIGHT : undefined;
+            const valueScore =
+              contribution != null && weight != null && weight > 0
+                ? contribution / weight
+                : undefined;
             return (
               <DetailRow
                 key={row.key}
                 label={row.label}
                 value={row.value}
-                score={score}
+                score={contribution}
+                valueScore={valueScore}
+                weight={weight}
+                expanded={expandedBreakdown}
                 maxContribution={maxContribution}
               />
             );
@@ -148,9 +197,17 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
         </div>
         {/* Total row */}
         {totalPercent != null && (
-          <div className="grid grid-cols-[1fr_1fr_2.5rem] items-baseline gap-x-2 mt-2 pt-2 border-t border-gray-200 text-sm font-semibold">
+          <div
+            className={`grid items-baseline gap-x-2 mt-2 pt-2 border-t border-gray-200 text-sm font-semibold ${
+              expandedBreakdown
+                ? "grid-cols-[1fr_1fr_2.5rem_2.5rem_2.5rem]"
+                : "grid-cols-[1fr_1fr_2.5rem]"
+            }`}
+          >
             <span className="text-gray-700">{t("detail.totalScore")}</span>
             <span />
+            {expandedBreakdown && <span />}
+            {expandedBreakdown && <span />}
             <span dir="ltr" className="tabular-nums text-end text-gray-800">
               {totalPercent.toFixed(0)}%
             </span>
@@ -222,10 +279,11 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
             <Collapsible.Root
               open={isDesktop || notesOpen}
               onOpenChange={setNotesOpen}
-              className="space-y-1 sm:flex sm:flex-col sm:flex-1 sm:min-h-0"
+              className={`space-y-1 ${isDesktop ? "flex flex-col flex-1 min-h-0" : ""}`}
             >
+              {!isDesktop && (
               <Collapsible.Trigger
-                className="sm:hidden w-full flex items-center justify-between gap-2 px-3 py-2
+                className="w-full flex items-center justify-between gap-2 px-3 py-2
                            text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md
                            hover:bg-gray-50 hover:border-gray-400 transition-colors"
               >
@@ -250,7 +308,9 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
                   <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                 </svg>
               </Collapsible.Trigger>
-              <label className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-gray-700">
+              )}
+              {isDesktop && (
+              <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700">
                 {t("detail.notes")}
                 {note && (
                   <span
@@ -259,9 +319,10 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
                   />
                 )}
               </label>
+              )}
               <Collapsible.Content className="data-[state=open]:block">
                 <textarea
-                  className="w-full min-h-[80px] sm:min-h-[100px] rounded-md border border-gray-300 px-3 py-2 text-sm
+                  className="w-full min-h-[80px] rounded-md border border-gray-300 px-3 py-2 text-sm
                              text-gray-900 bg-gray-50
                              placeholder:text-gray-400
                              focus:border-blue-400 focus:ring-1 focus:ring-blue-400 resize-y"
@@ -318,26 +379,53 @@ function DetailRow({
   label,
   value,
   score,
+  valueScore,
+  weight,
+  expanded,
   maxContribution,
 }: {
   label: string;
   value: string;
+  /** Weighted contribution (valueScore × weight). Drives the row color and
+   *  is shown in the rightmost numeric column in both layouts. */
   score?: number;
+  /** Raw value score (1–5) before weighting. Only rendered when expanded. */
+  valueScore?: number;
+  /** Importance weight used for this parameter. Only rendered when expanded. */
+  weight?: number;
+  /** When true, render Score · Weight · Weighted as separate columns. */
+  expanded: boolean;
   maxContribution: number;
 }) {
+  const numClass = "tabular-nums text-xs text-end";
+  const colorClass = score == null ? "text-transparent" : contributionColor(score, maxContribution);
   return (
-    <div className="grid grid-cols-[1fr_1fr_2.5rem] items-baseline gap-x-2">
+    <div
+      className={`grid items-baseline gap-x-2 ${
+        expanded
+          ? "grid-cols-[1fr_1fr_2.5rem_2.5rem_2.5rem]"
+          : "grid-cols-[1fr_1fr_2.5rem]"
+      }`}
+    >
       <span className="text-gray-500 truncate">{label}</span>
       <span className="font-medium text-gray-800 truncate">{value}</span>
-      <span
-        dir="ltr"
-        className={`tabular-nums text-xs text-end ${
-          score == null ? "text-transparent" : contributionColor(score, maxContribution)
-        }`}
-        aria-hidden={score == null}
-      >
-        {score != null ? score.toFixed(1) : "—"}
-      </span>
+      {expanded ? (
+        <>
+          <span dir="ltr" className={`${numClass} text-gray-600`} aria-hidden={valueScore == null}>
+            {valueScore != null ? valueScore.toFixed(1) : "—"}
+          </span>
+          <span dir="ltr" className={`${numClass} text-gray-500`} aria-hidden={weight == null}>
+            {weight != null ? weight.toFixed(0) : "—"}
+          </span>
+          <span dir="ltr" className={`${numClass} ${colorClass}`} aria-hidden={score == null}>
+            {score != null ? score.toFixed(1) : "—"}
+          </span>
+        </>
+      ) : (
+        <span dir="ltr" className={`${numClass} ${colorClass}`} aria-hidden={score == null}>
+          {score != null ? score.toFixed(1) : "—"}
+        </span>
+      )}
     </div>
   );
 }

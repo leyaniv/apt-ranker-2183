@@ -1,5 +1,15 @@
 ﻿@import "tailwindcss";
 
+/*
+ * Override Tailwind's `sm` breakpoint from its 640px default to 768px so it
+ * lines up with the `useIsDesktop` hook. With both pinned to the same
+ * boundary the app flips between mobile and desktop layouts in a single
+ * step instead of going through an in-between stage.
+ */
+@theme {
+  --breakpoint-sm: 768px;
+}
+
 @layer base {
   :root {
     --color-primary: #2563eb;
