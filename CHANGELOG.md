@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-05-02
+
+- Sold apartments should now show up with a "Sold" badge. Additional "Hide sold" filter toggle and a "Mark as sold" button in the detail view (marks persist across profiles).
+- Results table adapts to the available width, revealing extra columns as space allows.
+- Polished apartment details with score contributions and overall match percentage.
+- Polished mobile experience across apartment details, comparison views, and profile management.
+
 ## [1.1.1] - 2026-04-25
 
 - Simplified air-direction scoring to four cardinals (N/E/S/W).
