@@ -100,19 +100,25 @@ def fetch_all_properties() -> list[dict]:
     return all_properties
 
 
+# Statuses we want to include in the exported dataset. 'פנוי' = available,
+# 'נמכר' = sold. Sold units are still scraped so the UI can display them
+# (with a strikethrough / muted styling) and so we can diff against earlier
+# snapshots.
+INCLUDED_STATUSES = {"פנוי", "נמכר"}
+
+
 def filter_available(properties: list[dict], status_terms: dict[int, str]) -> list[dict]:
-    """Filter properties to only those with status 'פנוי'."""
-    # Find the term ID(s) for 'פנוי'
-    available_term_ids = {tid for tid, name in status_terms.items() if name == "פנוי"}
-    if not available_term_ids:
-        print(f"  WARNING: Could not find 'פנוי' status term. Available terms: {status_terms}")
+    """Filter properties to those whose status is in INCLUDED_STATUSES."""
+    included_term_ids = {tid for tid, name in status_terms.items() if name in INCLUDED_STATUSES}
+    if not included_term_ids:
+        print(f"  WARNING: Could not find any of {INCLUDED_STATUSES} in status terms: {status_terms}")
         print("  Returning all properties unfiltered.")
         return properties
 
     filtered = []
     for prop in properties:
         prop_status_ids = set(prop.get("status", []))
-        if prop_status_ids & available_term_ids:
+        if prop_status_ids & included_term_ids:
             filtered.append(prop)
     return filtered
 
@@ -410,7 +416,16 @@ def print_summary(apartments: list[dict], pdf_count: int, new_downloads: int) ->
     print("\n" + "=" * 60)
     print("SUMMARY")
     print("=" * 60)
-    print(f"Total available apartments: {len(apartments)}")
+    print(f"Total apartments: {len(apartments)}")
+
+    # By status
+    status_count: dict[str, int] = {}
+    for apt in apartments:
+        s = apt.get("status") or "?"
+        status_count[s] = status_count.get(s, 0) + 1
+    print(f"\nBy status:")
+    for s in sorted(status_count.keys()):
+        print(f"  {s}: {status_count[s]}")
 
     # By rooms
     rooms_count: dict[str, int] = {}
@@ -421,12 +436,15 @@ def print_summary(apartments: list[dict], pdf_count: int, new_downloads: int) ->
     for r in sorted(rooms_count.keys()):
         print(f"  {r} rooms: {rooms_count[r]}")
 
-    # Price range
-    prices = [apt["price"] for apt in apartments if apt.get("price")]
-    if prices:
-        print(f"\nPrice range: ₪{min(prices):,} - ₪{max(prices):,}")
-        avg_price = sum(prices) / len(prices)
-        print(f"Average price: ₪{avg_price:,.0f}")
+    # Price range — split by status so sold prices don't skew the available view
+    def _prices_for(status_filter):
+        return [apt["price"] for apt in apartments if apt.get("price") and (status_filter is None or apt.get("status") == status_filter)]
+
+    for label in ("פנוי", "נמכר"):
+        prices = _prices_for(label)
+        if prices:
+            avg_price = sum(prices) / len(prices)
+            print(f"\n[{label}] Price range: ₪{min(prices):,} - ₪{max(prices):,}  (avg ₪{avg_price:,.0f}, n={len(prices)})")
 
     # Area range
     areas = [apt["area_sqm"] for apt in apartments if apt.get("area_sqm")]
@@ -464,12 +482,12 @@ def main():
     all_properties = fetch_all_properties()
     print(f"  Total properties from API: {len(all_properties)}")
 
-    print("\n[Phase 2] Filtering to available (פנוי) apartments...")
+    print(f"\n[Phase 2] Filtering to included statuses ({', '.join(sorted(INCLUDED_STATUSES))})...")
     available = filter_available(all_properties, taxonomies["status"])
-    print(f"  Available apartments: {len(available)}")
+    print(f"  Apartments to scrape: {len(available)}")
 
     if not available:
-        print("No available apartments found. Exiting.")
+        print("No matching apartments found. Exiting.")
         sys.exit(1)
 
     # Phase 3: Scrape detail pages

@@ -17,6 +17,8 @@ export interface AppSettings {
   onboardingCompleted: boolean;
   /** Scoring input style — buttons (integer 1–5) or slider (continuous) */
   scoringInputStyle: "buttons" | "slider";
+  /** Hide sold (נמכר) apartments from results and compare views */
+  hideSold: boolean;
 }
 
 const DEFAULTS: AppSettings = {
@@ -25,6 +27,7 @@ const DEFAULTS: AppSettings = {
   developerTools: false,
   onboardingCompleted: false,
   scoringInputStyle: "buttons",
+  hideSold: false,
 };
 
 function load(): AppSettings {

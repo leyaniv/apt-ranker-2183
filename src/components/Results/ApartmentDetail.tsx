@@ -29,12 +29,18 @@ interface DetailRowDef {
  */
 export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNoteChange }: ApartmentDetailProps) {
   const { t, i18n } = useTranslation();
-  const { settings } = useApp();
+  const { settings, toggleUserSoldMark } = useApp();
   const lang = resolveLocale(i18n.language);
   const isDesktop = useIsDesktop();
   const [notesOpen, setNotesOpen] = useState(false);
   const directionLabel =
     lang === "he" ? apartment.air_direction : apartment.directions.join(", ");
+
+  // Sold-state breakdown for the mark-as-sold control:
+  // - scrapeSold: status from the scraper says "נמכר" (authoritative, locked)
+  // - userMarkedSold: user pressed the "mark as sold" button (cross-profile)
+  const scrapeSold = (apartment.status ?? "").trim() === "נמכר";
+  const userMarkedSold = apartment.userMarkedSold;
 
   const areaUnit = t("results.areaUnit");
   const fmtPrice = (n: number) =>
@@ -166,6 +172,52 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
               ))}
             </div>
           )}
+
+          {/* Mark-as-sold control: cross-profile user override.
+              When the scrape already reports the apartment as sold the
+              control is disabled and shows the official-source label. */}
+          {scrapeSold ? (
+            <button
+              type="button"
+              disabled
+              title={t("detail.soldOfficialTooltip")}
+              className="self-start inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium
+                         rounded-md border border-gray-200 bg-gray-50 text-gray-400 dark:text-gray-600 cursor-not-allowed"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
+              </svg>
+              {t("detail.soldOfficial")}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => toggleUserSoldMark(apartment.property_slug)}
+              title={
+                userMarkedSold
+                  ? t("detail.unmarkSoldTooltip")
+                  : t("detail.markSoldTooltip")
+              }
+              className={`self-start inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium
+                         rounded-md border transition-colors ${
+                           userMarkedSold
+                             ? "border-red-300 bg-red-50 text-red-700 dark:text-red-800 hover:bg-red-100"
+                             : "border-gray-300 bg-white text-gray-700 dark:text-gray-800 hover:bg-gray-50"
+                         }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                {userMarkedSold ? (
+                  // Arrow-uturn-left — "undo" the sold mark
+                  <path fillRule="evenodd" d="M7.793 2.232a.75.75 0 0 1-.025 1.06L3.622 7.25h10.003a5.375 5.375 0 0 1 0 10.75H10.75a.75.75 0 0 1 0-1.5h2.875a3.875 3.875 0 0 0 0-7.75H3.622l4.146 3.957a.75.75 0 0 1-1.036 1.085l-5.5-5.25a.75.75 0 0 1 0-1.085l5.5-5.25a.75.75 0 0 1 1.06.025Z" clipRule="evenodd" />
+                ) : (
+                  // No-symbol (circle with diagonal slash) — "mark as sold / unavailable"
+                  <path fillRule="evenodd" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16ZM3.5 10a6.5 6.5 0 0 1 10.65-5.03L4.97 14.15A6.47 6.47 0 0 1 3.5 10Zm2.35 5.03a6.5 6.5 0 0 0 9.18-9.18L5.85 15.03Z" clipRule="evenodd" />
+                )}
+              </svg>
+              {userMarkedSold ? t("detail.unmarkSold") : t("detail.markSold")}
+            </button>
+          )}
+
           {onNoteChange && (
             <Collapsible.Root
               open={isDesktop || notesOpen}
@@ -207,9 +259,9 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
                   />
                 )}
               </label>
-              <Collapsible.Content className="data-[state=open]:block sm:flex-1 sm:flex sm:flex-col sm:min-h-0">
+              <Collapsible.Content className="data-[state=open]:block">
                 <textarea
-                  className="w-full min-h-[120px] sm:min-h-[160px] sm:flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm
+                  className="w-full min-h-[80px] sm:min-h-[100px] rounded-md border border-gray-300 px-3 py-2 text-sm
                              text-gray-900 bg-gray-50
                              placeholder:text-gray-400
                              focus:border-blue-400 focus:ring-1 focus:ring-blue-400 resize-y"

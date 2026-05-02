@@ -8,6 +8,7 @@ import {
 import { useTranslation } from "react-i18next";
 import type { Apartment, Profile, BucketMap, RankedApartment } from "../../types";
 import { rankApartments } from "../../utils/scoring";
+import { useApp } from "../../context/AppContext";
 
 interface SideBySideRankingProps {
   profiles: Profile[];
@@ -36,6 +37,8 @@ export function SideBySideRanking({
   onSelectedProfileIdChange,
 }: SideBySideRankingProps) {
   const { t } = useTranslation();
+  const { settings } = useApp();
+  const hideSold = settings.hideSold;
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
   const [lines, setLines] = useState<LineCoord[]>([]);
 
@@ -58,14 +61,21 @@ export function SideBySideRanking({
     return map;
   }, [profiles, apartments, buckets]);
 
-  // Quick rank lookup: profileId → slug → rank (1-based)
+  // Quick rank lookup: profileId → slug → rank (1-based among non-sold).
+  // Sold apartments map to `null` so the delta indicator can hide for them.
   const rankLookup = useMemo(() => {
-    const map = new Map<string, Map<string, number>>();
+    const map = new Map<string, Map<string, number | null>>();
     for (const [profileId, ranked] of profileRankedLists) {
-      const slugMap = new Map<string, number>();
-      ranked.forEach((r, idx) =>
-        slugMap.set(r.apartment.property_slug, idx + 1),
-      );
+      const slugMap = new Map<string, number | null>();
+      let counter = 0;
+      ranked.forEach((r) => {
+        if (r.apartment.isSold) {
+          slugMap.set(r.apartment.property_slug, null);
+        } else {
+          counter += 1;
+          slugMap.set(r.apartment.property_slug, counter);
+        }
+      });
       map.set(profileId, slugMap);
     }
     return map;
@@ -211,6 +221,8 @@ export function SideBySideRanking({
       <div className="flex gap-6 flex-1 min-h-0">
         {profiles.map((profile) => {
           const ranked = profileRankedLists.get(profile.id) ?? [];
+          const visible = hideSold ? ranked.filter((r) => !r.apartment.isSold) : ranked;
+          let availableCounter = 0;
           return (
             <div key={profile.id} className="flex-1 min-w-0 flex flex-col min-h-0">
               {/* Column header */}
@@ -226,20 +238,28 @@ export function SideBySideRanking({
                 }}
                 className="flex-1 min-h-0 overflow-y-auto rounded-lg border border-gray-200 bg-white"
               >
-                {ranked.map((item, idx) => {
+                {visible.map((item) => {
                   const slug = item.apartment.property_slug;
+                  const isSold = item.apartment.isSold;
+                  if (!isSold) availableCounter += 1;
+                  const rank: number | null = isSold ? null : availableCounter;
                   const isSelected = selectedSlug === slug;
                   const isHovered = hoveredSlug === slug && !isSelected;
                   const isActive = activeSlug === slug;
-                  const rank = idx + 1;
 
-                  // Rank delta vs the clicked profile
-                  // Positive delta = ranks higher (better) in this profile
+                  // Rank delta vs the clicked profile. Only meaningful when
+                  // both endpoints have a numeric rank (i.e. neither is sold).
                   const originRank = selectedProfileId
-                    ? rankLookup.get(selectedProfileId)?.get(slug) ?? rank
+                    ? rankLookup.get(selectedProfileId)?.get(slug)
                     : rank;
-                  const delta = originRank - rank;
-                  const showDelta = isSelected && selectedProfileId !== profile.id && delta !== 0;
+                  const delta =
+                    originRank != null && rank != null ? originRank - rank : 0;
+                  const showDelta =
+                    isSelected &&
+                    selectedProfileId !== profile.id &&
+                    originRank != null &&
+                    rank != null &&
+                    delta !== 0;
 
                   return (
                     <div
@@ -254,6 +274,7 @@ export function SideBySideRanking({
                       onMouseLeave={() => setHoveredSlug(null)}
                       className={[
                         "sbs-row px-3 py-2 border-b border-gray-50 cursor-pointer transition-colors text-sm",
+                        isSold && "opacity-60",
                         isSelected &&
                           "bg-blue-100 dark:bg-blue-900/40 ring-2 ring-blue-400 ring-inset",
                         isHovered && "bg-blue-50 dark:bg-blue-900/20",
@@ -264,12 +285,20 @@ export function SideBySideRanking({
                     >
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs text-gray-400 w-7 shrink-0">
-                          #{rank}
+                          {rank == null ? "—" : `#${rank}`}
                         </span>
                         <span className="font-medium truncate flex-1 text-xs">
                           {item.apartment.buildingKey} #
                           {item.apartment.apartment_number}
                         </span>
+                        {isSold && (
+                          <span
+                            className="text-[10px] font-semibold rounded px-1 py-0.5 bg-gray-200 text-gray-600 dark:text-gray-800 shrink-0"
+                            title={t("results.soldTooltip")}
+                          >
+                            {t("results.sold")}
+                          </span>
+                        )}
                         <span className="text-xs text-blue-600 font-bold shrink-0">
                           {item.totalScore.toFixed(2)}
                         </span>

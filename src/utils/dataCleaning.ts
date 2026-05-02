@@ -99,6 +99,8 @@ export function cleanApartments(raw: RawApartment[]): Apartment[] {
       floorPrimary: parsePrimaryFloor(apt.floor),
       floorBucket: getFloorBucket(apt.floor),
       layout: deriveLayout(apt),
+      isSold: (apt.status ?? "").trim() === "נמכר",
+      userMarkedSold: false,
     };
   });
 }

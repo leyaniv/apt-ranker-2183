@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { Apartment, Profile, BucketMap } from "../../types";
 import { computeCombinedRanking } from "../../utils/scoring";
+import { useApp } from "../../context/AppContext";
 
 interface CombinedRankingProps {
   profiles: Profile[];
@@ -21,10 +22,17 @@ export function CombinedRanking({
   profileWeights,
 }: CombinedRankingProps) {
   const { t } = useTranslation();
+  const { settings } = useApp();
+  const hideSold = settings.hideSold;
 
   const combined = useMemo(
     () => computeCombinedRanking(profiles, apartments, buckets, profileWeights),
     [profiles, apartments, buckets, profileWeights]
+  );
+
+  const visible = useMemo(
+    () => (hideSold ? combined.filter((c) => !c.apartment.isSold) : combined),
+    [combined, hideSold]
   );
 
   const profileColWidth = profiles.length <= 2 ? "80px" : "70px";
@@ -59,38 +67,48 @@ export function CombinedRanking({
 
         {/* Rows */}
         <div className="flex-1 min-h-0 w-max">
-          {combined.slice(0, 50).map((item, idx) => (
-            <div
-              key={item.apartment.property_slug}
-              className="grid items-center gap-2 px-4 py-2 border-t border-gray-100 text-sm"
-              style={{ gridTemplateColumns: gridCols }}
-            >
-              <span className="text-gray-400 font-mono text-xs">{idx + 1}</span>
-              <span className="text-center text-gray-600">
-                {item.apartment.buildingKey}
-              </span>
-              <span className="text-center text-gray-600">
-                {item.apartment.apartment_number}
-              </span>
-              <span className="text-center text-gray-600">
-                {item.apartment.rooms}
-              </span>
-              <span className="text-center font-mono text-xs text-gray-600">
-                ₪{item.apartment.price.toLocaleString("en")}
-              </span>
-              {item.perProfile.map((score, i) => (
-                <span
-                  key={profiles[i].id}
-                  className="text-center text-xs text-gray-500"
+          {(() => {
+            let availableCounter = 0;
+            return visible.slice(0, 50).map((item) => {
+              const isSold = item.apartment.isSold;
+              if (!isSold) availableCounter += 1;
+              const rankLabel = isSold ? "—" : String(availableCounter);
+              return (
+                <div
+                  key={item.apartment.property_slug}
+                  className={`grid items-center gap-2 px-4 py-2 border-t border-gray-100 text-sm ${
+                    isSold ? "opacity-60" : ""
+                  }`}
+                  style={{ gridTemplateColumns: gridCols }}
                 >
-                  {score.toFixed(2)}
-                </span>
-              ))}
-              <span className="text-center font-bold text-blue-600">
-                {item.avgScore.toFixed(2)}
-              </span>
-            </div>
-          ))}
+                  <span className="text-gray-400 font-mono text-xs">{rankLabel}</span>
+                  <span className="text-center text-gray-600">
+                    {item.apartment.buildingKey}
+                  </span>
+                  <span className="text-center text-gray-600">
+                    {item.apartment.apartment_number}
+                  </span>
+                  <span className="text-center text-gray-600">
+                    {item.apartment.rooms}
+                  </span>
+                  <span className="text-center font-mono text-xs text-gray-600">
+                    ₪{item.apartment.price.toLocaleString("en")}
+                  </span>
+                  {item.perProfile.map((score, i) => (
+                    <span
+                      key={profiles[i].id}
+                      className="text-center text-xs text-gray-500"
+                    >
+                      {score.toFixed(2)}
+                    </span>
+                  ))}
+                  <span className="text-center font-bold text-blue-600">
+                    {item.avgScore.toFixed(2)}
+                  </span>
+                </div>
+              );
+            });
+          })()}
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ import { useProfiles } from "../hooks/useProfiles";
 import type { ImportResult } from "../utils/storage";
 import { rankApartments } from "../utils/scoring";
 import { useSettings, type AppSettings } from "../hooks/useSettings";
+import { useUserSoldMarks, type UserSoldMarks } from "../hooks/useUserSoldMarks";
 import { useChangeHistory } from "../hooks/useChangeHistory";
 import { track } from "../utils/analytics";
 import type { RankedApartment } from "../types";
@@ -85,6 +86,10 @@ interface AppContextValue {
   // Settings (cross-profile)
   settings: AppSettings;
   updateSettings: (patch: Partial<AppSettings>) => void;
+
+  // User-applied sold marks (cross-profile)
+  userSoldMarks: UserSoldMarks;
+  toggleUserSoldMark: (slug: string) => void;
   /**
    * Effective scoring input style for the active profile.
    * Equals `settings.scoringInputStyle`, except that profiles containing any
@@ -114,7 +119,7 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const { apartments, buckets, parameterConfigs, loading, error } =
+  const { apartments: rawApartments, buckets, parameterConfigs, loading, error } =
     useApartments();
   const {
     profiles,
@@ -132,7 +137,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
   } = useProfiles();
 
   const { settings, updateSettings } = useSettings();
+  const { userSoldMarks, toggleUserSoldMark } = useUserSoldMarks();
   const changeHistoryHook = useChangeHistory();
+
+  /**
+   * Apartments enriched with user-applied sold marks. Marks live in their own
+   * cross-profile localStorage key (see `useUserSoldMarks`); we merge them in
+   * here so all downstream consumers (ranking, results table, compare views)
+   * see a single, coherent `isSold` regardless of how the apartment was marked.
+   */
+  const apartments = useMemo<Apartment[]>(() => {
+    if (rawApartments.length === 0) return rawApartments;
+    return rawApartments.map((apt) => {
+      const userMarkedSold = !!userSoldMarks[apt.property_slug];
+      return {
+        ...apt,
+        userMarkedSold,
+        isSold: apt.isSold || userMarkedSold,
+      };
+    });
+  }, [rawApartments, userSoldMarks]);
 
   // Sync change history when active profile changes
   useEffect(() => {
@@ -586,6 +610,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     restoreToHistoryEntry,
     settings,
     updateSettings,
+    userSoldMarks,
+    toggleUserSoldMark,
     resolvedScoringInputStyle,
     registerTabSetter,
     requestTabChange,

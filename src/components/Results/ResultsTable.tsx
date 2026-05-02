@@ -18,7 +18,8 @@ interface RowData {
   notes: Record<string, string>;
   setNote: (slug: string, text: string) => void;
   manualOrder: string[] | null;
-  scoreRankMap: Map<string, number>;
+  scoreRankMap: Map<string, number | null>;
+  rankLabelMap: Map<string, number | null>;
   dropTargetSlug: string | null;
   onDragStart: (slug: string) => void;
   onDragOver: (slug: string) => void;
@@ -27,12 +28,15 @@ interface RowData {
 
 const VirtualRow = function VirtualRow({
   index, style, displayed, openSlugs, toggleOpen, isDesktop,
-  notes, setNote, manualOrder, scoreRankMap, dropTargetSlug,
+  notes, setNote, manualOrder, scoreRankMap, rankLabelMap, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: RowComponentProps<RowData>) {
   const ranked = displayed[index];
   if (!ranked) return null;
   const slug = ranked.apartment.property_slug;
+  const rankValue = rankLabelMap.get(slug);
+  const rank: number | null = rankValue === undefined ? index + 1 : rankValue;
+  const scoreRank = manualOrder ? scoreRankMap.get(slug) : undefined;
   return (
     <div
       style={style}
@@ -40,14 +44,14 @@ const VirtualRow = function VirtualRow({
     >
       <ApartmentRow
         ranked={ranked}
-        rank={index + 1}
+        rank={rank}
         isOpen={openSlugs.has(slug)}
         onToggle={toggleOpen}
         isDesktop={isDesktop}
         hasNote={!!notes[slug]}
         note={notes[slug]}
         onNoteChange={setNote}
-        originalRank={manualOrder ? scoreRankMap.get(slug) : undefined}
+        originalRank={scoreRank ?? undefined}
         dropTargetSlug={dropTargetSlug}
         onDragStart={onDragStart}
         onDragOver={onDragOver}
@@ -67,7 +71,7 @@ export function ResultsTable() {
     rankedApartments, activeProfile, addProfile,
     selectProfile, saveProfile, commitManualOrderToHistory, registerManualOrderSetter,
     settings, setHasUnsavedManualOrder, registerManualOrderActions,
-    notes, setNote,
+    notes, setNote, updateSettings,
   } = useApp();
 
   // Filter state
@@ -224,6 +228,7 @@ export function ResultsTable() {
   const filtered = useMemo(() => {
     const filterFn = (r: RankedApartment) => {
       const apt = r.apartment;
+      if (settings.hideSold && apt.isSold) return false;
       if (filterRooms && apt.rooms !== filterRooms) return false;
       if (filterBuilding && apt.buildingKey !== filterBuilding) return false;
       if (filterLayout && apt.layout !== filterLayout) return false;
@@ -252,12 +257,22 @@ export function ResultsTable() {
     }
 
     return rankedApartments.filter(filterFn);
-  }, [rankedApartments, filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice, manualOrder]);
+  }, [rankedApartments, filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice, manualOrder, settings.hideSold]);
 
-  // Map each slug to its original score-based rank (1-based)
+  // Score-based rank lookup: counts only non-sold apartments. Sold = null.
+  // Used to render the (parens) "original rank" hint when a manual order
+  // diverges from the scored order.
   const scoreRankMap = useMemo(() => {
-    const map = new Map<string, number>();
-    rankedApartments.forEach((r, i) => map.set(r.apartment.property_slug, i + 1));
+    const map = new Map<string, number | null>();
+    let counter = 0;
+    for (const r of rankedApartments) {
+      if (r.apartment.isSold) {
+        map.set(r.apartment.property_slug, null);
+      } else {
+        counter += 1;
+        map.set(r.apartment.property_slug, counter);
+      }
+    }
     return map;
   }, [rankedApartments]);
 
@@ -268,6 +283,23 @@ export function ResultsTable() {
     }
     return filtered;
   }, [filtered, settings.maxResults]);
+
+  // Display rank for the currently-shown rows: sequential among non-sold
+  // entries in `displayed` (so manual-order mode still shows a sensible
+  // 1, 2, 3… numbering). Sold rows get `null`.
+  const rankLabelMap = useMemo(() => {
+    const map = new Map<string, number | null>();
+    let counter = 0;
+    for (const r of displayed) {
+      if (r.apartment.isSold) {
+        map.set(r.apartment.property_slug, null);
+      } else {
+        counter += 1;
+        map.set(r.apartment.property_slug, counter);
+      }
+    }
+    return map;
+  }, [displayed]);
 
   const hasFilters = filterRooms || filterBuilding || filterLayout || filterType || filterMinPrice || filterMaxPrice;
 
@@ -511,28 +543,77 @@ export function ResultsTable() {
       <div className="flex-1 min-h-0 flex flex-col rounded-lg border border-gray-200 bg-white overflow-hidden">
       {/* Filters */}
       <Collapsible.Root
-        open={isDesktop || filtersOpen}
+        open={filtersOpen}
         onOpenChange={setFiltersOpen}
         data-tour-id="results-filters"
         className="flex-shrink-0 bg-white border-b border-gray-200"
       >
-        <Collapsible.Trigger className="sm:hidden w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-          <span className="flex items-center gap-2">
+        {/* Always-visible toolbar: additional-filters trigger + hide-sold + count */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2">
+          <Collapsible.Trigger className="inline-flex items-center gap-2 px-2.5 py-1 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
               <path fillRule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clipRule="evenodd" />
             </svg>
-            {t("results.filters")}
+            <span>{t("results.additionalFilters")}</span>
             {hasFilters && (
               <span className="text-xs text-blue-600 font-normal">
                 ({t("results.filtersActive", { count: [filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice].filter(Boolean).length })})
               </span>
             )}
-          </span>
-          <span className="text-xs text-gray-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className={`w-3.5 h-3.5 text-gray-400 transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+            >
+              <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.06l3.71-3.83a.75.75 0 1 1 1.08 1.04l-4.25 4.39a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06Z" clipRule="evenodd" />
+            </svg>
+          </Collapsible.Trigger>
+
+          {/* Hide-sold toggle */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={settings.hideSold}
+            onClick={() => updateSettings({ hideSold: !settings.hideSold })}
+            title={t("results.hideSoldTooltip")}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-sm rounded-md border transition-colors ${
+              settings.hideSold
+                ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <span
+              className={`inline-block w-3.5 h-3.5 rounded-sm border ${
+                settings.hideSold ? "bg-blue-600 border-blue-600" : "bg-white border-gray-400"
+              } flex items-center justify-center`}
+            >
+              {settings.hideSold && (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" className="w-3 h-3">
+                  <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+                </svg>
+              )}
+            </span>
+            <span>{t("results.hideSold")}</span>
+          </button>
+
+          <span className="text-xs text-gray-400 ms-auto">
             {t("results.showingOf", { shown: displayed.length, total: rankedApartments.length })}
           </span>
-        </Collapsible.Trigger>
-        <Collapsible.Content className="data-[state=open]:block">
+
+          {settings.developerTools && (
+            <button
+              onClick={randomizeOrder}
+              className="p-1 text-base leading-none rounded hover:bg-purple-100 transition-colors"
+              title={t("results.randomOrder")}
+              aria-label={t("results.randomOrder")}
+            >
+              🎲
+            </button>
+          )}
+        </div>
+
+        <Collapsible.Content className="data-[state=open]:block border-t border-gray-100">
       <div
         className="flex flex-wrap items-center gap-3 px-4 sm:px-6 py-3"
       >
@@ -617,24 +698,6 @@ export function ResultsTable() {
             {t("results.clearFilters")}
           </button>
         )}
-
-        <span className="text-xs text-gray-400 ms-auto">
-          {t("results.showingOf", {
-            shown: displayed.length,
-            total: rankedApartments.length,
-          })}
-        </span>
-
-        {settings.developerTools && (
-          <button
-            onClick={randomizeOrder}
-            className="p-1 text-base leading-none rounded hover:bg-purple-100 transition-colors"
-            title={t("results.randomOrder")}
-            aria-label={t("results.randomOrder")}
-          >
-            🎲
-          </button>
-        )}
       </div>
         </Collapsible.Content>
       </Collapsible.Root>
@@ -682,6 +745,7 @@ export function ResultsTable() {
               setNote,
               manualOrder,
               scoreRankMap,
+              rankLabelMap,
               dropTargetSlug,
               onDragStart: handleDragStart,
               onDragOver: handleDragOver,

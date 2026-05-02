@@ -49,6 +49,10 @@ export interface Apartment extends RawApartment {
   floorBucket: string;
   /** Layout category derived from remarks + floor data */
   layout: "regular" | "garden" | "garden_duplex" | "roof_duplex";
+  /** True if the apartment is considered sold (scraped status "נמכר" or user-marked) */
+  isSold: boolean;
+  /** True if the user manually marked this apartment as sold (cross-profile, persisted) */
+  userMarkedSold: boolean;
 }
 
 /* ─── Scoring ─────────────────────────────────── */

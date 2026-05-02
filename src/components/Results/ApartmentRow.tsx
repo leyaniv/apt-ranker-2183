@@ -6,7 +6,8 @@ import { ApartmentDetail } from "./ApartmentDetail";
 
 interface ApartmentRowProps {
   ranked: RankedApartment;
-  rank: number;
+  /** 1-based rank among available apartments. `null` for sold units (no rank). */
+  rank: number | null;
   isOpen: boolean;
   onToggle: (slug: string) => void;
   isDesktop: boolean;
@@ -45,6 +46,9 @@ export const ApartmentRow = memo(function ApartmentRow({
   const { apartment, totalScore, totalWeight, breakdown } = ranked;
   const slug = apartment.property_slug;
   const isDropTarget = dropTargetSlug === slug;
+  const isSold = apartment.isSold;
+  const userOnlySold = isSold && apartment.userMarkedSold && (apartment.status ?? "").trim() !== "נמכר";
+  const rankLabel = rank == null ? "—" : String(rank);
 
   const handleOpenChange = useCallback(() => onToggle(slug), [onToggle, slug]);
 
@@ -55,7 +59,11 @@ export const ApartmentRow = memo(function ApartmentRow({
       className={isDropTarget ? "border-t-2 border-blue-500" : ""}
     >
       <Collapsible.Root open={isOpen} onOpenChange={handleOpenChange}>
-        <div className="border-b border-gray-100 last:border-b-0">
+        <div
+          className={`border-b border-gray-100 last:border-b-0 ${
+            isSold ? "opacity-60" : ""
+          }`}
+        >
           {isDesktop ? (
             <div
               className={`grid grid-cols-[28px_50px_80px_60px_70px_70px_80px_60px_90px_110px_80px]
@@ -76,15 +84,28 @@ export const ApartmentRow = memo(function ApartmentRow({
                 ⠿
               </span>
 
-              <Collapsible.Trigger className="text-start">
-                <span className="text-gray-400 font-mono text-xs">
-                  {rank}
-                  {originalRank != null && originalRank !== rank && (
-                    <span className="text-gray-300 ms-0.5" title={t("results.originalRank", { rank: originalRank })}>
-                      ({originalRank})
-                    </span>
-                  )}
-                </span>
+              <Collapsible.Trigger className="text-center">
+                {isSold ? (
+                  <span
+                    className={`inline-flex items-center justify-center text-[10px] font-semibold rounded px-1.5 py-0.5 ${
+                      userOnlySold
+                        ? "bg-red-100 text-red-700 dark:text-red-800"
+                        : "bg-gray-200 text-gray-600 dark:text-gray-800"
+                    }`}
+                    title={userOnlySold ? t("results.userMarkedSoldTooltip") : t("results.soldTooltip")}
+                  >
+                    {t("results.sold")}
+                  </span>
+                ) : (
+                  <span className="text-gray-400 font-mono text-xs">
+                    {rankLabel}
+                    {rank != null && originalRank != null && originalRank !== rank && (
+                      <span className="text-gray-300 ms-0.5" title={t("results.originalRank", { rank: originalRank })}>
+                        ({originalRank})
+                      </span>
+                    )}
+                  </span>
+                )}
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-center">
@@ -161,12 +182,25 @@ export const ApartmentRow = memo(function ApartmentRow({
                 ⠿
               </span>
               <Collapsible.Trigger className="flex items-center gap-1.5 flex-1 min-w-0 cursor-pointer">
-                <span className="font-mono text-[11px] text-gray-400 shrink-0">
-                  {rank}
-                  {originalRank != null && originalRank !== rank && (
-                    <span className="text-gray-300">({originalRank})</span>
-                  )}
-                </span>
+                {isSold ? (
+                  <span
+                    className={`inline-flex items-center justify-center text-[10px] font-semibold rounded px-1 py-0.5 shrink-0 text-center ${
+                      userOnlySold
+                        ? "bg-red-100 text-red-700 dark:text-red-800"
+                        : "bg-gray-200 text-gray-600 dark:text-gray-800"
+                    }`}
+                    title={userOnlySold ? t("results.userMarkedSoldTooltip") : t("results.soldTooltip")}
+                  >
+                    {t("results.sold")}
+                  </span>
+                ) : (
+                  <span className="font-mono text-[11px] text-gray-400 shrink-0">
+                    {rankLabel}
+                    {rank != null && originalRank != null && originalRank !== rank && (
+                      <span className="text-gray-300">({originalRank})</span>
+                    )}
+                  </span>
+                )}
                 <span className="font-medium text-sm text-gray-800 truncate min-w-0">
                   {apartment.buildingKey}#{apartment.apartment_number}
                 </span>
