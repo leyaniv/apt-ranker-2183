@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.3.0] - 2026-05-02
 
 - Added a Print button on the Results tab that opens a printable view with column, row-scope, and notes options.
 - Apartments can be excluded from a profile's ranking either by marking a value with ✕ (deal-breaker) or by clicking "Mark as excluded" on a specific apartment. Excluded apartments are hidden by default; a "Show excluded" toggle reveals them.
