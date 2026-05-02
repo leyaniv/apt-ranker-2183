@@ -71,7 +71,7 @@ const VirtualRow = function VirtualRow({
 export function ResultsTable() {
   const { t } = useTranslation();
   const {
-    rankedApartments, activeProfile, addProfile,
+    rankedApartments, apartments, activeProfile, addProfile,
     selectProfile, saveProfile, commitManualOrderToHistory, registerManualOrderSetter,
     settings, setHasUnsavedManualOrder, registerManualOrderActions,
     notes, setNote, updateSettings,
@@ -607,6 +607,14 @@ export function ResultsTable() {
 
           <span className="text-xs text-gray-400 ms-auto">
             {t("results.showingOf", { shown: displayed.length, total: rankedApartments.length })}
+            {apartments.length > rankedApartments.length && (
+              <span
+                className="ms-2 text-red-500"
+                title={t("results.hiddenByExclusionsTip")}
+              >
+                · {t("results.hiddenByExclusions", { count: apartments.length - rankedApartments.length })}
+              </span>
+            )}
           </span>
 
           {settings.developerTools && (

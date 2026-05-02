@@ -60,6 +60,12 @@ function buildDescriptionForLang(
       const prevScore = (action.prev as { score?: number }).score;
       const param = getParamLabel(paramId, configs)[lng];
       const value = getValueLabel(paramId, valueKey, configs)[lng];
+      if (score === 0) {
+        return t("changeHistory.valueExcluded", { param, value });
+      }
+      if (prevScore === 0) {
+        return t("changeHistory.valueIncluded", { param, value, to: score });
+      }
       const from = prevScore !== undefined ? String(prevScore) : t("changeHistory.unset");
       return t("changeHistory.scoreChanged", { param, value, from, to: score });
     }

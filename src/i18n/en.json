@@ -52,12 +52,14 @@
     "advanced": "Advanced Parameters",
     "weightTip": "How much does this parameter matter? (1 = not at all, 5 = very important)",
     "scoreTip": "How much do you prefer this value? (1 = dislike, 5 = strongly prefer)",
+    "exclude": "Exclude",
+    "excludeTip": "Exclude this value — apartments matching it are removed from this profile's ranking entirely. Useful when a value is a deal-breaker.",
     "paramTooltip": {
       "air_direction": "Each apartment faces 1–3 cardinal directions (N/E/S/W). The score for a multi-direction apartment is the average of the directions it actually faces — so an NE-corner apartment's score = (N + E) / 2.\n\nUse 'Number of Air Directions' alongside this to express whether you prefer single-sided, corner (2-direction), or through (3-direction) apartments.\n\nExample: to prefer NE corner apartments, score N and E high here, and score '2' high under Number of Air Directions.",
       "air_direction_count": "How many cardinal directions the apartment faces (1 = single-sided, 2 = corner, 3 = through-apartment).\n\nThis works together with 'Air Direction': that parameter scores which directions you like, while this one scores how many exposures you want. Score both to fully express a preference like 'I want a NE corner apartment'."
     },
     "title": "Set Your Preferences",
-    "howToUse": "Set the importance (1–5) for each parameter to control how much it affects the ranking. Then score each value (1–5) to express your preference: 1 = dislike, 5 = strongly prefer."
+    "howToUse": "Set the importance (1–5) for each parameter to control how much it affects the ranking. Then score each value (1–5) to express your preference: 1 = dislike, 5 = strongly prefer.\n\nClick the ✕ next to a value to exclude it as a deal-breaker — any apartment matching that value is removed from this profile's ranking entirely."
   },
   "results": {
     "rank": "#",
@@ -102,6 +104,8 @@
     "userMarkedSoldTooltip": "You marked this apartment as sold. The contractor site hasn't reflected it yet.",
     "filtersActive": "{{count}} active",
     "showingOf": "Showing {{shown}} of {{total}}",
+    "hiddenByExclusions": "{{count}} hidden by exclusions",
+    "hiddenByExclusionsTip": "Apartments removed from this profile's ranking because at least one of their values is excluded (✕). Edit the scoring panel to undo.",
     "expandDetails": "Show details",
     "collapseDetails": "Hide details",
     "manuallyReordered": "Manually reordered",
@@ -162,7 +166,11 @@
     "clearCombine": "Clear Combine",
     "title": "Side-by-Side Profile Comparison",
     "titleShort": "Side-by-Side Comparison",
-    "howToUse": "See how different profiles rank the same apartments side by side. Select up to 3 profiles, then click an apartment in any column to highlight where it ranks in the others."
+    "excludedByProfile": "Excluded by this profile",
+    "excludedByProfileTip": "This apartment is removed from the profile's ranking by an exclusion (✕). Click to deselect.",
+    "howToUse": "See how different profiles rank the same apartments side by side. Select up to 3 profiles, then click an apartment in any column to highlight where it ranks in the others.",
+    "howToUseMobile": "See how different profiles rank the same apartments side by side. On mobile you can compare up to 2 profiles — switch to a larger screen to compare 3. Click an apartment in any column to highlight where it ranks in the other.",
+    "maxSelected": "Up to {{max}} profiles can be compared at once."
   },
   "combine": {
     "profileImportance": "Profile importance",
@@ -171,6 +179,8 @@
     "addProfile": "Add",
     "removeProfile": "Remove",
     "importanceLabel": "Importance",
+    "applyExclusions": "Apply exclusions",
+    "applyExclusionsTip": "When on, apartments excluded by this profile (any value scored ✕) are removed from the combined ranking. When off, those apartments still appear and the excluded value is treated as a strong dislike (1).",
     "title": "Merge Profiles Into One Ranking",
     "titleShort": "Merge Profiles",
     "howToUse": "Merge several profiles into a single ranking. Select up to 3 profiles and set each one's importance — apartments are ranked by the weighted average of their scores across profiles.",
@@ -187,6 +197,8 @@
   "changeHistory": {
     "unset": "unset",
     "scoreChanged": "{{param}}: {{value}} — score changed from {{from}} to {{to}}",
+    "valueExcluded": "{{param}}: {{value}} — excluded from this profile",
+    "valueIncluded": "{{param}}: {{value}} — exclusion removed (now {{to}})",
     "weightChanged": "{{param}} — importance changed from {{from}} to {{to}}",
     "paramReset": "{{param}} — scores reset to default",
     "allReset": "All scores reset to default",

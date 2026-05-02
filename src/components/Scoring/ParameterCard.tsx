@@ -35,7 +35,7 @@ export function ParameterCard({ config }: ParameterCardProps) {
     <Collapsible.Root open={open} onOpenChange={setOpen}>
       <div className="bg-white rounded-lg border border-gray-200 overflow-visible">
         {/* Header — always visible */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 px-4 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-3">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <Collapsible.Trigger className="flex items-center gap-2 min-w-0 text-start">
               <span
@@ -71,7 +71,7 @@ export function ParameterCard({ config }: ParameterCardProps) {
 
         {/* Expandable content — value scores */}
         <Collapsible.Content>
-          <div className="px-4 pb-4 pt-1 border-t border-gray-100">
+          <div className="px-3 sm:px-4 pb-4 pt-1 border-t border-gray-100">
             {config.kind === "categorical" ? (
               <CategoricalScorer config={config} />
             ) : (

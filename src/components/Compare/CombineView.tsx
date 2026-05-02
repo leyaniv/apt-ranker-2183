@@ -15,6 +15,8 @@ interface CombineState {
   selectedIds: string[];
   /** Profile importance weights: profileId → 1–5. Missing = 3 */
   profileWeights: Record<string, number>;
+  /** Whether each profile's score-0 vetoes filter the combined ranking. Missing = false */
+  respectExclusions: Record<string, boolean>;
   /** Whether creating a merged profile should lock the combined ranking as manual order */
   lockOrder: boolean;
 }
@@ -22,10 +24,10 @@ interface CombineState {
 function loadState(): CombineState {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (!raw) return { selectedIds: [], profileWeights: {}, lockOrder: false };
-    return { profileWeights: {}, lockOrder: false, ...JSON.parse(raw) };
+    if (!raw) return { selectedIds: [], profileWeights: {}, respectExclusions: {}, lockOrder: false };
+    return { profileWeights: {}, respectExclusions: {}, lockOrder: false, ...JSON.parse(raw) };
   } catch {
-    return { selectedIds: [], profileWeights: {}, lockOrder: false };
+    return { selectedIds: [], profileWeights: {}, respectExclusions: {}, lockOrder: false };
   }
 }
 
@@ -70,8 +72,18 @@ export function CombineView() {
     }));
   };
 
+  const toggleRespectExclusions = (profileId: string) => {
+    setState((prev) => ({
+      ...prev,
+      respectExclusions: {
+        ...prev.respectExclusions,
+        [profileId]: !prev.respectExclusions[profileId],
+      },
+    }));
+  };
+
   const clearSelection = () => {
-    setState({ selectedIds: [], profileWeights: {}, lockOrder: false });
+    setState({ selectedIds: [], profileWeights: {}, respectExclusions: {}, lockOrder: false });
   };
 
   const selectedProfiles = profiles.filter((p) => selectedIds.has(p.id));
@@ -83,6 +95,12 @@ export function CombineView() {
     weightsMap[p.id] = state.profileWeights[p.id] ?? 3;
   }
 
+  // Build respect-exclusions map for selected profiles (default false)
+  const respectMap: Record<string, boolean> = {};
+  for (const p of selectedProfiles) {
+    respectMap[p.id] = state.respectExclusions[p.id] ?? false;
+  }
+
   // Combined ranking (used for the optional manual-order snapshot on merge)
   const combinedOrder = useMemo(() => {
     if (selectedProfiles.length < 2) return [];
@@ -90,10 +108,11 @@ export function CombineView() {
       selectedProfiles,
       apartments,
       buckets,
-      weightsMap
+      weightsMap,
+      respectMap
     ).map((c) => c.apartment.property_slug);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProfiles, apartments, buckets, state.profileWeights]);
+  }, [selectedProfiles, apartments, buckets, state.profileWeights, state.respectExclusions]);
 
   const toggleLockOrder = () => {
     setState((prev) => ({ ...prev, lockOrder: !prev.lockOrder }));
@@ -204,51 +223,74 @@ export function CombineView() {
               return (
                 <div
                   key={p.id}
-                  className="flex flex-wrap items-center gap-x-3 gap-y-1
+                  className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center
+                             gap-y-2 sm:gap-x-3 sm:gap-y-1
                              bg-blue-50/60 border border-blue-200 rounded-md px-3 py-2"
                 >
-                  <span className="text-sm font-medium text-blue-800 truncate min-w-0 flex-1 sm:flex-initial sm:min-w-[80px]">
-                    {p.name}
-                  </span>
-                  {showWeight && (
-                    <>
-                      <Slider.Root
-                        className="relative flex items-center select-none touch-none
-                                   flex-1 sm:flex-initial sm:w-[160px] h-5 min-w-[120px]"
-                        value={[w]}
-                        min={1}
-                        max={5}
-                        step={1}
-                        onValueChange={(vs) => setProfileWeight(p.id, vs[0])}
-                        aria-label={`${p.name} ${t("combine.importanceLabel")}`}
-                        dir="ltr"
-                      >
-                        <Slider.Track className="bg-blue-200 relative grow rounded-full h-1.5">
-                          <Slider.Range className="absolute rounded-full h-full bg-blue-500" />
-                        </Slider.Track>
-                        <Slider.Thumb
-                          className="block w-5 h-5 bg-white border-2 border-blue-500 rounded-full shadow
-                                     focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
-                      </Slider.Root>
-                      <span
-                        className="text-xs text-gray-600 tabular-nums whitespace-nowrap"
-                        title={t("combine.importanceLabel")}
-                      >
-                        <span className="font-medium">{w}</span>
-                        <span className="text-gray-400"> · {pct}%</span>
-                      </span>
-                    </>
-                  )}
-                  <button
-                    onClick={() => toggleProfile(p.id)}
-                    aria-label={`${t("combine.removeProfile")}: ${p.name}`}
-                    className="shrink-0 w-6 h-6 flex items-center justify-center rounded
-                               text-blue-400 hover:bg-blue-100 hover:text-blue-700
-                               transition-colors text-lg leading-none"
-                  >
-                    ×
-                  </button>
+                  {/* Row 1 on mobile: name + remove. On desktop these flatten
+                      into the single-row layout via `sm:contents`. */}
+                  <div className="flex items-center gap-2 w-full sm:w-auto sm:contents">
+                    <span className="text-sm font-medium text-blue-800 truncate min-w-0 flex-1 sm:flex-initial sm:min-w-[80px]">
+                      {p.name}
+                    </span>
+                    <button
+                      onClick={() => toggleProfile(p.id)}
+                      aria-label={`${t("combine.removeProfile")}: ${p.name}`}
+                      className="shrink-0 w-6 h-6 flex items-center justify-center rounded
+                                 text-blue-400 hover:bg-blue-100 hover:text-blue-700
+                                 transition-colors text-lg leading-none
+                                 sm:order-last"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  {/* Row 2 on mobile: importance slider + apply-exclusions.
+                      Same `sm:contents` trick so desktop layout is unchanged. */}
+                  <div className="flex items-center gap-x-3 w-full sm:w-auto sm:contents">
+                    {showWeight && (
+                      <>
+                        <Slider.Root
+                          className="relative flex items-center select-none touch-none
+                                     flex-1 sm:flex-initial sm:w-[160px] h-5 min-w-[120px]"
+                          value={[w]}
+                          min={1}
+                          max={5}
+                          step={1}
+                          onValueChange={(vs) => setProfileWeight(p.id, vs[0])}
+                          aria-label={`${p.name} ${t("combine.importanceLabel")}`}
+                          dir="ltr"
+                        >
+                          <Slider.Track className="bg-blue-200 relative grow rounded-full h-1.5">
+                            <Slider.Range className="absolute rounded-full h-full bg-blue-500" />
+                          </Slider.Track>
+                          <Slider.Thumb
+                            className="block w-5 h-5 bg-white border-2 border-blue-500 rounded-full shadow
+                                       focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          />
+                        </Slider.Root>
+                        <span
+                          className="text-xs text-gray-600 tabular-nums whitespace-nowrap"
+                          title={t("combine.importanceLabel")}
+                        >
+                          <span className="font-medium">{w}</span>
+                          <span className="text-gray-400"> · {pct}%</span>
+                        </span>
+                      </>
+                    )}
+                    <label
+                      className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer
+                                 hover:text-gray-800 select-none whitespace-nowrap ms-auto sm:ms-0"
+                      title={t("combine.applyExclusionsTip")}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={respectMap[p.id]}
+                        onChange={() => toggleRespectExclusions(p.id)}
+                        className="w-3.5 h-3.5 accent-red-600 cursor-pointer"
+                      />
+                      <span>{t("combine.applyExclusions")}</span>
+                    </label>
+                  </div>
                 </div>
               );
             })}
@@ -287,6 +329,7 @@ export function CombineView() {
             apartments={apartments}
             buckets={buckets}
             profileWeights={weightsMap}
+            respectExclusions={respectMap}
           />
         </div>
       )}

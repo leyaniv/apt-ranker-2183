@@ -107,6 +107,30 @@
   :is(.dark) .score-btn[data-score="4"] { @apply border-lime-200 bg-[#121f0a] hover:bg-lime-100 text-lime-800 data-[active=true]:bg-[var(--color-score-4)] data-[active=true]:text-white; }
   :is(.dark) .score-btn[data-score="5"] { @apply border-green-200 bg-[#0a1f12] hover:bg-green-100 text-green-800 data-[active=true]:bg-[var(--color-score-5)] data-[active=true]:text-white; }
 
+  /* When the value is excluded (score 0), fade the 1–5 buttons so the
+     ✕ exclude button stands out and the rest looks visually disabled. */
+  .score-btn[data-disabled="true"] {
+    @apply opacity-30 grayscale;
+  }
+
+  /* Exclude (✕) button — strong "deal-breaker" affordance. Sits to the
+     left of the 1–5 row and toggles score 0 (apartment removed from this
+     profile's ranking). */
+  .exclude-btn {
+    @apply w-8 h-8 sm:w-9 sm:h-9 rounded-md text-sm font-bold border transition-colors
+      cursor-pointer flex items-center justify-center mr-0.5 sm:mr-1
+      border-gray-300 bg-white text-gray-400 hover:bg-red-50 hover:border-red-300 hover:text-red-500;
+  }
+  .exclude-btn[data-active="true"] {
+    @apply bg-red-600 border-red-600 text-white hover:bg-red-700 hover:border-red-700 hover:text-white;
+  }
+  :is(.dark) .exclude-btn {
+    @apply border-gray-300 bg-gray-50 text-gray-500 hover:bg-red-50 hover:border-red-300 hover:text-red-700;
+  }
+  :is(.dark) .exclude-btn[data-active="true"] {
+    @apply bg-red-800 border-red-800 text-white hover:bg-[#a01818] hover:border-[#a01818] hover:text-white;
+  }
+
   /* Continuous slider variant (used when scoringInputStyle === "slider"). */
   .score-slider-range[data-score="1"] { background-color: var(--color-score-1); }
   .score-slider-range[data-score="2"] { background-color: var(--color-score-2); }

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- Each value can now be marked with ✕ to exclude it as a deal-breaker — apartments matching it are removed from the profile's ranking.
+
 ## [1.2.0] - 2026-05-02
 
 - Sold apartments should now show up with a "Sold" badge. Additional "Hide sold" filter toggle and a "Mark as sold" button in the detail view (marks persist across profiles).

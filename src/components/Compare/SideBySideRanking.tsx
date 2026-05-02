@@ -81,6 +81,30 @@ export function SideBySideRanking({
     return map;
   }, [profileRankedLists]);
 
+  // Per-profile set of slugs excluded by that profile's score-0 vetoes.
+  // Used to surface an "excluded" banner in the column when the user selects
+  // an apartment that one of the profiles has filtered out — otherwise the
+  // bezier line would dead-end into nothing.
+  const excludedLookup = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const [profileId, ranked] of profileRankedLists) {
+      const visible = new Set(ranked.map((r) => r.apartment.property_slug));
+      const excluded = new Set<string>();
+      for (const apt of apartments) {
+        if (!visible.has(apt.property_slug)) excluded.add(apt.property_slug);
+      }
+      map.set(profileId, excluded);
+    }
+    return map;
+  }, [profileRankedLists, apartments]);
+
+  // Apartment lookup for rendering the excluded-banner.
+  const apartmentBySlug = useMemo(() => {
+    const map = new Map<string, Apartment>();
+    for (const apt of apartments) map.set(apt.property_slug, apt);
+    return map;
+  }, [apartments]);
+
   /* ── Bezier lines ───────────────────────────── */
 
   const updateLines = useCallback(() => {
@@ -222,6 +246,13 @@ export function SideBySideRanking({
         {profiles.map((profile) => {
           const ranked = profileRankedLists.get(profile.id) ?? [];
           const visible = hideSold ? ranked.filter((r) => !r.apartment.isSold) : ranked;
+          const excludedSet = excludedLookup.get(profile.id);
+          // True when the user's clicked apt has been vetoed by this profile.
+          const selectedIsExcluded =
+            !!selectedSlug && !!excludedSet?.has(selectedSlug);
+          const excludedApt = selectedIsExcluded
+            ? apartmentBySlug.get(selectedSlug!)
+            : null;
           let availableCounter = 0;
           return (
             <div key={profile.id} className="flex-1 min-w-0 flex flex-col min-h-0">
@@ -238,6 +269,38 @@ export function SideBySideRanking({
                 }}
                 className="flex-1 min-h-0 overflow-y-auto rounded-lg border border-gray-200 bg-white"
               >
+                {/* Excluded banner — sticky at the top of the column when the
+                    selected apartment is vetoed by this profile. The bezier
+                    line anchors to it via the same `rowRefs` key as a normal
+                    row, so the user gets a clear visual link instead of a
+                    dead-end. */}
+                {excludedApt && (
+                  <div
+                    ref={(el) => {
+                      const k = `${profile.id}:${selectedSlug}`;
+                      if (el) rowRefs.current.set(k, el);
+                      else rowRefs.current.delete(k);
+                    }}
+                    onClick={() => handleClick(selectedSlug!, profile.id)}
+                    className="sticky top-0 z-10 px-3 py-2 cursor-pointer
+                               bg-red-50 border-b-2 border-red-300 text-sm
+                               ring-2 ring-red-300 ring-inset
+                               dark:bg-red-900/30"
+                    title={t("compare.excludedByProfileTip")}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-red-500 w-7 shrink-0 text-center">
+                        ✕
+                      </span>
+                      <span className="font-medium truncate flex-1 text-xs text-red-700 dark:text-red-300">
+                        {excludedApt.buildingKey} #{excludedApt.apartment_number}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5 text-[11px] text-red-600 dark:text-red-400 font-medium">
+                      {t("compare.excludedByProfile")}
+                    </div>
+                  </div>
+                )}
                 {visible.map((item) => {
                   const slug = item.apartment.property_slug;
                   const isSold = item.apartment.isSold;

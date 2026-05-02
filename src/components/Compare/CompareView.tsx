@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useApp } from "../../context/AppContext";
 import { SideBySideRanking } from "./SideBySideRanking";
 import { InfoTooltip } from "../Layout/InfoTooltip";
+import { useIsDesktop } from "../../hooks/useIsDesktop";
 
 const COMPARE_STORAGE_KEY = "eshel-compare-state";
 
@@ -32,6 +33,10 @@ function saveCompareState(state: CompareState) {
 export function CompareView() {
   const { t } = useTranslation();
   const { profiles, apartments, buckets } = useApp();
+  const isDesktop = useIsDesktop();
+  // Mobile screens can't fit 3 columns of side-by-side ranking comfortably,
+  // so cap selection at 2 there. Desktop keeps the original 3-profile cap.
+  const maxSelected = isDesktop ? 3 : 2;
 
   const [state, setState] = useState<CompareState>(loadCompareState);
 
@@ -49,13 +54,21 @@ export function CompareView() {
     }
   }, [profiles]);
 
+  // When the device shrinks below the desktop breakpoint, trim any extra
+  // selections so we don't render 3 cramped columns.
+  useEffect(() => {
+    if (state.selectedIds.length > maxSelected) {
+      setState((prev) => ({ ...prev, selectedIds: prev.selectedIds.slice(0, maxSelected) }));
+    }
+  }, [maxSelected]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const selectedIds = new Set(state.selectedIds);
 
   const toggleProfile = (id: string) => {
     setState((prev) => {
       const s = new Set(prev.selectedIds);
       if (s.has(id)) s.delete(id);
-      else if (s.size < 3) s.add(id);
+      else if (s.size < maxSelected) s.add(id);
       return { ...prev, selectedIds: [...s] };
     });
   };
@@ -90,7 +103,7 @@ export function CompareView() {
             <span className="sm:hidden">{t("compare.titleShort")}</span>
             <span className="hidden sm:inline">{t("compare.title")}</span>
           </h2>
-          <InfoTooltip text={t("compare.howToUse")} />
+          <InfoTooltip text={t(isDesktop ? "compare.howToUse" : "compare.howToUseMobile")} />
         </div>
         {selectedIds.size > 0 && (
           <button
@@ -109,26 +122,34 @@ export function CompareView() {
             {t("compare.selectProfiles")}
           </p>
           <div className="flex flex-wrap gap-2">
-            {profiles.map((p) => (
-              <label
-                key={p.id}
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md
-                           border text-sm cursor-pointer transition-colors
-                           ${
-                             selectedIds.has(p.id)
-                               ? "bg-blue-50 border-blue-300 text-blue-700"
-                               : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
-                           }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedIds.has(p.id)}
-                  onChange={() => toggleProfile(p.id)}
-                  className="rounded"
-                />
-                {p.name}
-              </label>
-            ))}
+            {profiles.map((p) => {
+              const isChecked = selectedIds.has(p.id);
+              const atLimit = selectedIds.size >= maxSelected && !isChecked;
+              return (
+                <label
+                  key={p.id}
+                  title={atLimit ? t("compare.maxSelected", { max: maxSelected }) : undefined}
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md
+                             border text-sm transition-colors
+                             ${
+                               isChecked
+                                 ? "bg-blue-50 border-blue-300 text-blue-700 cursor-pointer"
+                                 : atLimit
+                                   ? "bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed"
+                                   : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 cursor-pointer"
+                             }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    disabled={atLimit}
+                    onChange={() => toggleProfile(p.id)}
+                    className="rounded"
+                  />
+                  {p.name}
+                </label>
+              );
+            })}
           </div>
         </div>
         {selectedIds.size > 0 && (

@@ -9,15 +9,15 @@
 
 import type { BucketDef, BucketMap, Apartment, ParameterId } from "../types";
 
-/** Format a price boundary as ₪X.XM / ₪XK. */
+/** Format a price boundary as "X.X M₪" / "XK ₪". */
 function formatPrice(n: number): string {
   if (n >= 1_000_000) {
     const m = n / 1_000_000;
     // Drop trailing zero: 1.20 → 1.2M, but keep 1.05M
-    return `₪${m.toFixed(2).replace(/\.?0+$/, "")}M`;
+    return `${m.toFixed(2).replace(/\.?0+$/, "")} M₪`;
   }
-  if (n >= 1_000) return `₪${Math.round(n / 1_000)}K`;
-  return `₪${Math.round(n)}`;
+  if (n >= 1_000) return `${Math.round(n / 1_000)}K ₪`;
+  return `${Math.round(n)} ₪`;
 }
 
 /** Format a price boundary in Hebrew using מש״ח (millions of shekels). */
@@ -82,7 +82,8 @@ const BUCKET_CONFIGS: BucketConfig[] = [
 /**
  * Build BucketDefs from a sorted list of interior boundaries.
  * - First bucket: "< b0"
- * - Middle bucket i: "b[i-1] – b[i]"
+ * - Middle bucket i: "b[i-1] – b[i]"  (with shared unit deduplicated, e.g.
+ *   "₪1.2 – 1.5M" instead of "₪1.2M – ₪1.5M")
  * - Last bucket: "≥ b[last]"
  */
 function buildBuckets(
@@ -92,6 +93,25 @@ function buildBuckets(
 ): BucketDef[] {
   const buckets: BucketDef[] = [];
   const count = boundaries.length + 1;
+
+  // Split a formatted boundary like "₪1.2M" / "90 m²" / "1.2 מש״ח" into
+  // (prefix, number, suffix). Returns null if the string doesn't look like
+  // a single numeric value (in which case we skip dedup).
+  const splitParts = (s: string): { prefix: string; num: string; suffix: string } | null => {
+    const m = s.match(/^(\D*)([\d.,]+)(.*)$/);
+    if (!m) return null;
+    return { prefix: m[1], num: m[2], suffix: m[3] };
+  };
+
+  // Render a "lo – hi" range, deduping shared prefix/suffix units.
+  const range = (loStr: string, hiStr: string): string => {
+    const lo = splitParts(loStr);
+    const hi = splitParts(hiStr);
+    if (lo && hi && lo.prefix === hi.prefix && lo.suffix === hi.suffix) {
+      return `${lo.prefix}${lo.num} – ${hi.num}${hi.suffix}`;
+    }
+    return `${loStr} – ${hiStr}`;
+  };
 
   for (let i = 0; i < count; i++) {
     const lo = i === 0 ? -Infinity : boundaries[i - 1];
@@ -106,8 +126,8 @@ function buildBuckets(
       label = `≥ ${formatEn(lo)}`;
       labelHe = `≥ ${formatHe(lo)}`;
     } else {
-      label = `${formatEn(lo)} – ${formatEn(hi)}`;
-      labelHe = `${formatHe(lo)} – ${formatHe(hi)}`;
+      label = range(formatEn(lo), formatEn(hi));
+      labelHe = range(formatHe(lo), formatHe(hi));
     }
 
     buckets.push({ label, labelHe, min: lo, max: hi });

@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import type { ParameterConfig } from "../../types";
 import { ScoreButtonGroup } from "./ScoreButtonGroup";
 import { resolveLocale } from "../../utils/locale";
+import { useIsDesktop } from "../../hooks/useIsDesktop";
 
 interface BucketedScorerProps {
   config: ParameterConfig;
@@ -14,11 +15,15 @@ interface BucketedScorerProps {
 export function BucketedScorer({ config }: BucketedScorerProps) {
   const { i18n } = useTranslation();
   const lang = resolveLocale(i18n.language);
+  const isDesktop = useIsDesktop();
 
   return (
     <div className="grid gap-2">
       {config.values.map((value) => {
-        const label = config.valueLabels[value]?.[lang] ?? value;
+        const fullLabel = config.valueLabels[value]?.[lang] ?? value;
+        // Tighten the en-dash on mobile to free up horizontal space:
+        // "₪1.2 – 1.5M" → "₪1.2–1.5M". Desktop has room for the spacing.
+        const label = isDesktop ? fullLabel : fullLabel.replace(/ – /g, "–");
         return (
           <div
             key={value}

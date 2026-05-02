@@ -21,7 +21,7 @@ const FLOOR_VALUES = [
 ] as const;
 
 const FLOOR_LABELS: Record<string, { en: string; he: string }> = {
-  underground: { en: "Underground (-2 to -1)", he: "מרתף (-2 עד -1)" },
+  underground: { en: "Underground (-N)", he: "מרתף (-2 עד -1)" },
   ground: { en: "Ground (0)", he: "קרקע (0)" },
   low: { en: "Low (1–3)", he: "נמוכה (1–3)" },
   mid: { en: "Mid (4–7)", he: "בינונית (4–7)" },

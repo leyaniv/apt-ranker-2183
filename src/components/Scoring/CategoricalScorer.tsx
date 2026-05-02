@@ -4,6 +4,7 @@ import type { ParameterConfig } from "../../types";
 import { ScoreButtonGroup } from "./ScoreButtonGroup";
 import { resolveLocale } from "../../utils/locale";
 import { useApp } from "../../context/AppContext";
+import { useIsDesktop } from "../../hooks/useIsDesktop";
 
 interface CategoricalScorerProps {
   config: ParameterConfig;
@@ -18,6 +19,7 @@ export function CategoricalScorer({ config }: CategoricalScorerProps) {
   const { i18n } = useTranslation();
   const lang = resolveLocale(i18n.language);
   const { apartments } = useApp();
+  const isDesktop = useIsDesktop();
 
   // For the "type" parameter, build a map: type → { pdfUrl, example label }
   const typePdfMap = useMemo(() => {
@@ -37,7 +39,21 @@ export function CategoricalScorer({ config }: CategoricalScorerProps) {
   return (
     <div className="grid gap-2">
       {config.values.map((value) => {
-        const label = config.valueLabels[value]?.[lang] ?? value;
+        const fullLabel = config.valueLabels[value]?.[lang] ?? value;
+        // On mobile the "Building" rows are tight against the score buttons,
+        // and the parameter card header already says "Building", so render
+        // just the compact "lot/bldg" key (e.g. "207/1") instead of the
+        // verbose "Lot 207 / Building 1".
+        let label = fullLabel;
+        if (!isDesktop) {
+          if (config.id === "building") {
+            label = value;
+          } else if (config.id === "layout" && lang === "en") {
+            // Abbreviate "Regular apartment" → "Regular apt." etc. (English only —
+            // Hebrew labels are already short enough on mobile).
+            label = fullLabel.replace(/ apartment\b/i, " apt.");
+          }
+        }
         const pdfInfo = typePdfMap?.get(value);
         return (
           <div

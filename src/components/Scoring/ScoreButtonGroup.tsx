@@ -108,29 +108,58 @@ interface ScoreButtonGroupProps {
 /**
  * Input for a single value's score. Renders as buttons (integer 1–5) or
  * a continuous slider depending on `resolvedScoringInputStyle`.
+ *
+ * In addition to the 1–5 scale, an extra "exclude" (✕) button removes
+ * any apartment with this value from the profile's ranking entirely
+ * (stored as score = 0).
  */
 export function ScoreButtonGroup({ paramId, valueKey }: ScoreButtonGroupProps) {
+  const { t } = useTranslation();
   const { scores, setScore, resolvedScoringInputStyle } = useApp();
   const currentScore = scores[paramId]?.[valueKey] ?? 3;
+  const isExcluded = currentScore === 0;
+
+  const toggleExclude = () => setScore(paramId, valueKey, isExcluded ? 3 : 0);
+
+  const excludeButton = (
+    <button
+      type="button"
+      className="exclude-btn"
+      data-active={isExcluded}
+      onClick={toggleExclude}
+      title={t("scoring.excludeTip")}
+      aria-label={`${t("scoring.exclude")} — ${valueKey}`}
+      aria-pressed={isExcluded}
+    >
+      ✕
+    </button>
+  );
 
   if (resolvedScoringInputStyle === "slider") {
     return (
-      <RangeSlider
-        value={currentScore}
-        onChange={(v) => setScore(paramId, valueKey, v)}
-        ariaLabel={`${valueKey} score`}
-      />
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        {excludeButton}
+        <div className={isExcluded ? "opacity-40 pointer-events-none" : ""}>
+          <RangeSlider
+            value={isExcluded ? 1 : currentScore}
+            onChange={(v) => setScore(paramId, valueKey, v)}
+            ariaLabel={`${valueKey} score`}
+          />
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="flex items-center gap-0.5 sm:gap-1">
+      {excludeButton}
       {[1, 2, 3, 4, 5].map((score) => (
         <button
           key={score}
           className="score-btn"
           data-score={score}
-          data-active={currentScore === score}
+          data-active={!isExcluded && currentScore === score}
+          data-disabled={isExcluded}
           onClick={() => setScore(paramId, valueKey, score)}
           aria-label={`${valueKey} - ${score}`}
         >

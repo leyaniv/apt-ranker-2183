@@ -10,6 +10,8 @@ interface CombinedRankingProps {
   buckets: BucketMap;
   /** Per-profile importance weight: profileId → 1–5. Missing = 3 */
   profileWeights?: Record<string, number>;
+  /** Per-profile flag: when true, that profile's score-0 vetoes filter out apts. */
+  respectExclusions?: Record<string, boolean>;
 }
 
 /**
@@ -20,14 +22,15 @@ export function CombinedRanking({
   apartments,
   buckets,
   profileWeights,
+  respectExclusions,
 }: CombinedRankingProps) {
   const { t } = useTranslation();
   const { settings } = useApp();
   const hideSold = settings.hideSold;
 
   const combined = useMemo(
-    () => computeCombinedRanking(profiles, apartments, buckets, profileWeights),
-    [profiles, apartments, buckets, profileWeights]
+    () => computeCombinedRanking(profiles, apartments, buckets, profileWeights, respectExclusions),
+    [profiles, apartments, buckets, profileWeights, respectExclusions]
   );
 
   const visible = useMemo(
