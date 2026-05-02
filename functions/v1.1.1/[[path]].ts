@@ -11,10 +11,20 @@
  */
 
 const LEGACY_ORIGIN = "https://apt-ranker-2183-v1-1-1.pages.dev";
+const PREFIX = "/v1.1.1";
 
 export const onRequest: PagesFunction = async ({ request }) => {
   const incoming = new URL(request.url);
-  const target = new URL(incoming.pathname + incoming.search, LEGACY_ORIGIN);
+  // Strip our public-facing /v1.1.1 prefix before forwarding. The legacy build
+  // was produced with Vite `base: "/v1.1.1/"`, which rewrites HTML asset
+  // references but does NOT move files inside `dist/` — so on the legacy
+  // origin the actual file paths are still `/assets/…`, not `/v1.1.1/assets/…`.
+  const stripped = incoming.pathname.startsWith(PREFIX + "/")
+    ? incoming.pathname.slice(PREFIX.length)
+    : incoming.pathname === PREFIX
+      ? "/"
+      : incoming.pathname;
+  const target = new URL(stripped + incoming.search, LEGACY_ORIGIN);
 
   // Strip hop-by-hop headers Cloudflare doesn't want us to forward.
   const headers = new Headers(request.headers);
