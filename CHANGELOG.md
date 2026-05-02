@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added a Print button on the Results tab that opens a printable view with column, row-scope, and notes options.
 - Each value can now be marked with ✕ to exclude it as a deal-breaker — apartments matching it are removed from the profile's ranking.
 
 ## [1.2.0] - 2026-05-02

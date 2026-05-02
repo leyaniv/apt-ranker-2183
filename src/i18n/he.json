@@ -227,6 +227,26 @@
     "redo": "חזרה על פעולה",
     "edit": "עריכה"
   },
+  "print": {
+    "button": "הדפסה",
+    "buttonTip": "פתח תצוגה להדפסה של הדירות המדורגות",
+    "buttonAria": "פתח תצוגה להדפסה",
+    "title": "הדפסה",
+    "columns": "עמודות",
+    "selectAll": "בחר הכל",
+    "selectNone": "ברירת מחדל",
+    "includeNotes": "הערות",
+    "includeMetadata": "כלול שם פרופיל ותאריך",
+    "rows": "שורות",
+    "scopeAll": "כל הדירות המדורגות ({{count}})",
+    "scopeFiltered": "השורות המוצגות כעת ({{count}})",
+    "scopeTopN": "העליונים",
+    "openPrintView": "פתח תצוגה להדפסה",
+    "popupBlocked": "הדפדפן חסם את חלון ההדפסה. אפשר חלונות קופצים לאתר ונסה שוב.",
+    "profile": "פרופיל",
+    "total": "סה\"כ",
+    "printedOn": "הודפס בתאריך"
+  },
   "settings": {
     "title": "הגדרות",
     "maxResults": "המקום שלך בהגרלה",

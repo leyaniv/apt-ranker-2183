@@ -227,6 +227,26 @@
     "redo": "Redo",
     "edit": "Edit"
   },
+  "print": {
+    "button": "Print",
+    "buttonTip": "Open a printable view of the ranked apartments",
+    "buttonAria": "Open print view",
+    "title": "Print",
+    "columns": "Columns",
+    "selectAll": "Select all",
+    "selectNone": "Select default",
+    "includeNotes": "Notes",
+    "includeMetadata": "Include profile name and date",
+    "rows": "Rows",
+    "scopeAll": "All ranked apartments ({{count}})",
+    "scopeFiltered": "Currently visible rows ({{count}})",
+    "scopeTopN": "top",
+    "openPrintView": "Open print view",
+    "popupBlocked": "The browser blocked the print window. Please allow popups for this site and try again.",
+    "profile": "Profile",
+    "total": "Total",
+    "printedOn": "Printed on"
+  },
   "settings": {
     "title": "Settings",
     "maxResults": "Your place at the raffle",

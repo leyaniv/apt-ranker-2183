@@ -6,6 +6,7 @@ import { useApp } from "../../context/AppContext";
 import { ApartmentRow } from "./ApartmentRow";
 import { TabHeader } from "../Layout/TabHeader";
 import { ConfirmDialog } from "../Layout/ConfirmDialog";
+import { PrintModal } from "../Print/PrintModal";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { useTableTier, TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
 import type { RankedApartment } from "../../types";
@@ -425,6 +426,9 @@ export function ResultsTable() {
     return () => registerManualOrderActions(null);
   }, [activeProfile, manualOrder, saveProfile, commitManualOrderToHistory, registerManualOrderActions]);
 
+  // Print modal
+  const [showPrintModal, setShowPrintModal] = useState(false);
+
   // Save manual order as a new profile (copies current scores/weights)
   const [showSaveAsModal, setShowSaveAsModal] = useState(false);
   const [saveAsName, setSaveAsName] = useState("");
@@ -470,8 +474,21 @@ export function ResultsTable() {
       className="mx-auto w-full sm:w-fit max-w-full flex flex-col h-full min-h-0 px-2 sm:px-0 pb-18 sm:pb-6"
       onDragEnd={() => { dragSlugRef.current = null; setDropTargetSlug(null); stopAutoScroll(); }}
     >
-      <div className="px-4 sm:px-6 pt-4 sm:pt-6 mb-2 flex-shrink-0">
+      <div className="px-4 sm:px-6 pt-4 sm:pt-6 mb-2 flex-shrink-0 flex items-center gap-2">
         <TabHeader title={t("results.title")} tooltip={t("results.howToUse")} />
+        <button
+          type="button"
+          onClick={() => setShowPrintModal(true)}
+          title={t("print.buttonTip")}
+          aria-label={t("print.buttonAria")}
+          className="ms-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
+                     bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
+            <path fillRule="evenodd" d="M5 2.75A2.75 2.75 0 0 1 7.75 0h4.5A2.75 2.75 0 0 1 15 2.75V5h.75A2.25 2.25 0 0 1 18 7.25v5.5A2.25 2.25 0 0 1 15.75 15H15v2.25A2.75 2.75 0 0 1 12.25 20h-4.5A2.75 2.75 0 0 1 5 17.25V15h-.75A2.25 2.25 0 0 1 2 12.75v-5.5A2.25 2.25 0 0 1 4.25 5H5V2.75ZM6.5 5h7V2.75c0-.69-.56-1.25-1.25-1.25h-4.5c-.69 0-1.25.56-1.25 1.25V5Zm0 9.5v2.75c0 .69.56 1.25 1.25 1.25h4.5c.69 0 1.25-.56 1.25-1.25V14.5h-7Zm9-7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" clipRule="evenodd" />
+          </svg>
+          <span>{t("print.button")}</span>
+        </button>
       </div>
       {/* Manual reorder banner */}
       {manualOrder && (
@@ -861,6 +878,14 @@ export function ResultsTable() {
           danger
           onConfirm={performResetManualOrder}
           onCancel={() => setConfirmResetOrderOpen(false)}
+        />
+      )}
+
+      {showPrintModal && (
+        <PrintModal
+          ranked={rankedApartments}
+          visible={displayed}
+          onClose={() => setShowPrintModal(false)}
         />
       )}
     </div>
