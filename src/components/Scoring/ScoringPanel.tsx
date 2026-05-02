@@ -13,6 +13,7 @@ export function ScoringPanel() {
   const { t } = useTranslation();
   const { parameterConfigs, activeProfile, resetScores, randomizeScores, roundScores, addProfile, settings, resolvedScoringInputStyle } = useApp();
   const [confirmRoundOpen, setConfirmRoundOpen] = useState(false);
+  const [confirmResetOpen, setConfirmResetOpen] = useState(false);
 
   if (!activeProfile) {
     return (
@@ -34,32 +35,40 @@ export function ScoringPanel() {
 
   return (
     <div className="px-2 py-4 sm:p-6 pb-20 sm:pb-6 space-y-3 max-w-3xl mx-auto w-full">
-      <TabHeader title={t("scoring.title")} tooltip={t("scoring.howToUse")} />
+      <div className="px-2 sm:px-0 flex items-center gap-2">
+        <TabHeader title={t("scoring.title")} tooltip={t("scoring.howToUse")} />
+        <div className="ms-auto flex items-center gap-1.5 shrink-0">
+          {settings.developerTools && (
+            <button
+              onClick={() => randomizeScores()}
+              title={t("scoring.randomize")}
+              aria-label={t("scoring.randomize")}
+              className="inline-flex items-center px-2 py-1 text-sm text-purple-600
+                         bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              🎲
+            </button>
+          )}
+          <button
+            onClick={() => setConfirmResetOpen(true)}
+            className="inline-flex items-center px-2 py-1 text-sm text-red-600 whitespace-nowrap
+                       bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            {t("scoring.resetAll")}
+          </button>
+        </div>
+      </div>
 
-      <div className="flex items-center justify-end gap-3 mb-2">
-        {resolvedScoringInputStyle === "slider" && (
+      {resolvedScoringInputStyle === "slider" && (
+        <div className="flex items-center justify-end gap-3 mb-2">
           <button
             onClick={() => setConfirmRoundOpen(true)}
             className="text-xs text-blue-500 hover:text-blue-700 transition-colors"
           >
             {t("scoring.roundToInteger")}
           </button>
-        )}
-        {settings.developerTools && (
-          <button
-            onClick={() => randomizeScores()}
-            className="text-xs text-purple-500 hover:text-purple-700 transition-colors"
-          >
-            🎲 {t("scoring.randomize")}
-          </button>
-        )}
-        <button
-          onClick={() => resetScores()}
-          className="text-xs text-red-500 hover:text-red-700 transition-colors"
-        >
-          {t("scoring.resetAll")}
-        </button>
-      </div>
+        </div>
+      )}
 
       {/* Standard parameters */}
       {standardParams.map((config, idx) => (
@@ -90,6 +99,19 @@ export function ScoringPanel() {
             setConfirmRoundOpen(false);
           }}
           onCancel={() => setConfirmRoundOpen(false)}
+        />
+      )}
+
+      {confirmResetOpen && (
+        <ConfirmDialog
+          title={t("scoring.resetAll")}
+          message={t("scoring.confirmResetAll")}
+          confirmLabel={t("scoring.resetAll")}
+          onConfirm={() => {
+            resetScores();
+            setConfirmResetOpen(false);
+          }}
+          onCancel={() => setConfirmResetOpen(false)}
         />
       )}
     </div>

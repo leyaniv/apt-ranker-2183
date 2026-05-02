@@ -2,6 +2,26 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { AppSettings } from "../../hooks/useSettings";
 import { track } from "../../utils/analytics";
+import { ConfirmDialog } from "../Layout/ConfirmDialog";
+
+/**
+ * Remove every entry from local/session storage whose key starts with the
+ * `eshel-` prefix used by this app, then reload the page so all in-memory
+ * state is reset to defaults.
+ */
+function clearAllAppData() {
+  const ESHEL_PREFIX = "eshel-";
+  for (const storage of [localStorage, sessionStorage]) {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i);
+      if (key && key.startsWith(ESHEL_PREFIX)) keysToRemove.push(key);
+    }
+    keysToRemove.forEach((k) => storage.removeItem(k));
+  }
+  track("data_cleared", {});
+  window.location.reload();
+}
 
 interface SettingsModalProps {
   settings: AppSettings;
@@ -20,6 +40,7 @@ export function SettingsModal({
   const [localMax, setLocalMax] = useState<string>(
     settings.maxResults != null ? String(settings.maxResults) : ""
   );
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const LANGUAGES = [
     { code: "he", label: "עברית" },
@@ -211,6 +232,28 @@ export function SettingsModal({
           </button>
         </div>
 
+        {/* Clear all data */}
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium text-gray-700">
+                {t("settings.clearAllData")}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {t("settings.clearAllDataHint")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowClearConfirm(true)}
+              className="shrink-0 px-3 py-1.5 text-sm text-red-700 border border-red-300
+                         rounded-md hover:bg-red-50 transition-colors"
+            >
+              {t("settings.clearAllData")}
+            </button>
+          </div>
+        </div>
+
         {/* Actions */}
         <div className="flex justify-end gap-2 mt-6">
           <button
@@ -229,6 +272,17 @@ export function SettingsModal({
           </button>
         </div>
       </div>
+
+      {showClearConfirm && (
+        <ConfirmDialog
+          title={t("settings.clearAllDataConfirmTitle")}
+          message={t("settings.clearAllDataConfirmMessage")}
+          confirmLabel={t("settings.clearAllDataConfirm")}
+          danger
+          onConfirm={clearAllAppData}
+          onCancel={() => setShowClearConfirm(false)}
+        />
+      )}
     </div>
   );
 }

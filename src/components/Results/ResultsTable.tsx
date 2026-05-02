@@ -156,8 +156,10 @@ export function ResultsTable() {
       const el = rowsContainerRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      const edge = 60; // px from edge to trigger auto-scroll
-      const maxSpeed = 18; // px per frame
+      // Edge zone scales with container height so mobile (small viewport)
+      // gets a larger relative trigger area. Clamped to a sensible range.
+      const edge = Math.min(160, Math.max(100, rect.height * 0.25));
+      const maxSpeed = 24; // px per frame
       let speed = 0;
       const distTop = e.clientY - rect.top;
       const distBottom = rect.bottom - e.clientY;
@@ -573,28 +575,13 @@ export function ResultsTable() {
         data-tour-id="results-filters"
         className="flex-shrink-0 bg-white border-b border-gray-200"
       >
-        {/* Always-visible toolbar: additional-filters trigger + hide-sold + count */}
+        {/* Always-visible toolbar: additional-filters trigger + hide-sold + count.
+            DOM order is hide-sold, count, trigger so that on mobile the first row
+            shows hide-sold (start) and count (end), with the additional-filters
+            trigger wrapping onto a second row. On desktop the trigger is
+            re-ordered back to the start with `sm:order-first`. RTL mirrors
+            naturally via logical `ms-auto`. */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2">
-          <Collapsible.Trigger className="inline-flex items-center gap-2 px-2.5 py-1 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
-              <path fillRule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clipRule="evenodd" />
-            </svg>
-            <span>{t("results.additionalFilters")}</span>
-            {hasFilters && (
-              <span className="text-xs text-blue-600 font-normal">
-                ({t("results.filtersActive", { count: [filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice].filter(Boolean).length })})
-              </span>
-            )}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className={`w-3.5 h-3.5 text-gray-400 transition-transform ${filtersOpen ? "rotate-180" : ""}`}
-            >
-              <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.06l3.71-3.83a.75.75 0 1 1 1.08 1.04l-4.25 4.39a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06Z" clipRule="evenodd" />
-            </svg>
-          </Collapsible.Trigger>
-
           {/* Hide-sold toggle */}
           <button
             type="button"
@@ -602,7 +589,7 @@ export function ResultsTable() {
             aria-checked={settings.hideSold}
             onClick={() => updateSettings({ hideSold: !settings.hideSold })}
             title={t("results.hideSoldTooltip")}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-sm rounded-md border transition-colors ${
+            className={`order-1 sm:order-none inline-flex items-center gap-1.5 px-2.5 py-1 text-sm rounded-md border transition-colors ${
               settings.hideSold
                 ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -622,7 +609,7 @@ export function ResultsTable() {
             <span>{t("results.hideSold")}</span>
           </button>
 
-          <span className="text-xs text-gray-400 ms-auto">
+          <span className="order-2 sm:order-none ms-auto text-xs text-gray-400">
             {t("results.showingOf", { shown: displayed.length, total: rankedApartments.length })}
             {apartments.length > rankedApartments.length && (
               <span
@@ -637,13 +624,33 @@ export function ResultsTable() {
           {settings.developerTools && (
             <button
               onClick={randomizeOrder}
-              className="p-1 text-base leading-none rounded hover:bg-purple-100 transition-colors"
+              className="order-2 sm:order-none p-1 text-base leading-none rounded hover:bg-purple-100 transition-colors"
               title={t("results.randomOrder")}
               aria-label={t("results.randomOrder")}
             >
               🎲
             </button>
           )}
+
+          <Collapsible.Trigger className="order-3 sm:order-first basis-full sm:basis-auto inline-flex items-center gap-2 px-2.5 py-1 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
+              <path fillRule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clipRule="evenodd" />
+            </svg>
+            <span>{t("results.additionalFilters")}</span>
+            {hasFilters && (
+              <span className="text-xs text-blue-600 font-normal">
+                ({t("results.filtersActive", { count: [filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice].filter(Boolean).length })})
+              </span>
+            )}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className={`w-3.5 h-3.5 text-gray-400 transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+            >
+              <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.06l3.71-3.83a.75.75 0 1 1 1.08 1.04l-4.25 4.39a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06Z" clipRule="evenodd" />
+            </svg>
+          </Collapsible.Trigger>
         </div>
 
         <Collapsible.Content className="data-[state=open]:block border-t border-gray-100">
@@ -772,6 +779,7 @@ export function ResultsTable() {
 
       {/* Rows */}
       <div
+        ref={rowsContainerRef}
         onDragOver={handleContainerDragOver}
         onDragLeave={stopAutoScroll}
         className="flex-1 min-h-0 relative"

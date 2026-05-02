@@ -37,6 +37,8 @@ interface RangeSliderProps {
   value: number;
   onChange: (v: number) => void;
   ariaLabel: string;
+  /** When provided, overrides the numeric label shown next to the thumb. */
+  displayValue?: number;
 }
 
 /**
@@ -47,7 +49,7 @@ interface RangeSliderProps {
  * tick. The upstream `onChange` (which triggers re-ranking of all
  * apartments + a localStorage write) is only fired once on drag end.
  */
-function RangeSlider({ value, onChange, ariaLabel }: RangeSliderProps) {
+function RangeSlider({ value, onChange, ariaLabel, displayValue }: RangeSliderProps) {
   const [localValue, setLocalValue] = useState(value);
   const draggingRef = useRef(false);
 
@@ -94,7 +96,7 @@ function RangeSlider({ value, onChange, ariaLabel }: RangeSliderProps) {
         className="score-slider-value text-xs font-mono tabular-nums min-w-[24px] text-end"
         data-score={bucket}
       >
-        {localValue.toFixed(1)}
+        {(displayValue ?? localValue).toFixed(1)}
       </span>
     </div>
   );
@@ -144,6 +146,7 @@ export function ScoreButtonGroup({ paramId, valueKey }: ScoreButtonGroupProps) {
             value={isExcluded ? 1 : currentScore}
             onChange={(v) => setScore(paramId, valueKey, v)}
             ariaLabel={`${valueKey} score`}
+            displayValue={isExcluded ? 0 : undefined}
           />
         </div>
       </div>

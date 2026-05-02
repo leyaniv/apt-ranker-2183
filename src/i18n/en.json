@@ -49,6 +49,7 @@
     "randomize": "Random Scoring",
     "roundToInteger": "Round to nearest integer",
     "confirmRound": "Round all scores and weights to the nearest integer?",
+    "confirmResetAll": "Reset all scores and weights for this profile? This cannot be undone.",
     "advanced": "Advanced Parameters",
     "weightTip": "How much does this parameter matter? (1 = not at all, 5 = very important)",
     "scoreTip": "How much do you prefer this value? (1 = dislike, 5 = strongly prefer)",
@@ -104,7 +105,7 @@
     "userMarkedSoldTooltip": "You marked this apartment as sold. The contractor site hasn't reflected it yet.",
     "filtersActive": "{{count}} active",
     "showingOf": "Showing {{shown}} of {{total}}",
-    "hiddenByExclusions": "{{count}} hidden by exclusions",
+    "hiddenByExclusions": "{{count}} excluded",
     "hiddenByExclusionsTip": "Apartments removed from this profile's ranking because at least one of their values is excluded (✕). Edit the scoring panel to undo.",
     "expandDetails": "Show details",
     "collapseDetails": "Hide details",
@@ -257,7 +258,12 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "developerTools": "Developer Tools",
-    "useSliderForScoring": "Use slider for scoring"
+    "useSliderForScoring": "Use slider for scoring",
+    "clearAllData": "Clear all data",
+    "clearAllDataHint": "Delete all profiles, settings, and locally saved data on this device.",
+    "clearAllDataConfirmTitle": "Clear all data?",
+    "clearAllDataConfirmMessage": "This will permanently delete all your profiles, scores, settings, notes, and history saved in this browser. This action cannot be undone.",
+    "clearAllDataConfirm": "Delete everything"
   },
   "about": {
     "title": "About",

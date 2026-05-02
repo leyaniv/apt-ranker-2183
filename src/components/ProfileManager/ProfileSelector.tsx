@@ -21,7 +21,10 @@ export function ProfileSelector() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (modalMode) inputRef.current?.focus();
+    if (modalMode) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
   }, [modalMode]);
 
   const openCreate = () => {

@@ -191,25 +191,20 @@ export const ApartmentRow = memo(function ApartmentRow({
             </div>
           ) : (
             <div
-              className={`flex items-center gap-1.5 px-3 py-2 hover:bg-gray-50 transition-colors
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", slug);
+                onDragStart?.(slug);
+              }}
+              className={`flex items-center gap-1.5 px-3 py-2 hover:bg-gray-50 transition-colors cursor-grab active:cursor-grabbing
                           ${isOpen ? "bg-gray-50" : ""}`}
+              title={t("results.dragHint")}
             >
-              <span
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.effectAllowed = "move";
-                  e.dataTransfer.setData("text/plain", slug);
-                  onDragStart?.(slug);
-                }}
-                className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 shrink-0"
-                title={t("results.dragHint")}
-              >
-                ⠿
-              </span>
               <Collapsible.Trigger className="flex items-center gap-1.5 flex-1 min-w-0 cursor-pointer">
                 {isSold ? (
                   <span
-                    className={`inline-flex items-center justify-center text-[10px] font-semibold rounded px-1 py-0.5 shrink-0 text-center ${
+                    className={`inline-flex items-center justify-center w-7 text-[10px] font-semibold rounded px-1 py-0.5 shrink-0 text-center ${
                       userOnlySold
                         ? "bg-red-100 text-red-700 dark:text-red-800"
                         : "bg-gray-200 text-gray-600 dark:text-gray-800"
@@ -219,10 +214,10 @@ export const ApartmentRow = memo(function ApartmentRow({
                     {t("results.sold")}
                   </span>
                 ) : (
-                  <span className="font-mono text-[11px] text-gray-400 shrink-0">
-                    {rankLabel}
+                  <span className="font-mono shrink-0 text-center tabular-nums flex items-baseline justify-center gap-0.5">
+                    <span className="text-sm font-semibold text-gray-600 min-w-[1.25rem] text-center">{rankLabel}</span>
                     {rank != null && originalRank != null && originalRank !== rank && (
-                      <span className="text-gray-300">({originalRank})</span>
+                      <span className="text-[10px] font-normal text-gray-300">({originalRank})</span>
                     )}
                   </span>
                 )}
