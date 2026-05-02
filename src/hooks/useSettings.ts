@@ -17,8 +17,14 @@ export interface AppSettings {
   onboardingCompleted: boolean;
   /** Scoring input style — buttons (integer 1–5) or slider (continuous) */
   scoringInputStyle: "buttons" | "slider";
-  /** Hide sold (נמכר) apartments from results and compare views */
-  hideSold: boolean;
+  /** Show sold (נמכר) apartments in results and compare views (default: true) */
+  showSold: boolean;
+  /**
+   * Show apartments the user has manually excluded in the active profile.
+   * Defaults to `false` — excluded apartments are hidden from results until
+   * the user opts in via the toggle.
+   */
+  showExcluded: boolean;
 }
 
 const DEFAULTS: AppSettings = {
@@ -27,7 +33,8 @@ const DEFAULTS: AppSettings = {
   developerTools: false,
   onboardingCompleted: false,
   scoringInputStyle: "buttons",
-  hideSold: false,
+  showSold: true,
+  showExcluded: false,
 };
 
 function load(): AppSettings {

@@ -38,7 +38,7 @@ export function SideBySideRanking({
 }: SideBySideRankingProps) {
   const { t } = useTranslation();
   const { settings } = useApp();
-  const hideSold = settings.hideSold;
+  const showSold = settings.showSold;
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
   const [lines, setLines] = useState<LineCoord[]>([]);
 
@@ -245,7 +245,7 @@ export function SideBySideRanking({
       <div className="flex gap-6 flex-1 min-h-0">
         {profiles.map((profile) => {
           const ranked = profileRankedLists.get(profile.id) ?? [];
-          const visible = hideSold ? ranked.filter((r) => !r.apartment.isSold) : ranked;
+          const visible = showSold ? ranked : ranked.filter((r) => !r.apartment.isSold);
           const excludedSet = excludedLookup.get(profile.id);
           // True when the user's clicked apt has been vetoed by this profile.
           const selectedIsExcluded =

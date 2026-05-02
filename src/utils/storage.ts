@@ -114,6 +114,9 @@ export function duplicateProfile(sourceId: string, newName: string): Profile | n
     weights: { ...source.weights },
     ...(source.manualOrder ? { manualOrder: [...source.manualOrder] } : {}),
     ...(source.notes ? { notes: { ...source.notes } } : {}),
+    ...(source.excludedSlugs && source.excludedSlugs.length > 0
+      ? { excludedSlugs: [...source.excludedSlugs] }
+      : {}),
   };
   profiles.push(clone);
   saveProfiles(profiles);
@@ -302,6 +305,9 @@ function materializeImportedProfile(source: Profile): Profile {
     weights: source.weights,
     ...(Array.isArray(source.manualOrder) ? { manualOrder: source.manualOrder } : {}),
     ...(source.notes && typeof source.notes === "object" ? { notes: source.notes } : {}),
+    ...(Array.isArray(source.excludedSlugs)
+      ? { excludedSlugs: source.excludedSlugs.filter((s): s is string => typeof s === "string") }
+      : {}),
   };
 }
 

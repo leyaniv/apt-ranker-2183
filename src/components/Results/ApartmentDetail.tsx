@@ -24,6 +24,13 @@ interface ApartmentDetailProps {
   totalWeight: number;
   note?: string;
   onNoteChange?: (slug: string, text: string) => void;
+  /**
+   * Why this apartment is excluded in the active profile, if at all.
+   * When `"scoring"`, the manual "Mark as excluded" toggle is replaced
+   * by a static "Excluded by scoring" indicator since manually toggling
+   * would have no visible effect.
+   */
+  excludedReason?: "manual" | "scoring" | null;
 }
 
 interface DetailRowDef {
@@ -37,9 +44,9 @@ interface DetailRowDef {
  * Expanded detail view for a single apartment.
  * Shows all fields, scoring contributions, and PDF links.
  */
-export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNoteChange }: ApartmentDetailProps) {
+export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNoteChange, excludedReason = null }: ApartmentDetailProps) {
   const { t, i18n } = useTranslation();
-  const { settings, toggleUserSoldMark, weights } = useApp();
+  const { settings, toggleUserSoldMark, toggleUserExcluded, userExcludedSet, weights } = useApp();
   const lang = resolveLocale(i18n.language);
   const isDesktop = useIsDesktop();
   const [notesOpen, setNotesOpen] = useState(false);
@@ -68,6 +75,7 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
   // - userMarkedSold: user pressed the "mark as sold" button (cross-profile)
   const scrapeSold = (apartment.status ?? "").trim() === "נמכר";
   const userMarkedSold = apartment.userMarkedSold;
+  const userExcluded = userExcludedSet.has(apartment.property_slug);
 
   const areaUnit = t("results.areaUnit");
   const fmtPrice = (n: number) =>
@@ -106,7 +114,9 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
       key: "storage_area_sqm",
       paramId: "storage_area_sqm",
       label: paramLabel("storage_area_sqm"),
-      value: `${apartment.storage_area_sqm} ${areaUnit}`,
+      value: apartment.storage_id
+        ? `${apartment.storage_area_sqm} ${areaUnit} (${apartment.storage_id})`
+        : `${apartment.storage_area_sqm} ${areaUnit}`,
     },
     {
       key: "air_direction",
@@ -121,7 +131,6 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
       value: String(apartment.directionCount),
     },
     { key: "price", paramId: "price", label: paramLabel("price"), value: fmtPrice(apartment.price) },
-    { key: "storage_id", label: t("detail.storageId"), value: apartment.storage_id },
   ];
 
   if (settings.developerTools) {
@@ -149,8 +158,102 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
     { label: t("detail.pdfDevelopment"), url: apartment.pdf_development },
   ].filter((p) => p.url);
 
+  // Mark-as-sold + Mark-as-excluded controls.
+  // Sold is cross-profile (when the scrape already reports the apartment as
+  // sold the control is disabled and shows the official-source label).
+  // Excluded is per-profile and hides the apartment from results unless
+  // 'Show excluded' is on.
+  const actionButtons = (
+    <div
+      className={`flex flex-wrap gap-2 ${
+        !isDesktop ? "[&>*]:flex-1 [&>*]:justify-center" : ""
+      }`}
+    >
+      {scrapeSold ? (
+        <button
+          type="button"
+          disabled
+          title={t("detail.soldOfficialTooltip")}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium
+                     rounded-md border border-gray-200 bg-gray-50 text-gray-400 dark:text-gray-600 cursor-not-allowed"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+            <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
+          </svg>
+          {t("detail.soldOfficial")}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => toggleUserSoldMark(apartment.property_slug)}
+          title={
+            userMarkedSold
+              ? t("detail.unmarkSoldTooltip")
+              : t("detail.markSoldTooltip")
+          }
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium
+                     rounded-md border transition-colors ${
+                       userMarkedSold
+                         ? "border-red-300 bg-red-50 text-red-700 dark:text-red-800 hover:bg-red-100"
+                         : "border-gray-300 bg-white text-gray-700 dark:text-gray-800 hover:bg-gray-50"
+                     }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+            {userMarkedSold ? (
+              <path fillRule="evenodd" d="M7.793 2.232a.75.75 0 0 1-.025 1.06L3.622 7.25h10.003a5.375 5.375 0 0 1 0 10.75H10.75a.75.75 0 0 1 0-1.5h2.875a3.875 3.875 0 0 0 0-7.75H3.622l4.146 3.957a.75.75 0 0 1-1.036 1.085l-5.5-5.25a.75.75 0 0 1 0-1.085l5.5-5.25a.75.75 0 0 1 1.06.025Z" clipRule="evenodd" />
+            ) : (
+              <path fillRule="evenodd" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16ZM3.5 10a6.5 6.5 0 0 1 10.65-5.03L4.97 14.15A6.47 6.47 0 0 1 3.5 10Zm2.35 5.03a6.5 6.5 0 0 0 9.18-9.18L5.85 15.03Z" clipRule="evenodd" />
+            )}
+          </svg>
+          {userMarkedSold ? t("detail.unmarkSold") : t("detail.markSold")}
+        </button>
+      )}
+
+      {excludedReason === "scoring" ? (
+        <span
+          title={t("detail.scoringExcludedTooltip")}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium
+                     rounded-md border border-amber-300 bg-amber-50 text-amber-800 dark:text-amber-900
+                     cursor-default"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+            <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clipRule="evenodd" />
+          </svg>
+          {t("detail.scoringExcluded")}
+        </span>
+      ) : (
+        <button
+          type="button"
+          onClick={() => toggleUserExcluded(apartment.property_slug)}
+          title={
+            userExcluded
+              ? t("detail.unmarkExcludedTooltip")
+              : t("detail.markExcludedTooltip")
+          }
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium
+                     rounded-md border transition-colors ${
+                       userExcluded
+                         ? "border-amber-300 bg-amber-50 text-amber-800 dark:text-amber-900 hover:bg-amber-100"
+                         : "border-gray-300 bg-white text-gray-700 dark:text-gray-800 hover:bg-gray-50"
+                     }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+            {userExcluded ? (
+              <path fillRule="evenodd" d="M7.793 2.232a.75.75 0 0 1-.025 1.06L3.622 7.25h10.003a5.375 5.375 0 0 1 0 10.75H10.75a.75.75 0 0 1 0-1.5h2.875a3.875 3.875 0 0 0 0-7.75H3.622l4.146 3.957a.75.75 0 0 1-1.036 1.085l-5.5-5.25a.75.75 0 0 1 0-1.085l5.5-5.25a.75.75 0 0 1 1.06.025Z" clipRule="evenodd" />
+            ) : (
+              <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clipRule="evenodd" />
+            )}
+          </svg>
+          {userExcluded ? t("detail.unmarkExcluded") : t("detail.markExcluded")}
+        </button>
+      )}
+    </div>
+  );
+
   return (
-    <div className={`px-4 pt-3 pb-4 grid grid-cols-1 gap-x-8 gap-y-3 text-sm ${isDesktop ? "grid-cols-2" : ""}`}>
+    <div className="px-4 pt-3 pb-4 text-sm">
+      {!isDesktop && actionButtons}
+      <div className={`${!isDesktop ? "mt-3" : ""} grid grid-cols-1 gap-x-8 gap-y-3 ${isDesktop ? "grid-cols-2" : ""}`}>
       <div ref={scoringColRef} className="space-y-2">
         {/* Column header */}
         <div
@@ -230,50 +333,10 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
             </div>
           )}
 
-          {/* Mark-as-sold control: cross-profile user override.
-              When the scrape already reports the apartment as sold the
-              control is disabled and shows the official-source label. */}
-          {scrapeSold ? (
-            <button
-              type="button"
-              disabled
-              title={t("detail.soldOfficialTooltip")}
-              className="self-start inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium
-                         rounded-md border border-gray-200 bg-gray-50 text-gray-400 dark:text-gray-600 cursor-not-allowed"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-                <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
-              </svg>
-              {t("detail.soldOfficial")}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => toggleUserSoldMark(apartment.property_slug)}
-              title={
-                userMarkedSold
-                  ? t("detail.unmarkSoldTooltip")
-                  : t("detail.markSoldTooltip")
-              }
-              className={`self-start inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium
-                         rounded-md border transition-colors ${
-                           userMarkedSold
-                             ? "border-red-300 bg-red-50 text-red-700 dark:text-red-800 hover:bg-red-100"
-                             : "border-gray-300 bg-white text-gray-700 dark:text-gray-800 hover:bg-gray-50"
-                         }`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-                {userMarkedSold ? (
-                  // Arrow-uturn-left — "undo" the sold mark
-                  <path fillRule="evenodd" d="M7.793 2.232a.75.75 0 0 1-.025 1.06L3.622 7.25h10.003a5.375 5.375 0 0 1 0 10.75H10.75a.75.75 0 0 1 0-1.5h2.875a3.875 3.875 0 0 0 0-7.75H3.622l4.146 3.957a.75.75 0 0 1-1.036 1.085l-5.5-5.25a.75.75 0 0 1 0-1.085l5.5-5.25a.75.75 0 0 1 1.06.025Z" clipRule="evenodd" />
-                ) : (
-                  // No-symbol (circle with diagonal slash) — "mark as sold / unavailable"
-                  <path fillRule="evenodd" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16ZM3.5 10a6.5 6.5 0 0 1 10.65-5.03L4.97 14.15A6.47 6.47 0 0 1 3.5 10Zm2.35 5.03a6.5 6.5 0 0 0 9.18-9.18L5.85 15.03Z" clipRule="evenodd" />
-                )}
-              </svg>
-              {userMarkedSold ? t("detail.unmarkSold") : t("detail.markSold")}
-            </button>
-          )}
+          {/* Mark-as-sold + Mark-as-excluded controls.
+              On mobile these are rendered above the grid; on desktop they
+              stay in the right column alongside notes and PDFs. */}
+          {isDesktop && actionButtons}
 
           {onNoteChange && (
             <Collapsible.Root
@@ -362,6 +425,7 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }

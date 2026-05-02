@@ -17,6 +17,14 @@ interface ApartmentRowProps {
   hasNote?: boolean;
   note?: string;
   onNoteChange?: (slug: string, text: string) => void;
+  /**
+   * Why this apartment is excluded in the active profile, if at all.
+   *  - `manual`  — user clicked "Mark as excluded" in the detail view.
+   *  - `scoring` — at least one contributing parameter scored 0 (✕) for
+   *               this apartment under the active profile.
+   *  - `null` / undefined — not excluded.
+   */
+  excludedReason?: "manual" | "scoring" | null;
   originalRank?: number;
   dropTargetSlug?: string | null;
   onDragStart?: (slug: string) => void;
@@ -42,7 +50,7 @@ function scoreColor(score: number): string {
  */
 export const ApartmentRow = memo(function ApartmentRow({
   ranked, rank, isOpen, onToggle, isDesktop, tier = 1,
-  hasNote, note, onNoteChange, originalRank, dropTargetSlug,
+  hasNote, note, onNoteChange, excludedReason = null, originalRank, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: ApartmentRowProps) {
   const { t } = useTranslation();
@@ -51,6 +59,13 @@ export const ApartmentRow = memo(function ApartmentRow({
   const isDropTarget = dropTargetSlug === slug;
   const isSold = apartment.isSold;
   const userOnlySold = isSold && apartment.userMarkedSold && (apartment.status ?? "").trim() !== "נמכר";
+  const isExcluded = excludedReason != null;
+  // Sold takes precedence over excluded in the rank-cell badge so the user
+  // sees the strongest negative signal first.
+  const showExcludedBadge = isExcluded && !isSold;
+  const excludedLabelKey = excludedReason === "scoring" ? "results.filteredOut" : "results.excluded";
+  const excludedTooltipKey =
+    excludedReason === "scoring" ? "results.filteredOutTooltip" : "results.excludedTooltip";
   const rankLabel = rank == null ? "—" : String(rank);
 
   const handleOpenChange = useCallback(() => onToggle(slug), [onToggle, slug]);
@@ -64,7 +79,7 @@ export const ApartmentRow = memo(function ApartmentRow({
       <Collapsible.Root open={isOpen} onOpenChange={handleOpenChange}>
         <div
           className={`border-b border-gray-100 last:border-b-0 ${
-            isSold ? "opacity-60" : ""
+            isSold || isExcluded ? "opacity-60" : ""
           }`}
         >
           {isDesktop ? (
@@ -98,6 +113,16 @@ export const ApartmentRow = memo(function ApartmentRow({
                     title={userOnlySold ? t("results.userMarkedSoldTooltip") : t("results.soldTooltip")}
                   >
                     {t("results.sold")}
+                  </span>
+                ) : showExcludedBadge ? (
+                  <span
+                    className="inline-flex items-center justify-center text-amber-600 dark:text-amber-700"
+                    title={t(excludedTooltipKey)}
+                    aria-label={t(excludedLabelKey)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                      <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clipRule="evenodd" />
+                    </svg>
                   </span>
                 ) : (
                   <span className="text-gray-400 font-mono text-xs">
@@ -213,6 +238,16 @@ export const ApartmentRow = memo(function ApartmentRow({
                   >
                     {t("results.sold")}
                   </span>
+                ) : showExcludedBadge ? (
+                  <span
+                    className="inline-flex items-center justify-center w-7 shrink-0 text-amber-600 dark:text-amber-700"
+                    title={t(excludedTooltipKey)}
+                    aria-label={t(excludedLabelKey)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                      <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clipRule="evenodd" />
+                    </svg>
+                  </span>
                 ) : (
                   <span className="font-mono shrink-0 text-center tabular-nums flex items-baseline justify-center gap-0.5">
                     <span className="text-sm font-semibold text-gray-600 min-w-[1.25rem] text-center">{rankLabel}</span>
@@ -254,7 +289,7 @@ export const ApartmentRow = memo(function ApartmentRow({
                     : "bg-gray-50 mx-2 mb-2 rounded-md border border-gray-200 shadow-inner"
                 }
               >
-                <ApartmentDetail apartment={apartment} breakdown={breakdown} totalWeight={totalWeight} note={note} onNoteChange={onNoteChange} />
+                <ApartmentDetail apartment={apartment} breakdown={breakdown} totalWeight={totalWeight} note={note} onNoteChange={onNoteChange} excludedReason={excludedReason} />
               </div>
             )}
           </Collapsible.Content>

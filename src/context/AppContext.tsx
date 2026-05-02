@@ -90,6 +90,15 @@ interface AppContextValue {
   // User-applied sold marks (cross-profile)
   userSoldMarks: UserSoldMarks;
   toggleUserSoldMark: (slug: string) => void;
+
+  /**
+   * Set of property_slugs the user has marked as excluded *in the active
+   * profile*. Excluded apartments are still ranked; the results tab hides
+   * them by default (controlled by `settings.showExcluded`) and badges
+   * them when shown. Per-profile (lives on `Profile.excludedSlugs`).
+   */
+  userExcludedSet: Set<string>;
+  toggleUserExcluded: (slug: string) => void;
   /**
    * Effective scoring input style for the active profile.
    * Equals `settings.scoringInputStyle`, except that profiles containing any
@@ -542,8 +551,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const rankedApartments = useMemo(() => {
     if (apartments.length === 0) return [];
-    return rankApartments(apartments, scores, weights, buckets);
+    // Include scoring-excluded apts in the result (tagged with
+    // `excluded: true`) so the Results table can choose to surface them
+    // when "Show excluded" is on, alongside manually-excluded apts.
+    return rankApartments(apartments, scores, weights, buckets, true, true);
   }, [apartments, scores, weights, buckets]);
+
+  /** Active profile's excluded slugs as a Set for O(1) membership tests. */
+  const userExcludedSet = useMemo(
+    () => new Set(activeProfile?.excludedSlugs ?? []),
+    [activeProfile?.excludedSlugs]
+  );
+
+  const toggleUserExcluded = useCallback(
+    (slug: string) => {
+      if (!activeProfile) return;
+      const current = activeProfile.excludedSlugs ?? [];
+      const has = current.includes(slug);
+      const nextList = has
+        ? current.filter((s) => s !== slug)
+        : [...current, slug];
+      // Drop the field entirely when empty so unaffected profiles stay clean
+      // and exports don't carry an empty list.
+      const next: Profile = { ...activeProfile };
+      if (nextList.length > 0) next.excludedSlugs = nextList;
+      else delete next.excludedSlugs;
+      saveProfile(next);
+    },
+    [activeProfile, saveProfile]
+  );
 
   /**
    * Scoring input style resolution:
@@ -612,6 +648,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     updateSettings,
     userSoldMarks,
     toggleUserSoldMark,
+    userExcludedSet,
+    toggleUserExcluded,
     resolvedScoringInputStyle,
     registerTabSetter,
     requestTabChange,

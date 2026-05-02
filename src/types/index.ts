@@ -122,6 +122,13 @@ export interface Profile {
   manualOrder?: string[];
   /** Free-text notes per apartment: property_slug → note text */
   notes?: Record<string, string>;
+  /**
+   * Per-profile manual exclusion list: apartments the user has marked as
+   * excluded for this profile. Excluded apartments are still ranked, but
+   * are hidden from the results table by default and badged when shown.
+   * Stored as a deduplicated list of property_slug values.
+   */
+  excludedSlugs?: string[];
 }
 
 /** Ranked apartment with computed score */
@@ -132,6 +139,14 @@ export interface RankedApartment {
   totalWeight: number;
   /** Per-parameter breakdown: paramId → weighted contribution */
   breakdown: Record<string, number>;
+  /**
+   * True when this apartment was excluded by the active profile's scoring
+   * (at least one contributing parameter scored 0). Only set when the
+   * caller of `rankApartments` opted in via `includeExcluded`. Excluded
+   * entries are scored with 0→1 substitution (so they have a real number)
+   * and are excluded from the min/max used for 1–5 normalization.
+   */
+  excluded?: boolean;
 }
 
 /* ─── Change History ──────────────────────────── */

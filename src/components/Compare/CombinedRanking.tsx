@@ -26,7 +26,7 @@ export function CombinedRanking({
 }: CombinedRankingProps) {
   const { t } = useTranslation();
   const { settings } = useApp();
-  const hideSold = settings.hideSold;
+  const showSold = settings.showSold;
 
   const combined = useMemo(
     () => computeCombinedRanking(profiles, apartments, buckets, profileWeights, respectExclusions),
@@ -34,8 +34,8 @@ export function CombinedRanking({
   );
 
   const visible = useMemo(
-    () => (hideSold ? combined.filter((c) => !c.apartment.isSold) : combined),
-    [combined, hideSold]
+    () => (showSold ? combined : combined.filter((c) => !c.apartment.isSold)),
+    [combined, showSold]
   );
 
   const profileColWidth = profiles.length <= 2 ? "80px" : "70px";

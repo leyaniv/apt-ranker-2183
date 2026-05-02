@@ -23,15 +23,15 @@ interface RowData {
   manualOrder: string[] | null;
   scoreRankMap: Map<string, number | null>;
   rankLabelMap: Map<string, number | null>;
-  dropTargetSlug: string | null;
-  onDragStart: (slug: string) => void;
+  userExcludedSet: Set<string>;
+  dropTargetSlug: string | null;  onDragStart: (slug: string) => void;
   onDragOver: (slug: string) => void;
   onDrop: (slug: string) => void;
 }
 
 const VirtualRow = function VirtualRow({
   index, style, displayed, openSlugs, toggleOpen, isDesktop, tier,
-  notes, setNote, manualOrder, scoreRankMap, rankLabelMap, dropTargetSlug,
+  notes, setNote, manualOrder, scoreRankMap, rankLabelMap, userExcludedSet, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: RowComponentProps<RowData>) {
   const ranked = displayed[index];
@@ -40,6 +40,11 @@ const VirtualRow = function VirtualRow({
   const rankValue = rankLabelMap.get(slug);
   const rank: number | null = rankValue === undefined ? index + 1 : rankValue;
   const scoreRank = manualOrder ? scoreRankMap.get(slug) : undefined;
+  const excludedReason: "manual" | "scoring" | null = userExcludedSet.has(slug)
+    ? "manual"
+    : ranked.excluded
+      ? "scoring"
+      : null;
   return (
     <div
       style={style}
@@ -56,6 +61,7 @@ const VirtualRow = function VirtualRow({
         note={notes[slug]}
         onNoteChange={setNote}
         originalRank={scoreRank ?? undefined}
+        excludedReason={excludedReason}
         dropTargetSlug={dropTargetSlug}
         onDragStart={onDragStart}
         onDragOver={onDragOver}
@@ -72,10 +78,11 @@ const VirtualRow = function VirtualRow({
 export function ResultsTable() {
   const { t } = useTranslation();
   const {
-    rankedApartments, apartments, activeProfile, addProfile,
+    rankedApartments, activeProfile, addProfile,
     selectProfile, saveProfile, commitManualOrderToHistory, registerManualOrderSetter,
     settings, setHasUnsavedManualOrder, registerManualOrderActions,
     notes, setNote, updateSettings,
+    userExcludedSet,
   } = useApp();
 
   // Filter state
@@ -207,6 +214,40 @@ export function ResultsTable() {
     });
   }, [manualOrder]);
 
+  // Number of apartments currently flagged sold (scraped or user-marked).
+  // Surfaced next to the "Hide sold" toggle so the user can see how many
+  // rows the toggle would hide without flipping it.
+  const soldCount = useMemo(
+    () => rankedApartments.reduce((n, r) => n + (r.apartment.isSold ? 1 : 0), 0),
+    [rankedApartments]
+  );
+
+  // Combined excluded count: manual exclusions + scoring exclusions, with
+  // de-duplication (a slug can be in both sets, e.g. user marked it AND a
+  // scoring veto applies). Surfaced next to the "Show excluded" toggle and
+  // used as the basis for the "{n} excluded hidden" hint.
+  const excludedCount = useMemo(() => {
+    const set = new Set<string>(userExcludedSet);
+    for (const r of rankedApartments) {
+      if (r.excluded) set.add(r.apartment.property_slug);
+    }
+    return set.size;
+  }, [rankedApartments, userExcludedSet]);
+
+  // Number of apartments hidden from the visible list by the sold/excluded
+  // toggles combined. Sold-and-excluded apartments are counted once.
+  const hiddenCount = useMemo(() => {
+    let n = 0;
+    for (const r of rankedApartments) {
+      const isExcluded =
+        userExcludedSet.has(r.apartment.property_slug) || r.excluded === true;
+      const hiddenBySold = !settings.showSold && r.apartment.isSold;
+      const hiddenByExcluded = !settings.showExcluded && isExcluded;
+      if (hiddenBySold || hiddenByExcluded) n += 1;
+    }
+    return n;
+  }, [rankedApartments, userExcludedSet, settings.showSold, settings.showExcluded]);
+
   // Derive unique values for filter dropdowns
   const uniqueRooms = useMemo(
     () =>
@@ -234,11 +275,31 @@ export function ResultsTable() {
     [rankedApartments]
   );
 
+  // The full ranked list with the persistent "Show sold" / "Show excluded"
+  // toggles applied (but no quick-filters and no maxResults). Used as the
+  // "All" scope for printing so the printed view matches what the user is
+  // willing to see — toggling those off should hide those apts from print
+  // too.
+  const rankedAfterToggles = useMemo(() => {
+    return rankedApartments.filter((r) => {
+      if (!settings.showSold && r.apartment.isSold) return false;
+      const isExcluded =
+        userExcludedSet.has(r.apartment.property_slug) || r.excluded === true;
+      if (!settings.showExcluded && isExcluded) return false;
+      return true;
+    });
+  }, [rankedApartments, settings.showSold, settings.showExcluded, userExcludedSet]);
+
   // Apply filters
   const filtered = useMemo(() => {
     const filterFn = (r: RankedApartment) => {
       const apt = r.apartment;
-      if (settings.hideSold && apt.isSold) return false;
+      if (!settings.showSold && apt.isSold) return false;
+      // Hide both manually-excluded and scoring-excluded apts unless
+      // "Show excluded" is on. The two sources are surfaced uniformly so
+      // the user sees a single "excluded" experience.
+      const isExcluded = userExcludedSet.has(apt.property_slug) || r.excluded === true;
+      if (!settings.showExcluded && isExcluded) return false;
       if (filterRooms && apt.rooms !== filterRooms) return false;
       if (filterBuilding && apt.buildingKey !== filterBuilding) return false;
       if (filterLayout && apt.layout !== filterLayout) return false;
@@ -267,16 +328,17 @@ export function ResultsTable() {
     }
 
     return rankedApartments.filter(filterFn);
-  }, [rankedApartments, filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice, manualOrder, settings.hideSold]);
+  }, [rankedApartments, filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice, manualOrder, settings.showSold, settings.showExcluded, userExcludedSet]);
 
-  // Score-based rank lookup: counts only non-sold apartments. Sold = null.
-  // Used to render the (parens) "original rank" hint when a manual order
-  // diverges from the scored order.
+  // Score-based rank lookup: counts only non-sold, non-excluded apartments.
+  // Sold or excluded apts get `null`. Used to render the (parens) "original
+  // rank" hint when a manual order diverges from the scored order.
   const scoreRankMap = useMemo(() => {
     const map = new Map<string, number | null>();
     let counter = 0;
     for (const r of rankedApartments) {
-      if (r.apartment.isSold) {
+      const isExcluded = userExcludedSet.has(r.apartment.property_slug) || r.excluded === true;
+      if (r.apartment.isSold || isExcluded) {
         map.set(r.apartment.property_slug, null);
       } else {
         counter += 1;
@@ -284,7 +346,7 @@ export function ResultsTable() {
       }
     }
     return map;
-  }, [rankedApartments]);
+  }, [rankedApartments, userExcludedSet]);
 
   // Apply maxResults limit (raffle position)
   const displayed = useMemo(() => {
@@ -294,14 +356,15 @@ export function ResultsTable() {
     return filtered;
   }, [filtered, settings.maxResults]);
 
-  // Display rank for the currently-shown rows: sequential among non-sold
-  // entries in `displayed` (so manual-order mode still shows a sensible
-  // 1, 2, 3… numbering). Sold rows get `null`.
+  // Display rank for the currently-shown rows: sequential among non-sold,
+  // non-excluded entries in `displayed` (so manual-order mode still shows a
+  // sensible 1, 2, 3… numbering). Sold or excluded rows get `null`.
   const rankLabelMap = useMemo(() => {
     const map = new Map<string, number | null>();
     let counter = 0;
     for (const r of displayed) {
-      if (r.apartment.isSold) {
+      const isExcluded = userExcludedSet.has(r.apartment.property_slug) || r.excluded === true;
+      if (r.apartment.isSold || isExcluded) {
         map.set(r.apartment.property_slug, null);
       } else {
         counter += 1;
@@ -309,7 +372,7 @@ export function ResultsTable() {
       }
     }
     return map;
-  }, [displayed]);
+  }, [displayed, userExcludedSet]);
 
   const hasFilters = filterRooms || filterBuilding || filterLayout || filterType || filterMinPrice || filterMaxPrice;
 
@@ -576,47 +639,81 @@ export function ResultsTable() {
         className="flex-shrink-0 bg-white border-b border-gray-200"
       >
         {/* Always-visible toolbar: additional-filters trigger + hide-sold + count.
-            DOM order is hide-sold, count, trigger so that on mobile the first row
-            shows hide-sold (start) and count (end), with the additional-filters
-            trigger wrapping onto a second row. On desktop the trigger is
-            re-ordered back to the start with `sm:order-first`. RTL mirrors
-            naturally via logical `ms-auto`. */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2">
-          {/* Hide-sold toggle */}
+            On mobile this wraps to two rows:
+              row 1: hide-sold (start) + count (end via ms-auto)
+              row 2: show-excluded (start) + additional-filters trigger (end
+                     via me-auto on show-excluded). When the active profile
+                     has no exclusions the show-excluded button is hidden and
+                     the trigger sits alone at the row's start.
+            On desktop the trigger is re-ordered back to the start with
+            `sm:order-first`. RTL mirrors naturally via logical `ms-auto`. */}
+        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 sm:gap-3 px-3 sm:px-6 py-2">
+          {/* Show-sold toggle */}
           <button
             type="button"
             role="switch"
-            aria-checked={settings.hideSold}
-            onClick={() => updateSettings({ hideSold: !settings.hideSold })}
-            title={t("results.hideSoldTooltip")}
+            aria-checked={settings.showSold}
+            onClick={() => updateSettings({ showSold: !settings.showSold })}
+            title={t("results.showSoldTooltip")}
             className={`order-1 sm:order-none inline-flex items-center gap-1.5 px-2.5 py-1 text-sm rounded-md border transition-colors ${
-              settings.hideSold
+              settings.showSold
                 ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
           >
             <span
               className={`inline-block w-3.5 h-3.5 rounded-sm border ${
-                settings.hideSold ? "bg-blue-600 border-blue-600" : "bg-white border-gray-400"
+                settings.showSold ? "bg-blue-600 border-blue-600" : "bg-white border-gray-400"
               } flex items-center justify-center`}
             >
-              {settings.hideSold && (
+              {settings.showSold && (
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" className="w-3 h-3">
                   <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
                 </svg>
               )}
             </span>
-            <span>{t("results.hideSold")}</span>
+            <span>{t("results.showSold")}{soldCount > 0 ? ` (${soldCount})` : ""}</span>
+          </button>
+
+          {/* Show-excluded toggle. Always rendered so users discover that
+              both manually-excluded apartments and scoring-excluded ones
+              (apt has at least one parameter scored ✕) can be revealed.
+              On mobile sits at the start of row 2 with `me-auto` to push
+              the additional-filters trigger to the row's end. */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={settings.showExcluded}
+            onClick={() => updateSettings({ showExcluded: !settings.showExcluded })}
+            title={t("results.showExcludedTooltip")}
+            className={`order-4 sm:order-none me-auto sm:me-0 inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-sm rounded-md border transition-colors whitespace-nowrap ${
+              settings.showExcluded
+                ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <span
+              className={`inline-block w-3.5 h-3.5 rounded-sm border ${
+                settings.showExcluded ? "bg-blue-600 border-blue-600" : "bg-white border-gray-400"
+              } flex items-center justify-center`}
+            >
+              {settings.showExcluded && (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white" className="w-3 h-3">
+                  <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+                </svg>
+              )}
+            </span>
+            <span>{t("results.showExcluded")}{excludedCount > 0 ? ` (${excludedCount})` : ""}</span>
           </button>
 
           <span className="order-2 sm:order-none ms-auto text-xs text-gray-400">
             {t("results.showingOf", { shown: displayed.length, total: rankedApartments.length })}
-            {apartments.length > rankedApartments.length && (
+            {hiddenCount > 0 && (
               <span
                 className="ms-2 text-red-500"
                 title={t("results.hiddenByExclusionsTip")}
               >
-                · {t("results.hiddenByExclusions", { count: apartments.length - rankedApartments.length })}
+                · {t("results.hiddenByExclusions", { count: hiddenCount })}
               </span>
             )}
           </span>
@@ -632,7 +729,12 @@ export function ResultsTable() {
             </button>
           )}
 
-          <Collapsible.Trigger className="order-3 sm:order-first basis-full sm:basis-auto inline-flex items-center gap-2 px-2.5 py-1 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+          {/* Mobile-only forced row break: pushes the show-excluded toggle and
+              the additional-filters trigger onto their own row. Hidden on
+              desktop so everything stays on a single line. */}
+          <div className="order-3 basis-full h-0 sm:hidden" aria-hidden="true" />
+
+          <Collapsible.Trigger className="order-5 sm:order-first inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
               <path fillRule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clipRule="evenodd" />
             </svg>
@@ -805,6 +907,7 @@ export function ResultsTable() {
               manualOrder,
               scoreRankMap,
               rankLabelMap,
+              userExcludedSet,
               dropTargetSlug,
               onDragStart: handleDragStart,
               onDragOver: handleDragOver,
@@ -891,7 +994,7 @@ export function ResultsTable() {
 
       {showPrintModal && (
         <PrintModal
-          ranked={rankedApartments}
+          ranked={rankedAfterToggles}
           visible={displayed}
           onClose={() => setShowPrintModal(false)}
         />

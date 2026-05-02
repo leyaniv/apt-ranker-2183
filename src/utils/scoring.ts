@@ -182,25 +182,51 @@ export function computeApartmentScore(
  * are removed before normalization, so they don't appear in the ranking
  * and don't skew the normalized 1–5 range. Pass `respectExclusions=false`
  * to disable this filtering and treat 0 as 1 instead.
+ *
+ * Set `includeExcluded=true` to keep excluded apartments in the result
+ * (tagged with `excluded: true`) instead of dropping them. Excluded
+ * entries are scored with 0→1 substitution so they have a meaningful
+ * number, and are excluded from the min/max used for normalization
+ * (the same linear transform is then applied to them, so they typically
+ * sink to the bottom of the list).
  */
 export function rankApartments(
   apartments: Apartment[],
   scores: ValueScores,
   weights: ImportanceWeights,
   buckets: BucketMap,
-  respectExclusions: boolean = true
+  respectExclusions: boolean = true,
+  includeExcluded: boolean = false
 ): RankedApartment[] {
   const ranked: RankedApartment[] = [];
   for (const apt of apartments) {
     const { totalScore, totalWeight, breakdown, excluded } =
       computeApartmentScore(apt, scores, weights, buckets, respectExclusions);
-    if (excluded) continue;
+    if (excluded) {
+      if (!includeExcluded) continue;
+      // Re-score with exclusions disabled (0→1) so excluded apts have a
+      // real, sortable number rather than 0.
+      const noVeto = computeApartmentScore(apt, scores, weights, buckets, false);
+      ranked.push({
+        apartment: apt,
+        totalScore: noVeto.totalScore,
+        totalWeight: noVeto.totalWeight,
+        breakdown: noVeto.breakdown,
+        excluded: true,
+      });
+      continue;
+    }
     ranked.push({ apartment: apt, totalScore, totalWeight, breakdown });
   }
 
-  // Normalize scores to the full 1–5 range
-  if (ranked.length > 1) {
-    const rawScores = ranked.map((r) => r.totalScore);
+  // Normalize scores to the full 1–5 range using only the non-excluded
+  // entries' min/max so excluded apts can't compress the visible spread.
+  // The same linear transform is applied to excluded entries so they
+  // remain comparable for sorting (they typically fall at or below the
+  // visible minimum).
+  const visible = includeExcluded ? ranked.filter((r) => !r.excluded) : ranked;
+  if (visible.length > 1) {
+    const rawScores = visible.map((r) => r.totalScore);
     const min = Math.min(...rawScores);
     const max = Math.max(...rawScores);
     const range = max - min;

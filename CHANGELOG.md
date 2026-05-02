@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - Added a Print button on the Results tab that opens a printable view with column, row-scope, and notes options.
-- Each value can now be marked with ✕ to exclude it as a deal-breaker — apartments matching it are removed from the profile's ranking.
+- Apartments can be excluded from a profile's ranking either by marking a value with ✕ (deal-breaker) or by clicking "Mark as excluded" on a specific apartment. Excluded apartments are hidden by default; a "Show excluded" toggle reveals them.
 
 ## [1.2.0] - 2026-05-02
 
