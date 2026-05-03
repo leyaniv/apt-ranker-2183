@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2026-05-04
+
+- Fixed apartment plan PDF links.
+
 ## [1.3.0] - 2026-05-02
 
 - Added a Print button on the Results tab that opens a printable view with column, row-scope, and notes options.
