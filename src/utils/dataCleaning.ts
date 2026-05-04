@@ -101,6 +101,7 @@ export function cleanApartments(raw: RawApartment[]): Apartment[] {
       layout: deriveLayout(apt),
       isSold: (apt.status ?? "").trim() === "נמכר",
       userMarkedSold: false,
+      isFreeMarketing: (apt.status ?? "").trim() === "שיווק חופשי",
     };
   });
 }

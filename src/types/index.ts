@@ -58,6 +58,8 @@ export interface Apartment extends RawApartment {
   isSold: boolean;
   /** True if the user manually marked this apartment as sold (cross-profile, persisted) */
   userMarkedSold: boolean;
+  /** True if status is "שיווק חופשי" (open-market sale, not lottery). Currently filtered out of the UI. */
+  isFreeMarketing: boolean;
 }
 
 /* ─── Scoring ─────────────────────────────────── */

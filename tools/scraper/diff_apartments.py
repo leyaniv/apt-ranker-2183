@@ -38,9 +38,19 @@ def load(path: Path) -> list[dict]:
         return json.load(f)
 
 
+# שיווק חופשי = open-market sales, scraped with API-only data. They have no
+# price/area/PDFs and aren't surfaced in the webapp, so we exclude them from
+# the diff to keep the report focused on lottery units.
+FREE_MARKETING_STATUS = "שיווק חופשי"
+
+
+def _is_free_marketing(apt: dict) -> bool:
+    return (apt.get("status") or "").strip() == FREE_MARKETING_STATUS
+
+
 def diff(old_path: Path, new_path: Path) -> None:
-    old = load(old_path)
-    new = load(new_path)
+    old = [a for a in load(old_path) if not _is_free_marketing(a)]
+    new = [a for a in load(new_path) if not _is_free_marketing(a)]
 
     new_by = {a["property_slug"]: a for a in new}
     old_by = {a["property_slug"]: a for a in old}

@@ -13,6 +13,15 @@ interface UseApartmentsResult {
 }
 
 /**
+ * Free-marketing apartments ("שיווק חופשי") are open-market sales rather than
+ * lottery units. The scraper includes them with API-only data (no price, no
+ * area, no PDFs), so they have nothing to score on. We hide them from the
+ * entire UI for now via this flag. Flip to `true` to expose them again
+ * (and revisit bucketing — they'll currently lack price/area).
+ */
+const SHOW_FREE_MARKETING = false;
+
+/**
  * Fetches apartment data, cleans it, computes buckets, and
  * hydrates parameter configs. All in one hook.
  */
@@ -34,7 +43,10 @@ export function useApartments(): UseApartmentsResult {
 
         if (cancelled) return;
 
-        const cleaned = cleanApartments(raw);
+        const cleanedAll = cleanApartments(raw);
+        const cleaned = SHOW_FREE_MARKETING
+          ? cleanedAll
+          : cleanedAll.filter((apt) => !apt.isFreeMarketing);
         const bucketMap = computeAllBuckets(cleaned);
         const configs = hydrateParameterConfigs(bucketMap, cleaned);
 

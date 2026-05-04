@@ -104,7 +104,13 @@ def fetch_all_properties() -> list[dict]:
 # 'נמכר' = sold. Sold units are still scraped so the UI can display them
 # (with a strikethrough / muted styling) and so we can diff against earlier
 # snapshots.
-INCLUDED_STATUSES = {"פנוי", "נמכר"}
+#
+# 'שיווק חופשי' = free marketing (open-market sales, not lottery). These are
+# included for completeness but only via the API — we skip the detail page
+# (and therefore PDFs) since the webapp currently filters them out anyway.
+INCLUDED_STATUSES = {"פנוי", "נמכר", "שיווק חופשי"}
+FREE_MARKETING_STATUS = "שיווק חופשי"
+DETAIL_SCRAPE_STATUSES = {"פנוי", "נמכר"}
 
 
 def filter_available(properties: list[dict], status_terms: dict[int, str]) -> list[dict]:
@@ -127,8 +133,13 @@ def filter_available(properties: list[dict], status_terms: dict[int, str]) -> li
 # Phase 3: Scrape Detail Pages
 # ---------------------------------------------------------------------------
 
-def parse_detail_page(html: str, property_slug: str) -> dict:
-    """Parse an apartment detail page and extract all fields + PDF links."""
+def parse_detail_page(html: str, property_slug: str, *, parse_pdfs: bool = True) -> dict:
+    """Parse an apartment detail page and extract all fields + PDF links.
+
+    When ``parse_pdfs`` is False, PDF link extraction is skipped — useful for
+    'שיווק חופשי' (open-market) units where we don't want PDFs in the
+    output and don't want them downloaded.
+    """
     soup = BeautifulSoup(html, "lxml")
     data = {"property_slug": property_slug}
 
@@ -191,50 +202,69 @@ def parse_detail_page(html: str, property_slug: str) -> dict:
         data["apartment_number"] = int(apt_match.group(1))
 
     # --- PDF links ---
-    pdf_links = {}
-    for a_tag in soup.find_all("a", href=True):
-        href = a_tag["href"]
-        if not href.lower().endswith(".pdf"):
-            continue
-        link_text = a_tag.get_text(strip=True)
-        if "תכנית דירה" in link_text or "תוכנית דירה" in link_text:
-            pdf_links["pdf_apartment_plan"] = href
-        elif "תכנית קומות" in link_text or "תוכנית קומות" in link_text:
-            pdf_links["pdf_floor_plan"] = href
-        elif "חניה" in link_text or "מחסנים" in link_text:
-            pdf_links["pdf_parking_storage"] = href
-        elif "פיתוח" in link_text and "צבעונית" in link_text:
-            pdf_links["pdf_development"] = href
-        else:
-            # Unknown PDF type — store it anyway
-            pdf_links.setdefault("pdf_other", [])
-            if isinstance(pdf_links["pdf_other"], list):
-                pdf_links["pdf_other"].append(href)
+    # Canonical URL fields end with `_url`. The matching non-suffixed key
+    # (e.g. `pdf_apartment_plan`) is reserved for the local relative path,
+    # populated later by `map_pdf_local_paths` when PDFs are downloaded.
+    # If --skip-pdfs is used, only the `_url` fields exist, which is what
+    # the webapp consumes.
+    if parse_pdfs:
+        pdf_other_urls: list[str] = []
+        for a_tag in soup.find_all("a", href=True):
+            href = a_tag["href"]
+            if not href.lower().endswith(".pdf"):
+                continue
+            link_text = a_tag.get_text(strip=True)
+            if "תכנית דירה" in link_text or "תוכנית דירה" in link_text:
+                data["pdf_apartment_plan_url"] = href
+            elif "תכנית קומות" in link_text or "תוכנית קומות" in link_text:
+                data["pdf_floor_plan_url"] = href
+            elif "חניה" in link_text or "מחסנים" in link_text:
+                data["pdf_parking_storage_url"] = href
+            elif "פיתוח" in link_text and "צבעונית" in link_text:
+                data["pdf_development_url"] = href
+            else:
+                pdf_other_urls.append(href)
 
-    data.update(pdf_links)
+        if pdf_other_urls:
+            data["pdf_other_urls"] = pdf_other_urls
+
     return data
 
 
-def scrape_detail_pages(properties: list[dict]) -> list[dict]:
-    """Fetch and parse each property's detail page."""
+def _attach_api_taxonomy_ids(detail: dict, prop: dict) -> None:
+    """Stash raw taxonomy IDs on the detail record for later enrichment."""
+    detail["_api_status_ids"] = prop.get("status", [])
+    detail["_api_air_direction_ids"] = prop.get("air_direction", [])
+    detail["_api_earth_ids"] = prop.get("earth", [])
+    detail["_api_remarks_ids"] = prop.get("remarks", [])
+
+
+def scrape_detail_pages(properties: list[dict], status_terms: dict[int, str]) -> list[dict]:
+    """Fetch and parse each property's detail page.
+
+    For 'שיווק חופשי' (open-market) units we still fetch the detail page —
+    it carries the same fields (building, apartment#, rooms, floor, area,
+    balcony, storage, parking, type) — but we skip PDF link parsing. PDFs
+    won't be downloaded for them either (collect_unique_pdfs only sees URL
+    fields that aren't set).
+    """
+    free_marketing_term_ids = {tid for tid, name in status_terms.items() if name == FREE_MARKETING_STATUS}
+
     apartments = []
     total = len(properties)
     for i, prop in enumerate(properties, 1):
         slug = prop["slug"]
         url = prop["link"]
-        print(f"  [{i}/{total}] Scraping {slug}...", end=" ")
+        prop_status_ids = set(prop.get("status", []))
+        is_free_marketing = bool(prop_status_ids & free_marketing_term_ids)
+        tag = " (שיווק חופשי, no PDFs)" if is_free_marketing else ""
 
+        print(f"  [{i}/{total}] Scraping {slug}{tag}...", end=" ")
         try:
             resp = session.get(url, timeout=30)
             resp.raise_for_status()
-            detail = parse_detail_page(resp.text, slug)
-
-            # Enrich with API taxonomy data already resolved
-            detail["_api_status_ids"] = prop.get("status", [])
-            detail["_api_air_direction_ids"] = prop.get("air_direction", [])
-            detail["_api_earth_ids"] = prop.get("earth", [])
-            detail["_api_house_number_ids"] = prop.get("house_number", [])
-            detail["_api_remarks_ids"] = prop.get("remarks", [])
+            detail = parse_detail_page(resp.text, slug, parse_pdfs=not is_free_marketing)
+            _attach_api_taxonomy_ids(detail, prop)
             detail["detail_url"] = url
 
             apartments.append(detail)
@@ -253,35 +283,30 @@ def scrape_detail_pages(properties: list[dict]) -> list[dict]:
 
 def collect_unique_pdfs(apartments: list[dict]) -> dict[str, str]:
     """Collect all unique PDF URLs and compute local paths. Returns {url: local_path}."""
-    pdf_keys = ["pdf_apartment_plan", "pdf_floor_plan", "pdf_parking_storage", "pdf_development"]
+    url_keys = [
+        "pdf_apartment_plan_url",
+        "pdf_floor_plan_url",
+        "pdf_parking_storage_url",
+        "pdf_development_url",
+    ]
     url_to_local = {}
 
-    for apt in apartments:
-        for key in pdf_keys:
-            url = apt.get(key)
-            if url and url not in url_to_local:
-                # Preserve path structure under /files/
-                parsed = urlparse(url)
-                path_part = parsed.path
-                if "/files/" in path_part:
-                    relative = path_part.split("/files/", 1)[1]
-                else:
-                    relative = path_part.lstrip("/")
-                local_path = str(PDFS_DIR / relative)
-                url_to_local[url] = local_path
+    def _register(url: str) -> None:
+        if not url or url in url_to_local:
+            return
+        parsed = urlparse(url)
+        path_part = parsed.path
+        if "/files/" in path_part:
+            relative = path_part.split("/files/", 1)[1]
+        else:
+            relative = path_part.lstrip("/")
+        url_to_local[url] = str(PDFS_DIR / relative)
 
-        # Handle pdf_other if present
-        other = apt.get("pdf_other", [])
-        if isinstance(other, list):
-            for url in other:
-                if url not in url_to_local:
-                    parsed = urlparse(url)
-                    path_part = parsed.path
-                    if "/files/" in path_part:
-                        relative = path_part.split("/files/", 1)[1]
-                    else:
-                        relative = path_part.lstrip("/")
-                    url_to_local[url] = str(PDFS_DIR / relative)
+    for apt in apartments:
+        for key in url_keys:
+            _register(apt.get(key) or "")
+        for url in apt.get("pdf_other_urls", []) or []:
+            _register(url)
 
     return url_to_local
 
@@ -314,22 +339,29 @@ def download_pdfs(url_to_local: dict[str, str]) -> int:
 
 
 def map_pdf_local_paths(apartments: list[dict], url_to_local: dict[str, str]) -> None:
-    """Replace PDF URLs with local relative paths in apartment records."""
-    pdf_keys = ["pdf_apartment_plan", "pdf_floor_plan", "pdf_parking_storage", "pdf_development"]
-    for apt in apartments:
-        for key in pdf_keys:
-            url = apt.get(key)
-            if url and url in url_to_local:
-                # Store both URL and local path
-                apt[f"{key}_url"] = url
-                apt[key] = os.path.relpath(url_to_local[url], SCRAPER_DIR)
+    """Populate local-path fields (`pdf_apartment_plan`, etc.) from `*_url` fields.
 
-        other = apt.get("pdf_other", [])
-        if isinstance(other, list):
-            apt["pdf_other_urls"] = other
+    The `*_url` fields are the canonical URL location and remain untouched.
+    Only the non-suffixed keys are filled here, with relative paths to the
+    downloaded PDFs.
+    """
+    url_to_local_key = {
+        "pdf_apartment_plan_url": "pdf_apartment_plan",
+        "pdf_floor_plan_url": "pdf_floor_plan",
+        "pdf_parking_storage_url": "pdf_parking_storage",
+        "pdf_development_url": "pdf_development",
+    }
+    for apt in apartments:
+        for url_key, local_key in url_to_local_key.items():
+            url = apt.get(url_key)
+            if url and url in url_to_local:
+                apt[local_key] = os.path.relpath(url_to_local[url], SCRAPER_DIR)
+
+        other_urls = apt.get("pdf_other_urls", []) or []
+        if other_urls:
             apt["pdf_other"] = [
                 os.path.relpath(url_to_local[u], SCRAPER_DIR)
-                for u in other if u in url_to_local
+                for u in other_urls if u in url_to_local
             ]
 
 
@@ -354,12 +386,6 @@ def enrich_with_taxonomy_labels(apartments: list[dict], taxonomies: dict[str, di
         earth_ids = apt.pop("_api_earth_ids", [])
         earth_labels = [taxonomies["earth"].get(tid, str(tid)) for tid in earth_ids]
         apt["lot"] = ", ".join(earth_labels) if earth_labels else None
-
-        # House number
-        hn_ids = apt.pop("_api_house_number_ids", [])
-        hn_labels = [taxonomies["house_number"].get(tid, str(tid)) for tid in hn_ids]
-        if hn_labels and "apartment_number" not in apt:
-            apt["apartment_number_from_api"] = ", ".join(hn_labels)
 
         # Remarks (notes)
         remarks_ids = apt.pop("_api_remarks_ids", [])
@@ -492,7 +518,7 @@ def main():
 
     # Phase 3: Scrape detail pages
     print(f"\n[Phase 3] Scraping {len(available)} detail pages...")
-    apartments = scrape_detail_pages(available)
+    apartments = scrape_detail_pages(available, taxonomies["status"])
 
     # Phase 4: Download PDFs
     if not args.skip_pdfs:
