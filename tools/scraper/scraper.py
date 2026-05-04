@@ -112,6 +112,14 @@ INCLUDED_STATUSES = {"פנוי", "נמכר", "שיווק חופשי"}
 FREE_MARKETING_STATUS = "שיווק חופשי"
 DETAIL_SCRAPE_STATUSES = {"פנוי", "נמכר"}
 
+# Manual overrides for source-data errors on the contractor's site.
+# Map from property_slug -> corrected air_direction string.
+# Add entries here when the published data is wrong; verified against floor plans.
+AIR_DIRECTION_OVERRIDES: dict[str, str] = {
+    # 100308: contractor lists צפון-מערב, but the apartment actually faces צפון-מזרח.
+    "100308": "צפון-מזרח",
+}
+
 
 def filter_available(properties: list[dict], status_terms: dict[int, str]) -> list[dict]:
     """Filter properties to those whose status is in INCLUDED_STATUSES."""
@@ -376,6 +384,11 @@ def enrich_with_taxonomy_labels(apartments: list[dict], taxonomies: dict[str, di
         air_ids = apt.pop("_api_air_direction_ids", [])
         air_labels = [taxonomies["air_direction"].get(tid, str(tid)) for tid in air_ids]
         apt["air_direction"] = ", ".join(air_labels) if air_labels else None
+
+        # Manual overrides for known source-data errors on the contractor's site.
+        slug = apt.get("property_slug")
+        if slug in AIR_DIRECTION_OVERRIDES:
+            apt["air_direction"] = AIR_DIRECTION_OVERRIDES[slug]
 
         # Status
         status_ids = apt.pop("_api_status_ids", [])
