@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.4.0] - 2026-05-04
 
 - Added a new Buildings view on the Results tab that lays each building's apartments out as a grid of floors × air-direction columns.
 
