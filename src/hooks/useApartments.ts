@@ -5,7 +5,13 @@ import { computeAllBuckets } from "../utils/bucketing";
 import { hydrateParameterConfigs } from "../utils/parameterConfigs";
 
 interface UseApartmentsResult {
+  /** Lottery (regular) apartments — these drive ranking and every view
+   *  except the Buildings view. */
   apartments: Apartment[];
+  /** Open-market ("שיווק חופשי") apartments. Always loaded, but only
+   *  surfaced by the Buildings view. They have no price / area / type and
+   *  cannot be ranked. */
+  freeMarketingApartments: Apartment[];
   buckets: BucketMap;
   parameterConfigs: ParameterConfig[];
   loading: boolean;
@@ -13,20 +19,16 @@ interface UseApartmentsResult {
 }
 
 /**
- * Free-marketing apartments ("שיווק חופשי") are open-market sales rather than
- * lottery units. The scraper includes them with API-only data (no price, no
- * area, no PDFs), so they have nothing to score on. We hide them from the
- * entire UI for now via this flag. Flip to `true` to expose them again
- * (and revisit bucketing — they'll currently lack price/area).
- */
-const SHOW_FREE_MARKETING = false;
-
-/**
  * Fetches apartment data, cleans it, computes buckets, and
  * hydrates parameter configs. All in one hook.
+ *
+ * Open-market units are split out into `freeMarketingApartments` so the
+ * rest of the app (scoring, list, compare, print) can ignore them while
+ * the Buildings view still has access.
  */
 export function useApartments(): UseApartmentsResult {
   const [apartments, setApartments] = useState<Apartment[]>([]);
+  const [freeMarketingApartments, setFreeMarketingApartments] = useState<Apartment[]>([]);
   const [buckets, setBuckets] = useState<BucketMap>({});
   const [parameterConfigs, setParameterConfigs] = useState<ParameterConfig[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,13 +46,13 @@ export function useApartments(): UseApartmentsResult {
         if (cancelled) return;
 
         const cleanedAll = cleanApartments(raw);
-        const cleaned = SHOW_FREE_MARKETING
-          ? cleanedAll
-          : cleanedAll.filter((apt) => !apt.isFreeMarketing);
-        const bucketMap = computeAllBuckets(cleaned);
-        const configs = hydrateParameterConfigs(bucketMap, cleaned);
+        const lottery = cleanedAll.filter((apt) => !apt.isFreeMarketing);
+        const freeMarketing = cleanedAll.filter((apt) => apt.isFreeMarketing);
+        const bucketMap = computeAllBuckets(lottery);
+        const configs = hydrateParameterConfigs(bucketMap, lottery);
 
-        setApartments(cleaned);
+        setApartments(lottery);
+        setFreeMarketingApartments(freeMarketing);
         setBuckets(bucketMap);
         setParameterConfigs(configs);
       } catch (err) {
@@ -66,5 +68,5 @@ export function useApartments(): UseApartmentsResult {
     return () => { cancelled = true; };
   }, []);
 
-  return { apartments, buckets, parameterConfigs, loading, error };
+  return { apartments, freeMarketingApartments, buckets, parameterConfigs, loading, error };
 }

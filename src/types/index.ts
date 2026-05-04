@@ -3,30 +3,42 @@
  *  Priority App.
  * ────────────────────────────────────────────── */
 
-/** Raw apartment record as loaded from apartments.json */
+/** Raw apartment record as loaded from apartments.json.
+ *
+ * Most fields are present on lottery apartments. Open-market
+ * ("שיווק חופשי") units come from the WordPress REST API only and lack
+ * the detail-page fields (price, area, type, building number, parking,
+ * storage, PDFs). Those are marked optional. For open-market units the
+ * scraper writes the API's `apartment_number_from_api` field instead of
+ * `apartment_number`; that field is the building number, not the apt
+ * number, and is the only thing tying the record to a building. */
 export interface RawApartment {
   property_slug: string;
   rooms: string;
   floor: string;
-  type: string;
-  price: number;
-  area_sqm: number;
-  balcony_area_sqm: number;
-  storage_area_sqm: number;
-  storage_id: string;
-  parking_count: number;
-  building: number;
-  apartment_number: number;
+  type?: string;
+  price?: number;
+  area_sqm?: number;
+  balcony_area_sqm?: number;
+  storage_area_sqm?: number;
+  storage_id?: string;
+  parking_count?: number;
+  building?: number;
+  apartment_number?: number;
+  /** Building number as returned by the WP REST API. Present on
+   * open-market units (where `building` is missing). Despite the name,
+   * this is the *building* number, not the apartment number. */
+  apartment_number_from_api?: string;
   air_direction: string;
   status: string;
   lot: string;
-  price_per_sqm: number;
+  price_per_sqm?: number | null;
   detail_url: string;
   pdf_apartment_plan?: string;
   pdf_floor_plan?: string;
   pdf_parking_storage?: string;
   pdf_development?: string;
-  pdf_other: string[];
+  pdf_other?: string[];
   pdf_apartment_plan_url?: string;
   pdf_floor_plan_url?: string;
   pdf_parking_storage_url?: string;
@@ -38,8 +50,26 @@ export interface RawApartment {
 /** Base direction extracted from composite air_direction strings */
 export type BaseDirection = "N" | "E" | "S" | "W";
 
-/** Cleaned apartment with derived fields ready for scoring */
+/** Cleaned apartment with derived fields ready for scoring.
+ *
+ *  Fields that are optional on `RawApartment` (because open-market units
+ *  arrive without them) are narrowed back to required here — `cleanApartments`
+ *  fills concrete defaults so consumers can rely on these being present at
+ *  runtime. Open-market units carry zero / empty values for those fields. */
 export interface Apartment extends RawApartment {
+  // Narrowed from RawApartment optionals — defaults filled by cleanApartments.
+  type: string;
+  price: number;
+  area_sqm: number;
+  balcony_area_sqm: number;
+  storage_area_sqm: number;
+  storage_id: string;
+  parking_count: number;
+  building: number;
+  apartment_number: number;
+  price_per_sqm: number;
+  pdf_other: string[];
+
   /** Composite key: "{lot}/{building}" — e.g. "207/1" */
   buildingKey: string;
   /** Parsed base directions from the Hebrew composite string */
@@ -53,12 +83,19 @@ export interface Apartment extends RawApartment {
   /** Floor bucket label */
   floorBucket: string;
   /** Layout category derived from remarks + floor data */
-  layout: "regular" | "garden" | "garden_duplex" | "roof_duplex";
+  layout:
+    | "regular"
+    | "garden"
+    | "garden_duplex"
+    | "roof_duplex"
+    | "upper_duplex"
+    | "double_height_duplex";
   /** True if the apartment is considered sold (scraped status "נמכר" or user-marked) */
   isSold: boolean;
   /** True if the user manually marked this apartment as sold (cross-profile, persisted) */
   userMarkedSold: boolean;
-  /** True if status is "שיווק חופשי" (open-market sale, not lottery). Currently filtered out of the UI. */
+  /** True for open-market ("שיווק חופשי") units. Excluded from ranking and
+   *  from the list / compare / print views; only the Buildings view shows them. */
   isFreeMarketing: boolean;
 }
 

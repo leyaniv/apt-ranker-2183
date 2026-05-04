@@ -23,6 +23,9 @@ import type { RankedApartment } from "../types";
 interface AppContextValue {
   // Data
   apartments: Apartment[];
+  /** Open-market ("שיווק חופשי") apartments. Excluded from ranking and
+   *  every view except the Buildings view. */
+  freeMarketingApartments: Apartment[];
   buckets: BucketMap;
   parameterConfigs: ParameterConfig[];
   loading: boolean;
@@ -128,7 +131,7 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const { apartments: rawApartments, buckets, parameterConfigs, loading, error } =
+  const { apartments: rawApartments, freeMarketingApartments, buckets, parameterConfigs, loading, error } =
     useApartments();
   const {
     profiles,
@@ -605,6 +608,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value: AppContextValue = {
     apartments,
+    freeMarketingApartments,
     buckets,
     parameterConfigs,
     loading,

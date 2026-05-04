@@ -1,6 +1,14 @@
 ﻿@import "tailwindcss";
 
 /*
+ * Make the `dark:` variant follow the `.dark` class on <html> instead of
+ * the OS `prefers-color-scheme` media query. This matches the CSS-variable
+ * overrides scoped under `.dark` below and lets the in-app theme toggle
+ * (App.tsx) drive every dark-mode utility.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
  * Override Tailwind's `sm` breakpoint from its 640px default to 768px so it
  * lines up with the `useIsDesktop` hook. With both pinned to the same
  * boundary the app flips between mobile and desktop layouts in a single
@@ -37,6 +45,7 @@
 
     /* Tinted backgrounds — darker versions for dark mode */
     --color-amber-50: #261f0d;
+    --color-amber-100: #3b2f12;
     --color-amber-200: #854d0e;
     --color-blue-50: #0c1929;
     --color-blue-100: #122240;
@@ -50,6 +59,7 @@
     --color-yellow-300: #a16207;
     --color-lime-100: #1e3b12;
     --color-lime-300: #4d7c0f;
+    --color-green-50: #0f2a16;
     --color-green-100: #123b1e;
     --color-green-300: #15803d;
     --color-green-800: #4ade80;

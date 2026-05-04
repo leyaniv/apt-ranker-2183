@@ -106,6 +106,8 @@ export const PRINT_COLUMNS: PrintColumn[] = [
         garden: { en: "Garden", he: "דירת גן" },
         garden_duplex: { en: "Garden Duplex", he: "דופלקס גן" },
         roof_duplex: { en: "Roof Duplex", he: "דופלקס גג" },
+        upper_duplex: { en: "Upper Duplex", he: "דופלקס עליון" },
+        double_height_duplex: { en: "Double-Height Duplex", he: "דופלקס חלל כפול" },
       };
       return map[r.apartment.layout]?.[locale] ?? r.apartment.layout;
     },

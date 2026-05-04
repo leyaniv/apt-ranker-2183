@@ -73,8 +73,16 @@ export function parsePrimaryFloor(floor: string): number {
 /** Derive the apartment layout from the remarks field + floor data */
 function deriveLayout(
   apt: RawApartment
-): "regular" | "garden" | "garden_duplex" | "roof_duplex" {
+):
+  | "regular"
+  | "garden"
+  | "garden_duplex"
+  | "roof_duplex"
+  | "upper_duplex"
+  | "double_height_duplex" {
   if (apt.remarks === "דופלקס גג") return "roof_duplex";
+  if (apt.remarks === "דופלקס עליון") return "upper_duplex";
+  if (apt.remarks === "דופלקס חלל כפול") return "double_height_duplex";
   if (apt.remarks === "דירת גן") {
     return apt.floor.includes(",") ? "garden_duplex" : "garden";
   }
@@ -83,6 +91,23 @@ function deriveLayout(
 
 /* ─── Main cleaning function ─────────────────── */
 
+/** Resolve the building number for an apartment. Lottery units have an
+ *  explicit `building` field; open-market units only carry the building
+ *  number under `apartment_number_from_api` (a misleading name from the
+ *  upstream API, see the type comment). Returns 0 when neither is
+ *  available so callers can still produce a stable string key. */
+function resolveBuilding(apt: RawApartment): number {
+  if (typeof apt.building === "number" && Number.isFinite(apt.building)) {
+    return apt.building;
+  }
+  const fromApi = apt.apartment_number_from_api;
+  if (fromApi) {
+    const n = parseInt(fromApi, 10);
+    if (Number.isFinite(n)) return n;
+  }
+  return 0;
+}
+
 /**
  * Clean a raw apartment array: fix typos, derive fields, and return
  * enriched Apartment records ready for scoring.
@@ -90,9 +115,26 @@ function deriveLayout(
 export function cleanApartments(raw: RawApartment[]): Apartment[] {
   return raw.map((apt) => {
     const directions = parseDirections(apt.air_direction);
+    const building = resolveBuilding(apt);
     return {
       ...apt,
-      buildingKey: `${apt.lot}/${apt.building}`,
+      // Field-by-field defaulting so downstream consumers (scoring,
+      // filters, detail view) see well-typed values even for open-market
+      // units that arrive without these fields. Open-market units are
+      // filtered out of those flows anyway, but defaults keep the
+      // Apartment shape honest.
+      type: apt.type ?? "",
+      price: apt.price ?? 0,
+      area_sqm: apt.area_sqm ?? 0,
+      balcony_area_sqm: apt.balcony_area_sqm ?? 0,
+      storage_area_sqm: apt.storage_area_sqm ?? 0,
+      storage_id: apt.storage_id ?? "",
+      parking_count: apt.parking_count ?? 0,
+      building,
+      apartment_number: apt.apartment_number ?? 0,
+      price_per_sqm: apt.price_per_sqm ?? 0,
+      pdf_other: apt.pdf_other ?? [],
+      buildingKey: `${apt.lot}/${building}`,
       directions,
       directionCount: directions.length,
       roomsNum: parseFloat(apt.rooms),

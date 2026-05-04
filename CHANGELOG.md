@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- Added a new Buildings view on the Results tab that lays each building's apartments out as a grid of floors × air-direction columns.
+
 ## [1.3.1] - 2026-05-04
 
 - Fixed apartment plan PDF links.
