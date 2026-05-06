@@ -132,10 +132,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100353/",
     "air_direction": "צפון-מערב-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13712.6
+    "price_per_sqm": 13712.6,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100354",
@@ -325,10 +326,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100350/",
     "air_direction": "צפון-מערב-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13734.5
+    "price_per_sqm": 13734.5,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100351",
@@ -770,10 +772,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100332/",
     "air_direction": "צפון-מערב-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירת גן",
-    "price_per_sqm": 15532.91
+    "price_per_sqm": 15532.91,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100333",
@@ -794,10 +797,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100333/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14639.46
+    "price_per_sqm": 14639.46,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100324",
@@ -1171,10 +1175,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100315/",
     "air_direction": "דרום-מערב-מזרח",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14472.53
+    "price_per_sqm": 14472.53,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100316",
@@ -1383,10 +1388,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100300/",
     "air_direction": "דרום-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14807.98
+    "price_per_sqm": 14807.98,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100301",
@@ -1507,10 +1513,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100293/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13983.55
+    "price_per_sqm": 13983.55,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100294",
@@ -1807,10 +1814,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100276/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14505.07
+    "price_per_sqm": 14505.07,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100277",
@@ -1831,10 +1839,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100277/",
     "air_direction": "דרום-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14845.15
+    "price_per_sqm": 14845.15,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100278",
@@ -1929,10 +1938,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100281/",
     "air_direction": "צפון-מערב-מזרח",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13830.24
+    "price_per_sqm": 13830.24,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100282",
@@ -2851,10 +2861,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100243/",
     "air_direction": "דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14046.7
+    "price_per_sqm": 14046.7,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100228",
@@ -2947,10 +2958,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100231/",
     "air_direction": "דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13910.7
+    "price_per_sqm": 13910.7,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100232",
@@ -4149,10 +4161,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100178/",
     "air_direction": "צפון-מערב-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דופלקס גג",
-    "price_per_sqm": 15263.87
+    "price_per_sqm": 15263.87,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100182",
@@ -5093,10 +5106,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100129/",
     "air_direction": "צפון-מערב-מזרח",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14467.27
+    "price_per_sqm": 14467.27,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100130",
@@ -7741,10 +7755,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100052/",
     "air_direction": "צפון-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14360.45
+    "price_per_sqm": 14360.45,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100053",
@@ -7960,10 +7975,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100046/",
     "air_direction": "צפון-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14264.33
+    "price_per_sqm": 14264.33,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100031",
@@ -8320,9 +8336,10 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100045/",
     "air_direction": "דרום-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14169.03
+    "price_per_sqm": 14169.03,
+    "status_changed_date": "2026-05-06"
   }
 ]
