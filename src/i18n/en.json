@@ -109,6 +109,7 @@
     "showExcluded": "Show excluded",
     "showExcludedTooltip": "Show apartments excluded in this profile — both ones you marked as excluded and ones filtered out by your scoring. Hidden by default.",
     "excluded": "Excluded",
+    "excludedShort": "Exc.",
     "excludedTooltip": "You marked this apartment as excluded in the active profile.",
     "filteredOut": "Filtered out",
     "filteredOutTooltip": "This apartment was filtered out by the active profile's scoring (at least one of its values is marked ✕). Edit the scoring panel to undo.",
@@ -152,7 +153,9 @@
     "openMarketTooltip": "Open-market unit (שיווק חופשי). Not part of the lottery and not ranked.",
     "empty": "n/a",
     "empty_state": "No apartments to show.",
-    "alsoHere": "also"
+    "alsoHere": "also",
+    "collapseAll": "Collapse all",
+    "expandAll": "Expand all"
   },
   "detail": {
     "balcony": "Balcony",

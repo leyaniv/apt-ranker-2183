@@ -500,6 +500,10 @@ export function ResultsTable() {
   // Print modal
   const [showPrintModal, setShowPrintModal] = useState(false);
 
+  // Collapse/expand toggle for buildings view
+  const [collapseSignal, setCollapseSignal] = useState(0);
+  const [allBuildingsExpanded, setAllBuildingsExpanded] = useState(true);
+
   // Save manual order as a new profile (copies current scores/weights)
   const [showSaveAsModal, setShowSaveAsModal] = useState(false);
   const [saveAsName, setSaveAsName] = useState("");
@@ -550,7 +554,7 @@ export function ResultsTable() {
         <div
           role="tablist"
           aria-label={t("results.viewMode")}
-          className={`${settings.resultsViewMode === "buildings" ? "ms-auto " : "order-2 "}inline-flex rounded-md border border-gray-300 bg-white p-0.5 text-xs sm:text-sm`}
+          className="order-2 inline-flex rounded-md border border-gray-300 bg-white p-0.5 text-xs sm:text-sm"
         >
           <button
             type="button"
@@ -579,6 +583,21 @@ export function ResultsTable() {
             {t("results.viewModeBuildings")}
           </button>
         </div>
+        {settings.resultsViewMode === "buildings" && (
+        <button
+          type="button"
+          onClick={() => setCollapseSignal((s) => s + 1)}
+          title={allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}
+          aria-label={allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}
+          className="order-1 ms-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
+                     bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
+            <path fillRule="evenodd" d="M3.22 7.595a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l3.25-3.25a.75.75 0 1 0-1.06-1.06L7 10.19 4.28 7.595a.75.75 0 0 0-1.06 0ZM9.22 7.595a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l3.25-3.25a.75.75 0 1 0-1.06-1.06L13 10.19l-2.72-2.595a.75.75 0 0 0-1.06 0Z" clipRule="evenodd" />
+          </svg>
+          <span>{allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}</span>
+        </button>
+        )}
         {settings.resultsViewMode !== "buildings" && (
         <button
           type="button"
@@ -597,7 +616,7 @@ export function ResultsTable() {
       </div>
       {settings.resultsViewMode === "buildings" ? (
         <Suspense fallback={<div className="p-6 text-center text-gray-400 text-sm">{t("common.loading")}</div>}>
-          <BuildingsView />
+          <BuildingsView toggleSignal={collapseSignal} onAllExpandedChange={setAllBuildingsExpanded} />
         </Suspense>
       ) : (
       <>

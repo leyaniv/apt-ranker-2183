@@ -22,7 +22,7 @@
  *    score chip; on desktop rows widen to show type / rooms too.
  */
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { useApp } from "../../context/AppContext";
@@ -52,11 +52,12 @@ function scoreChipClass(score: number): string {
 interface CellRendererProps {
   cell: LayoutCell;
   rowSpan: number;
+  columnCount: number;
   isUserExcluded: (slug: string) => boolean;
   onOpenRanked: (ranked: RankedApartment) => void;
 }
 
-function ApartmentCell({ cell, rowSpan, isUserExcluded, onOpenRanked }: CellRendererProps) {
+function ApartmentCell({ cell, rowSpan, columnCount, isUserExcluded, onOpenRanked }: CellRendererProps) {
   const { t } = useTranslation();
   if (cell.kind !== "apt") return null;
 
@@ -90,14 +91,14 @@ function ApartmentCell({ cell, rowSpan, isUserExcluded, onOpenRanked }: CellRend
   if (isSold) {
     tdStyle = {
       backgroundImage:
-        "repeating-linear-gradient(135deg, var(--color-gray-200), var(--color-gray-200) 6px, var(--color-gray-300) 6px, var(--color-gray-300) 12px)",
-      backgroundColor: "var(--color-gray-200)",
+        "repeating-linear-gradient(135deg, var(--color-red-100), var(--color-red-100) 6px, var(--color-red-200) 6px, var(--color-red-200) 12px)",
+      backgroundColor: "var(--color-red-100)",
     };
   } else if (isOpenMarket) {
     tdStyle = {
       backgroundImage:
-        "repeating-linear-gradient(135deg, var(--color-amber-100), var(--color-amber-100) 6px, var(--color-amber-200) 6px, var(--color-amber-200) 12px)",
-      backgroundColor: "var(--color-amber-100)",
+        "repeating-linear-gradient(135deg, var(--color-gray-200), var(--color-gray-200) 6px, var(--color-gray-300) 6px, var(--color-gray-300) 12px)",
+      backgroundColor: "var(--color-gray-200)",
     };
   }
 
@@ -105,6 +106,7 @@ function ApartmentCell({ cell, rowSpan, isUserExcluded, onOpenRanked }: CellRend
     <td rowSpan={rowSpan} className={baseClasses} style={tdStyle}>
       <CellPlacement
         placement={primary}
+        columnCount={columnCount}
         isUserExcluded={isUserExcluded}
         onOpenRanked={onOpenRanked}
       />
@@ -124,6 +126,7 @@ function ApartmentCell({ cell, rowSpan, isUserExcluded, onOpenRanked }: CellRend
 
 interface CellPlacementProps {
   placement: AptPlacement;
+  columnCount: number;
   isUserExcluded: (slug: string) => boolean;
   onOpenRanked: (ranked: RankedApartment) => void;
 }
@@ -143,21 +146,44 @@ function CellInfoLine({ apt }: { apt: Apartment }) {
     bottom.push(t(`results.layout_${apt.layout}`));
   }
   if (apt.type) bottom.push(apt.type);
-  if (top.length === 0 && bottom.length === 0) return null;
+  const priceStr = apt.price ? `₪${apt.price.toLocaleString()}` : "";
+  if (top.length === 0 && bottom.length === 0 && !priceStr) return null;
   return (
     <div className="hidden sm:block text-[11px] opacity-80 leading-tight">
       {top.length > 0 && <div className="truncate">{top.join(" · ")}</div>}
-      {bottom.length > 0 && <div className="truncate">{bottom.join(" · ")}</div>}
+      {(bottom.length > 0 || priceStr) && (
+        <div className="flex justify-between gap-1">
+          <span className="truncate">{bottom.join(" · ")}</span>
+          {priceStr && <span className="flex-shrink-0">{priceStr}</span>}
+        </div>
+      )}
     </div>
   );
 }
 
 /** Mobile-only compact info: rooms on its own line, area on a separate
- *  line (hidden if `hideArea` is set, e.g. for sold/excluded units). */
-function MobileRoomsArea({ apt, hideArea }: { apt: Apartment; hideArea?: boolean }) {
+ *  line (hidden if `hideArea` is set, e.g. for sold/excluded units).
+ *  When `wide` is true (≤3 columns), rooms+area share a line and price
+ *  is shown below. */
+function MobileRoomsArea({ apt, hideArea, wide }: { apt: Apartment; hideArea?: boolean; wide?: boolean }) {
   const { t } = useTranslation();
   const showArea = !hideArea && !!apt.area_sqm;
   if (!apt.rooms && !showArea) return null;
+  const priceStr = apt.price ? `₪${apt.price.toLocaleString()}` : "";
+
+  if (wide) {
+    return (
+      <div className="sm:hidden text-[10px] opacity-80 leading-tight min-w-0">
+        <div className="truncate">
+          {apt.rooms ? `${apt.rooms} ${t("results.roomsShort")}` : ""}
+          {apt.rooms && showArea ? " \u00b7 " : ""}
+          {showArea ? `${apt.area_sqm} ${t("results.areaUnit")}` : ""}
+        </div>
+        {priceStr && <div className="truncate">{priceStr}</div>}
+      </div>
+    );
+  }
+
   return (
     <div className="sm:hidden text-[10px] opacity-80 leading-tight min-w-0">
       {apt.rooms ? (
@@ -174,7 +200,7 @@ function MobileRoomsArea({ apt, hideArea }: { apt: Apartment; hideArea?: boolean
   );
 }
 
-function CellPlacement({ placement, isUserExcluded, onOpenRanked }: CellPlacementProps) {
+function CellPlacement({ placement, columnCount, isUserExcluded, onOpenRanked }: CellPlacementProps) {
   const { t } = useTranslation();
 
   if (placement.kind === "freeMarketing") {
@@ -189,16 +215,16 @@ function CellPlacement({ placement, isUserExcluded, onOpenRanked }: CellPlacemen
           <span className="font-semibold text-[11px] sm:text-xs text-black dark:text-white">
             #{apt.apartment_number || "—"}
           </span>
-          <span className="hidden sm:inline-block px-1 py-0.5 rounded bg-amber-200 text-black dark:text-white text-[10px] font-semibold whitespace-nowrap">
+          <span className="hidden sm:inline-block px-1 py-0.5 rounded bg-gray-200 text-gray-700 dark:text-gray-800 text-[10px] font-semibold whitespace-nowrap">
             {t("buildingsView.openMarket")}
           </span>
         </div>
         {/* Mobile-only second row: open-market chip */}
-        <span className="sm:hidden self-start px-1 rounded bg-amber-200 text-black dark:text-white text-[9px] font-semibold whitespace-nowrap">
+        <span className="sm:hidden self-start px-1 rounded bg-gray-200 text-gray-700 dark:text-gray-800 text-[9px] font-semibold whitespace-nowrap">
           {t("buildingsView.openMarket")}
         </span>
         {/* Mobile rooms+area, desktop full info block */}
-        <MobileRoomsArea apt={apt} />
+        <MobileRoomsArea apt={apt} wide={columnCount <= 3} />
         <CellInfoLine apt={apt} />
       </div>
     );
@@ -221,24 +247,25 @@ function CellPlacement({ placement, isUserExcluded, onOpenRanked }: CellPlacemen
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
                   ${dimmed ? "opacity-55" : ""}`}
     >
-      {/* Top row: apt number + score (state chip on desktop only) */}
+      {/* Top row: apt number + score + state chip */}
       <div className="flex items-center justify-between gap-1">
         <span className="font-semibold text-[11px] sm:text-xs text-gray-800">
           #{apt.apartment_number}
         </span>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 min-w-0">
           {apt.isSold && (
-            <span className="hidden sm:inline-block px-1 py-0.5 rounded bg-gray-200 text-gray-700 dark:text-gray-800 text-[10px] font-semibold whitespace-nowrap">
+            <span className="px-1 py-0.5 rounded bg-red-100 text-red-700 dark:text-red-800 text-[9px] sm:text-[10px] font-semibold whitespace-nowrap">
               {t("results.sold")}
             </span>
           )}
           {(r.excluded === true || userExcluded) && !apt.isSold && (
-            <span className="hidden sm:inline-block px-1 py-0.5 rounded bg-amber-100 text-amber-800 dark:text-amber-900 text-[10px] font-semibold whitespace-nowrap">
-              {t("results.excluded")}
+            <span className="px-1 py-0.5 rounded bg-amber-100 text-amber-800 dark:text-amber-900 text-[9px] sm:text-[10px] font-semibold whitespace-nowrap">
+              <span className="sm:hidden">{t("results.excludedShort")}</span>
+              <span className="hidden sm:inline">{t("results.excluded")}</span>
             </span>
           )}
           <span
-            className={`text-[9px] sm:text-[10px] font-semibold rounded px-1 py-0.5 ${scoreChipClass(
+            className={`${dimmed ? "hidden sm:inline-block " : ""}text-[9px] sm:text-[10px] font-semibold rounded px-1 py-0.5 ${scoreChipClass(
               r.totalScore
             )}`}
             aria-label={`${t("results.score")} ${r.totalScore.toFixed(1)}`}
@@ -247,19 +274,7 @@ function CellPlacement({ placement, isUserExcluded, onOpenRanked }: CellPlacemen
           </span>
         </div>
       </div>
-      {/* Mobile-only second row: state chip */}
-      {(apt.isSold || ((r.excluded === true || userExcluded) && !apt.isSold)) && (
-        <span
-          className={`sm:hidden self-start px-1 rounded text-[9px] font-semibold whitespace-nowrap ${
-            apt.isSold
-              ? "bg-gray-200 text-gray-700 dark:text-gray-800"
-              : "bg-amber-100 text-amber-800 dark:text-amber-900"
-          }`}
-        >
-          {apt.isSold ? t("results.sold") : t("results.excluded")}
-        </span>
-      )}
-      <MobileRoomsArea apt={apt} hideArea={apt.isSold || r.excluded === true || userExcluded} />
+      <MobileRoomsArea apt={apt} wide={columnCount <= 3} />
       <CellInfoLine apt={apt} />
     </button>
   );
@@ -274,7 +289,7 @@ function OverflowChip({
 }) {
   if (placement.kind === "freeMarketing") {
     return (
-      <span className="px-1.5 py-0.5 rounded bg-amber-200 text-black dark:text-white text-[10px] font-medium">
+      <span className="px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 dark:text-gray-800 text-[10px] font-medium">
         #{placement.apartment.apartment_number || "—"}
       </span>
     );
@@ -312,21 +327,21 @@ function EmptyCell() {
 
 interface BuildingCardProps {
   layout: BuildingLayout;
-  defaultOpen: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onOpenRanked: (ranked: RankedApartment) => void;
   isUserExcluded: (slug: string) => boolean;
 }
 
-function BuildingCard({ layout, defaultOpen, onOpenRanked, isUserExcluded }: BuildingCardProps) {
+function BuildingCard({ layout, open, onOpenChange, onOpenRanked, isUserExcluded }: BuildingCardProps) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(defaultOpen);
 
   const { counts, groups, floorCount, topScore } = layout;
 
   return (
     <Collapsible.Root
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       className="bg-white dark:bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden"
     >
       <Collapsible.Trigger className="w-full flex items-center gap-3 px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors text-start">
@@ -374,12 +389,12 @@ function BuildingCard({ layout, defaultOpen, onOpenRanked, isUserExcluded }: Bui
             </span>
           )}
           {counts.sold > 0 && (
-            <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-600 dark:text-gray-700">
+            <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 dark:text-red-800">
               {t("buildingsView.soldCount", { count: counts.sold })}
             </span>
           )}
           {counts.freeMarketing > 0 && (
-            <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:text-amber-900">
+            <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-600 dark:text-gray-700">
               {t("buildingsView.openMarketCount", { count: counts.freeMarketing })}
             </span>
           )}
@@ -482,6 +497,7 @@ function FloorGroupTable({
                   key={col.key}
                   cell={cell}
                   rowSpan={cell.rowSpan}
+                  columnCount={columns.length}
                   isUserExcluded={isUserExcluded}
                   onOpenRanked={onOpenRanked}
                 />
@@ -550,7 +566,7 @@ function DetailModal({
 
 /* ─── Main view ───────────────────────────────────────────────────────── */
 
-export function BuildingsView() {
+export function BuildingsView({ toggleSignal, onAllExpandedChange }: { toggleSignal: number; onAllExpandedChange: (v: boolean) => void }) {
   const { t } = useTranslation();
   const {
     rankedApartments,
@@ -564,6 +580,35 @@ export function BuildingsView() {
     () => buildBuildingsLayout(rankedApartments, freeMarketingApartments),
     [rankedApartments, freeMarketingApartments]
   );
+
+  // Auto-open buildings with at least one ranked-and-visible apartment.
+  const isVisible = (b: BuildingLayout) =>
+    b.counts.available > 0 || b.counts.sold > 0;
+
+  const [openSet, setOpenSet] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    for (const l of layouts) {
+      if (isVisible(l)) initial.add(l.buildingKey);
+    }
+    return initial;
+  });
+
+  const allExpanded = layouts.length > 0 && layouts.every((l) => openSet.has(l.buildingKey));
+
+  // Report allExpanded state to parent
+  useEffect(() => {
+    onAllExpandedChange(allExpanded);
+  }, [allExpanded, onAllExpandedChange]);
+
+  // Toggle all when the parent increments the signal
+  useEffect(() => {
+    if (toggleSignal > 0) {
+      setOpenSet((prev) => {
+        const currentlyAll = layouts.every((l) => prev.has(l.buildingKey));
+        return currentlyAll ? new Set() : new Set(layouts.map((l) => l.buildingKey));
+      });
+    }
+  }, [toggleSignal, layouts]);
 
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 
@@ -589,12 +634,6 @@ export function BuildingsView() {
     );
   }
 
-  // Auto-collapse buildings with zero ranked-and-visible apartments. We
-  // open buildings that have at least one ranked apt, leave the others
-  // collapsed but discoverable.
-  const isVisible = (b: BuildingLayout) =>
-    b.counts.available > 0 || b.counts.sold > 0;
-
   return (
     <div className="flex-1 min-h-0 overflow-y-auto px-1 sm:px-6 pb-4 sm:pb-6 space-y-3">
       <div className="mx-auto w-full max-w-3xl space-y-3">
@@ -602,7 +641,14 @@ export function BuildingsView() {
         <BuildingCard
           key={layout.buildingKey}
           layout={layout}
-          defaultOpen={isVisible(layout)}
+          open={openSet.has(layout.buildingKey)}
+          onOpenChange={(v) =>
+            setOpenSet((prev) => {
+              const next = new Set(prev);
+              v ? next.add(layout.buildingKey) : next.delete(layout.buildingKey);
+              return next;
+            })
+          }
           onOpenRanked={handleOpenRanked}
           isUserExcluded={isUserExcluded}
         />
