@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- Scoring panel shows a sold/available stats bar for each value
+
 ## [1.4.1] - 2026-05-06
 
 - Buildings view now has collapse/expand all button, improved color consistency, and better mobile layout.

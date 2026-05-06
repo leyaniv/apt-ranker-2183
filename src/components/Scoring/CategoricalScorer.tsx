@@ -5,6 +5,8 @@ import { ScoreButtonGroup } from "./ScoreButtonGroup";
 import { resolveLocale } from "../../utils/locale";
 import { useApp } from "../../context/AppContext";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
+import { useValueStats } from "../../hooks/useValueStats";
+import { StatsBar } from "./StatsBar";
 
 interface CategoricalScorerProps {
   config: ParameterConfig;
@@ -18,8 +20,9 @@ interface CategoricalScorerProps {
 export function CategoricalScorer({ config }: CategoricalScorerProps) {
   const { i18n } = useTranslation();
   const lang = resolveLocale(i18n.language);
-  const { apartments } = useApp();
+  const { apartments, buckets } = useApp();
   const isDesktop = useIsDesktop();
+  const valueStats = useValueStats(apartments, config.id, buckets);
 
   // For the "type" parameter, build a map: type → { pdfUrl, example label }
   const typePdfMap = useMemo(() => {
@@ -37,25 +40,19 @@ export function CategoricalScorer({ config }: CategoricalScorerProps) {
   }, [config.id, apartments]);
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-1">
       {config.values.map((value) => {
         const fullLabel = config.valueLabels[value]?.[lang] ?? value;
-        // On mobile the "Building" rows are tight against the score buttons,
-        // and the parameter card header already says "Building", so render
-        // just the compact "lot/bldg" key (e.g. "207/1") instead of the
-        // verbose "Lot 207 / Building 1".
         let label = fullLabel;
         if (!isDesktop) {
           if (config.id === "building") {
             label = value;
           } else if (config.id === "layout" && lang === "en") {
-            // Abbreviate "Regular apartment" → "Regular apt." etc. (English only —
-            // Hebrew labels are already short enough on mobile).
             label = fullLabel.replace(/ apartment\b/i, " apt.");
           }
         }
         const pdfInfo = typePdfMap?.get(value);
-        return (
+        return isDesktop ? (
           <div
             key={value}
             className="flex items-center justify-between gap-2 sm:gap-3 py-1"
@@ -73,6 +70,28 @@ export function CategoricalScorer({ config }: CategoricalScorerProps) {
                   📄 {pdfInfo.label}
                 </a>
               )}
+            </div>
+            <StatsBar stats={valueStats[value]} />
+            <ScoreButtonGroup paramId={config.id} valueKey={value} />
+          </div>
+        ) : (
+          <div key={value} className="flex items-center justify-between gap-2 py-0.5">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-sm text-gray-700 truncate">{label}</span>
+                {pdfInfo && (
+                  <a
+                    href={pdfInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] text-blue-500 hover:text-blue-700 whitespace-nowrap"
+                    title={pdfInfo.label}
+                  >
+                    📄 {pdfInfo.label}
+                  </a>
+                )}
+              </div>
+              <StatsBar stats={valueStats[value]} />
             </div>
             <ScoreButtonGroup paramId={config.id} valueKey={value} />
           </div>
