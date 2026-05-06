@@ -45,6 +45,8 @@ export interface RawApartment {
   pdf_development_url?: string;
   pdf_other_urls?: string[];
   remarks: string;
+  /** Date the status changed (e.g. when marked sold), ISO format YYYY-MM-DD */
+  status_changed_date?: string;
 }
 
 /** Base direction extracted from composite air_direction strings */

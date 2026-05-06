@@ -504,10 +504,88 @@ def print_summary(apartments: list[dict], pdf_count: int, new_downloads: int) ->
 # Main
 # ---------------------------------------------------------------------------
 
+def status_only_check() -> None:
+    """Quick status-only scrape: fetch statuses from the API and compare against
+    the existing apartments.json to detect availability changes (e.g. פנוי -> נמכר).
+    Updates apartments.json in-place with the new statuses and sets
+    status_changed_date to today's date for any changed apartments.
+    """
+    import datetime
+
+    print("=" * 60)
+    print("Eshel Haifa - Quick Status Check")
+    print("=" * 60)
+
+    # Load existing data
+    if not OUTPUT_JSON.exists():
+        print(f"ERROR: {OUTPUT_JSON} not found. Run a full scrape first.")
+        sys.exit(1)
+
+    with open(OUTPUT_JSON, "r", encoding="utf-8") as f:
+        existing = json.load(f)
+
+    # Build lookup: slug -> index in list
+    slug_to_index = {apt["property_slug"]: i for i, apt in enumerate(existing) if apt.get("property_slug")}
+
+    # Resolve only the status taxonomy
+    print("\nResolving status taxonomy...")
+    status_terms = resolve_taxonomy("status")
+    print(f"  {len(status_terms)} terms")
+
+    # Fetch all properties from API
+    print("\nFetching properties from API...")
+    all_properties = fetch_all_properties()
+    print(f"  {len(all_properties)} properties")
+
+    # Map current statuses and detect changes
+    today = datetime.date.today().isoformat()
+    changes = []
+    for prop in all_properties:
+        slug = prop["slug"]
+        if slug not in slug_to_index:
+            continue
+
+        prop_status_ids = prop.get("status", [])
+        current_labels = [status_terms.get(tid, str(tid)) for tid in prop_status_ids]
+        current_status = ", ".join(current_labels) if current_labels else None
+
+        idx = slug_to_index[slug]
+        old_status = existing[idx].get("status")
+
+        if current_status != old_status:
+            changes.append({
+                "property_slug": slug,
+                "old_status": old_status,
+                "new_status": current_status,
+            })
+            existing[idx]["status"] = current_status
+            existing[idx]["status_changed_date"] = today
+
+    # Print summary
+    print(f"\n{'=' * 60}")
+    print(f"STATUS CHANGES: {len(changes)}")
+    print(f"{'=' * 60}")
+    if not changes:
+        print("  No status changes detected.")
+    else:
+        for c in changes:
+            print(f"  {c['property_slug']}: {c['old_status']} -> {c['new_status']}")
+
+        # Write updated apartments.json
+        with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
+            json.dump(existing, f, ensure_ascii=False, indent=2)
+        print(f"\nUpdated {OUTPUT_JSON} with {len(changes)} status change(s).")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Eshel Haifa Apartment Scraper - Lottery 771")
     parser.add_argument("--skip-pdfs", action="store_true", help="Skip PDF downloading (Phase 4), only export JSON")
+    parser.add_argument("--status-only", action="store_true", help="Quick status check — only fetch statuses from API and compare against existing data")
     args = parser.parse_args()
+
+    if args.status_only:
+        status_only_check()
+        return
 
     print("=" * 60)
     print("Eshel Haifa Apartment Scraper - Lottery 771")
@@ -553,6 +631,25 @@ def main():
     # Phase 5: Export
     print("\n[Phase 5] Enriching with taxonomy labels...")
     enrich_with_taxonomy_labels(apartments, taxonomies)
+
+    # Track status changes: compare against previous data and set status_changed_date
+    import datetime
+    today = datetime.date.today().isoformat()
+    if OUTPUT_JSON.exists():
+        with open(OUTPUT_JSON, "r", encoding="utf-8") as f:
+            old_data = json.load(f)
+        old_status_map = {apt["property_slug"]: apt.get("status") for apt in old_data if apt.get("property_slug")}
+        old_date_map = {apt["property_slug"]: apt.get("status_changed_date") for apt in old_data if apt.get("property_slug")}
+        for apt in apartments:
+            slug = apt.get("property_slug")
+            if not slug:
+                continue
+            old_status = old_status_map.get(slug)
+            if old_status is not None and apt.get("status") != old_status:
+                apt["status_changed_date"] = today
+            elif slug in old_date_map and old_date_map[slug]:
+                # Preserve existing date if status didn't change
+                apt["status_changed_date"] = old_date_map[slug]
 
     print("\n[Phase 5] Exporting JSON...")
     export_json(apartments)

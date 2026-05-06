@@ -25,7 +25,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דופלקס גג",
-    "price_per_sqm": 15270.23
+    "price_per_sqm": 15270.23,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100356",
@@ -50,10 +51,11 @@
     "pdf_parking_storage": "pdfs\\2183\\208\\208-DP.pdf",
     "pdf_development": "pdfs\\2183\\208\\208-DC.pdf",
     "air_direction": "צפון-מערב-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13696.33
+    "price_per_sqm": 13696.33,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100357",
@@ -401,7 +403,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14438.08
+    "price_per_sqm": 14438.08,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100340",
@@ -697,7 +700,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14807.98
+    "price_per_sqm": 14807.98,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100326",
@@ -917,7 +921,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14438.08
+    "price_per_sqm": 14438.08,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100317",
@@ -973,7 +978,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14457.69
+    "price_per_sqm": 14457.69,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100319",
@@ -1057,7 +1063,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14473.01
+    "price_per_sqm": 14473.01,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100322",
@@ -1201,7 +1208,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירת גן",
-    "price_per_sqm": 15854.83
+    "price_per_sqm": 15854.83,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100312",
@@ -1229,7 +1237,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירת גן",
-    "price_per_sqm": 15897.27
+    "price_per_sqm": 15897.27,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100313",
@@ -1369,7 +1378,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14467.27
+    "price_per_sqm": 14467.27,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100305",
@@ -1397,7 +1407,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דופלקס גג",
-    "price_per_sqm": 15338.86
+    "price_per_sqm": 15338.86,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100306",
@@ -1493,7 +1504,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14450.52
+    "price_per_sqm": 14450.52,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100299",
@@ -1518,10 +1530,11 @@
     "pdf_parking_storage": "pdfs\\2183\\208\\208-DP.pdf",
     "pdf_development": "pdfs\\2183\\208\\208-DC.pdf",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13696.33
+    "price_per_sqm": 13696.33,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100300",
@@ -1577,7 +1590,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14438.08
+    "price_per_sqm": 14438.08,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100302",
@@ -1602,10 +1616,11 @@
     "pdf_parking_storage": "pdfs\\2183\\208\\208-DP.pdf",
     "pdf_development": "pdfs\\2183\\208\\208-DC.pdf",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13712.6
+    "price_per_sqm": 13712.6,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100303",
@@ -1630,10 +1645,11 @@
     "pdf_parking_storage": "pdfs\\2183\\208\\208-DP.pdf",
     "pdf_development": "pdfs\\2183\\208\\208-DC.pdf",
     "air_direction": "דרום-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14837.22
+    "price_per_sqm": 14837.22,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100292",
@@ -1661,7 +1677,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירת גן",
-    "price_per_sqm": 16004.0
+    "price_per_sqm": 16004.0,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100293",
@@ -1801,7 +1818,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14845.57
+    "price_per_sqm": 14845.57,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100284",
@@ -1897,7 +1915,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דופלקס גג",
-    "price_per_sqm": 15249.55
+    "price_per_sqm": 15249.55,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100288",
@@ -2102,10 +2121,11 @@
     "pdf_parking_storage": "pdfs\\2183\\208\\208-DP.pdf",
     "pdf_development": "pdfs\\2183\\208\\208-DC.pdf",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14518.48
+    "price_per_sqm": 14518.48,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100280",
@@ -2133,7 +2153,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14873.55
+    "price_per_sqm": 14873.55,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100281",
@@ -2189,7 +2210,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14459.13
+    "price_per_sqm": 14459.13,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100274",
@@ -2657,7 +2679,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14599.76
+    "price_per_sqm": 14599.76,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100245",
@@ -2685,7 +2708,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14626.02
+    "price_per_sqm": 14626.02,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100246",
@@ -2825,7 +2849,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14584.34
+    "price_per_sqm": 14584.34,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100251",
@@ -2853,7 +2878,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14732.02
+    "price_per_sqm": 14732.02,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100252",
@@ -3025,7 +3051,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14689.25
+    "price_per_sqm": 14689.25,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100239",
@@ -3053,7 +3080,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14658.12
+    "price_per_sqm": 14658.12,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100240",
@@ -3305,7 +3333,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14413.54
+    "price_per_sqm": 14413.54,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100233",
@@ -3333,7 +3362,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14396.94
+    "price_per_sqm": 14396.94,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100234",
@@ -3445,7 +3475,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14308.72
+    "price_per_sqm": 14308.72,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100227",
@@ -3473,7 +3504,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14330.18
+    "price_per_sqm": 14330.18,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100214",
@@ -3529,7 +3561,8 @@
     "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14200.25
+    "price_per_sqm": 14200.25,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100216",
@@ -3666,10 +3699,11 @@
     "pdf_parking_storage": "pdfs\\2183\\208\\208-DP.pdf",
     "pdf_development": "pdfs\\2183\\208\\208-DC.pdf",
     "air_direction": "דרום-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14360.45
+    "price_per_sqm": 14360.45,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100221",
@@ -4832,10 +4866,11 @@
     "pdf_parking_storage": "pdfs\\2183\\207\\207-DP.pdf",
     "pdf_development": "pdfs\\2183\\207\\207-DC.pdf",
     "air_direction": "צפון-מערב-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13996.72
+    "price_per_sqm": 13996.72,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100176",
@@ -5251,7 +5286,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13957.2
+    "price_per_sqm": 13957.2,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100153",
@@ -5332,10 +5368,11 @@
     "pdf_parking_storage": "pdfs\\2183\\207\\207-DP.pdf",
     "pdf_development": "pdfs\\2183\\207\\207-DC.pdf",
     "air_direction": "דרום-מערב-מזרח",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13822.09
+    "price_per_sqm": 13822.09,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100156",
@@ -5503,7 +5540,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דופלקס גג",
-    "price_per_sqm": 15443.22
+    "price_per_sqm": 15443.22,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100148",
@@ -5903,7 +5941,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 15759.08
+    "price_per_sqm": 15759.08,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100137",
@@ -6239,7 +6278,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 15785.88
+    "price_per_sqm": 15785.88,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100113",
@@ -6383,7 +6423,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 15287.97
+    "price_per_sqm": 15287.97,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100119",
@@ -6911,7 +6952,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14218.07
+    "price_per_sqm": 14218.07,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100087",
@@ -6939,7 +6981,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14753.54
+    "price_per_sqm": 14753.54,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100088",
@@ -6967,7 +7010,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14902.66
+    "price_per_sqm": 14902.66,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100089",
@@ -7043,7 +7087,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14769.93
+    "price_per_sqm": 14769.93,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100082",
@@ -7071,7 +7116,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14796.45
+    "price_per_sqm": 14796.45,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100083",
@@ -7239,7 +7285,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14655.65
+    "price_per_sqm": 14655.65,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100076",
@@ -7267,7 +7314,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14701.13
+    "price_per_sqm": 14701.13,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100077",
@@ -7519,7 +7567,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14569.03
+    "price_per_sqm": 14569.03,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100070",
@@ -7544,10 +7593,11 @@
     "pdf_parking_storage": "pdfs\\2183\\207\\207-DP.pdf",
     "pdf_development": "pdfs\\2183\\207\\207-DC.pdf",
     "air_direction": "צפון-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14589.7
+    "price_per_sqm": 14589.7,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100071",
@@ -7572,10 +7622,11 @@
     "pdf_parking_storage": "pdfs\\2183\\207\\207-DP.pdf",
     "pdf_development": "pdfs\\2183\\207\\207-DC.pdf",
     "air_direction": "צפון",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14219.1
+    "price_per_sqm": 14219.1,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100072",
@@ -7687,7 +7738,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14533.02
+    "price_per_sqm": 14533.02,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100064",
@@ -7712,10 +7764,11 @@
     "pdf_parking_storage": "pdfs\\2183\\207\\207-DP.pdf",
     "pdf_development": "pdfs\\2183\\207\\207-DC.pdf",
     "air_direction": "צפון-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14498.55
+    "price_per_sqm": 14498.55,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100019",
@@ -8860,10 +8913,11 @@
     "pdf_parking_storage": "pdfs\\2183\\207\\207-DP.pdf",
     "pdf_development": "pdfs\\2183\\207\\207-DC.pdf",
     "air_direction": "דרום-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14405.79
+    "price_per_sqm": 14405.79,
+    "status_changed_date": "2026-05-06"
   },
   {
     "property_slug": "100058",
@@ -8919,7 +8973,8 @@
     "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13875.36
+    "price_per_sqm": 13875.36,
+    "status_changed_date": "2026-05-03"
   },
   {
     "property_slug": "100060",

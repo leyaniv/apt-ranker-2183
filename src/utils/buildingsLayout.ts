@@ -93,6 +93,8 @@ export interface BuildingCounts {
   available: number;
   /** Ranked, sold (scrape or user-marked). */
   sold: number;
+  /** Sold with status_changed_date matching today. */
+  soldToday: number;
   /** Open-market units (any state). */
   freeMarketing: number;
   /** Sum of all (ranked + free-marketing). */
@@ -479,8 +481,10 @@ export function buildBuildingsLayout(
 
 
     // ─ Header counts + top score ───────────────────────────────────────
+    const today = new Date().toISOString().slice(0, 10);
     let available = 0;
     let sold = 0;
+    let soldToday = 0;
     let freeMarketingCount = 0;
     let topScore: number | null = null;
     for (const rec of g.records) {
@@ -488,8 +492,14 @@ export function buildBuildingsLayout(
         freeMarketingCount += 1;
         continue;
       }
-      if (rec.isSold) sold += 1;
-      else available += 1;
+      if (rec.isSold) {
+        sold += 1;
+        if (rec.placement.ranked.apartment.status_changed_date === today) {
+          soldToday += 1;
+        }
+      } else {
+        available += 1;
+      }
       const s = rec.placement.ranked.totalScore;
       if (!rec.isSold && (topScore === null || s > topScore)) topScore = s;
     }
@@ -502,6 +512,7 @@ export function buildBuildingsLayout(
       counts: {
         available,
         sold,
+        soldToday,
         freeMarketing: freeMarketingCount,
         total: available + sold + freeMarketingCount,
       },

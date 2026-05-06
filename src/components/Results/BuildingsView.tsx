@@ -83,12 +83,23 @@ function ApartmentCell({ cell, rowSpan, columnCount, isUserExcluded, onOpenRanke
   const isSold = primary.kind === "ranked" && primary.ranked.apartment.isSold;
   const isUnavailable = isOpenMarket || isSold;
 
+  // Highlight apartments sold today with a brighter red
+  const today = new Date().toISOString().slice(0, 10);
+  const isSoldToday =
+    isSold && primary.kind === "ranked" && primary.ranked.apartment.status_changed_date === today;
+
   const baseClasses =
     "align-top border border-gray-100 dark:border-gray-200 p-0 " +
     (isUnavailable ? "" : "bg-green-50 dark:bg-green-50 ");
 
   let tdStyle: React.CSSProperties | undefined;
-  if (isSold) {
+  if (isSoldToday) {
+    tdStyle = {
+      backgroundImage:
+        "repeating-linear-gradient(135deg, var(--color-red-200), var(--color-red-200) 6px, var(--color-red-300) 6px, var(--color-red-300) 12px)",
+      backgroundColor: "var(--color-red-200)",
+    };
+  } else if (isSold) {
     tdStyle = {
       backgroundImage:
         "repeating-linear-gradient(135deg, var(--color-red-100), var(--color-red-100) 6px, var(--color-red-200) 6px, var(--color-red-200) 12px)",
@@ -390,7 +401,9 @@ function BuildingCard({ layout, open, onOpenChange, onOpenRanked, isUserExcluded
           )}
           {counts.sold > 0 && (
             <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 dark:text-red-800">
-              {t("buildingsView.soldCount", { count: counts.sold })}
+              {counts.soldToday > 0
+                ? t("buildingsView.soldCountToday", { count: counts.sold, today: counts.soldToday })
+                : t("buildingsView.soldCount", { count: counts.sold })}
             </span>
           )}
           {counts.freeMarketing > 0 && (
