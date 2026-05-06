@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2026-05-06
+
+- Buildings view now has collapse/expand all button, improved color consistency, and better mobile layout.
+- Reduced mobile margins and padding across the app to maximize usable space.
+- Sold button in apartment details shows the date the apartment was sold (e.g. "Sold (03/05/2026)").
+- Apartments sold today are highlighted with a brighter red in the buildings view.
+
 ## [1.4.0] - 2026-05-04
 
 - Added a new Buildings view on the Results tab that lays each building's apartments out as a grid of floors × air-direction columns.
