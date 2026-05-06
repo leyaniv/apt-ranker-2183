@@ -120,6 +120,13 @@ AIR_DIRECTION_OVERRIDES: dict[str, str] = {
     "100308": "צפון-מזרח",
 }
 
+# Manual overrides for remarks taxonomy errors.
+# Map from property_slug -> corrected remarks string.
+REMARKS_OVERRIDES: dict[str, str] = {
+    # 100291: listed as דירת גן but is actually a regular דירה.
+    "100291": "דירה",
+}
+
 
 def filter_available(properties: list[dict], status_terms: dict[int, str]) -> list[dict]:
     """Filter properties to those whose status is in INCLUDED_STATUSES."""
@@ -405,6 +412,9 @@ def enrich_with_taxonomy_labels(apartments: list[dict], taxonomies: dict[str, di
         remarks_labels = [taxonomies["remarks"].get(tid, str(tid)) for tid in remarks_ids]
         apt["remarks"] = ", ".join(remarks_labels) if remarks_labels else None
 
+        if slug in REMARKS_OVERRIDES:
+            apt["remarks"] = REMARKS_OVERRIDES[slug]
+
         # Compute price per sqm
         price = apt.get("price", 0)
         area = apt.get("area_sqm", 0)
@@ -553,10 +563,16 @@ def status_only_check() -> None:
         old_status = existing[idx].get("status")
 
         if current_status != old_status:
+            apt = existing[idx]
             changes.append({
                 "property_slug": slug,
                 "old_status": old_status,
                 "new_status": current_status,
+                "lot": apt.get("lot"),
+                "building": apt.get("building"),
+                "apartment_number": apt.get("apartment_number"),
+                "rooms": apt.get("rooms"),
+                "floor": apt.get("floor"),
             })
             existing[idx]["status"] = current_status
             existing[idx]["status_changed_date"] = today
@@ -569,7 +585,9 @@ def status_only_check() -> None:
         print("  No status changes detected.")
     else:
         for c in changes:
+            details = f"Lot {c['lot']}, Bldg {c['building']}, Apt {c['apartment_number']}, {c['rooms']} rooms, Floor {c['floor']}"
             print(f"  {c['property_slug']}: {c['old_status']} -> {c['new_status']}")
+            print(f"    ({details})")
 
         # Write updated apartments.json
         with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
