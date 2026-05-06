@@ -50,7 +50,7 @@ export function ChangeHistory() {
   const reversed = [...changeHistory].reverse();
 
   return (
-    <div className="p-4 sm:p-6 max-w-3xl mx-auto w-full">
+    <div className="px-4 pt-2 pb-4 sm:p-6 max-w-3xl mx-auto w-full">
       <TabHeader title={t("history.title")} tooltip={t("history.howToUse")} />
       <div className="space-y-2 mt-4">
         {reversed.map((entry, idx) => {

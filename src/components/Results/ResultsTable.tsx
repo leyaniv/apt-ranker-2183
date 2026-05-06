@@ -549,8 +549,8 @@ export function ResultsTable() {
       className="mx-auto w-full sm:w-fit max-w-full flex flex-col h-full min-h-0 px-2 sm:px-0 pb-18 sm:pb-6"
       onDragEnd={() => { dragSlugRef.current = null; setDropTargetSlug(null); stopAutoScroll(); }}
     >
-      <div className="px-4 sm:px-6 pt-4 sm:pt-6 mb-2 flex-shrink-0 flex items-center gap-2">
-        <TabHeader title={t("results.title")} tooltip={t("results.howToUse")} />
+      <div className="px-4 sm:px-6 pt-2 sm:pt-6 mb-2 flex-shrink-0 flex items-center gap-2">
+        <TabHeader title={t("results.title")} titleShort={t("results.titleShort")} tooltip={t("results.howToUse")} />
         <div
           role="tablist"
           aria-label={t("results.viewMode")}
@@ -589,10 +589,10 @@ export function ResultsTable() {
           onClick={() => setCollapseSignal((s) => s + 1)}
           title={allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}
           aria-label={allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}
-          className="order-1 ms-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
+          className="order-1 ms-auto inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700
                      bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="hidden sm:block w-4 h-4 text-gray-500">
             <path fillRule="evenodd" d="M3.22 7.595a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l3.25-3.25a.75.75 0 1 0-1.06-1.06L7 10.19 4.28 7.595a.75.75 0 0 0-1.06 0ZM9.22 7.595a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l3.25-3.25a.75.75 0 1 0-1.06-1.06L13 10.19l-2.72-2.595a.75.75 0 0 0-1.06 0Z" clipRule="evenodd" />
           </svg>
           <span>{allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}</span>

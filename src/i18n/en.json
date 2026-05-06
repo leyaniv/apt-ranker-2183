@@ -137,6 +137,7 @@
     "unsavedOrderMessage": "You have unsaved changes to the manual order. Would you like to save or discard them before leaving?",
     "discardOrder": "Discard",
     "title": "Ranked Apartments",
+    "titleShort": "Ranked Apts.",
     "howToUse": "Browse your ranked apartments. Use the filters to narrow the list, click a row to see full details and add notes, or drag rows to set a manual order.",
     "viewMode": "View mode",
     "viewModeList": "List",

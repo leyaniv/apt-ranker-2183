@@ -13,7 +13,7 @@ export function Header() {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 py-3 sm:px-6">
+    <header className="bg-white border-b border-gray-200 mb-1 sm:mb-0 px-4 py-1.5 sm:py-3 sm:px-6">
       <div className="flex items-start justify-between gap-2 sm:gap-4 sm:flex-wrap">
         {/* Title */}
         <div className="min-w-0 flex-1">

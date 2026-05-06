@@ -168,7 +168,7 @@ function AppContent() {
       <Header />
 
       <Tabs.Root value={activeTab} onValueChange={handleTabChange} className="flex-1 min-h-0 flex flex-col">
-        <Tabs.List className="flex-shrink-0 flex flex-wrap items-center gap-y-1 border-b border-gray-200 bg-white px-0 sm:px-6">
+        <Tabs.List className="flex-shrink-0 flex flex-wrap items-center gap-y-0 sm:gap-y-1 border-b border-gray-200 bg-white px-0 sm:px-6">
           <div className="flex w-full sm:w-auto order-1 sm:order-none min-w-0">
             {(["scoring", "results", "history", "compare", "combine"] as const).map((tab) => (
               <Tabs.Trigger
@@ -193,7 +193,7 @@ function AppContent() {
           </div>
 
           {/* Undo / Redo + Profile selector */}
-          <div className="flex items-center gap-2 sm:gap-3 ms-auto flex-wrap order-0 sm:order-none w-full sm:w-auto justify-between sm:justify-end px-2 py-1 sm:px-0 sm:py-0">
+          <div className="flex items-center gap-2 sm:gap-3 ms-auto flex-wrap order-0 sm:order-none w-full sm:w-auto justify-between sm:justify-end px-2 py-0.5 sm:px-0 sm:py-0">
             <div className="flex items-center gap-1">
               <button
                 onClick={undo}
