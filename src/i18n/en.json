@@ -145,8 +145,10 @@
     "titleShort": "Ranked Apts.",
     "howToUse": "Browse your ranked apartments. Use the filters to narrow the list, click a row to see full details and add notes, or drag rows to set a manual order.",
     "viewMode": "View mode",
-    "viewModeList": "List",
-    "viewModeBuildings": "Buildings"
+    "viewModeWide": "Wide",
+    "viewModeNarrow": "Narrow",
+    "viewModeWideTooltip": "Wide layout — buildings grouped per lot in three columns",
+    "viewModeNarrowTooltip": "Narrow layout — all buildings in a single vertical list"
   },
   "buildingsView": {
     "buildingTitle": "Building {{key}}",
@@ -164,7 +166,9 @@
     "alsoHere": "also",
     "collapseAll": "Collapse all",
     "expandAll": "Expand all",
-    "title": "Apartments by Building",
+    "lotTitle": "Lot {{lot}}",
+    "lotSummary": "{{buildings}} buildings · {{total}} apartments",
+    "title": "Buildings Layout",
     "titleShort": "By Building",
     "howToUse": "View apartments laid out by building — each row is a floor and each column an air direction. Click any apartment cell to see full details. Sold or excluded apartments are dimmed in place to keep the building's layout intact."
   },

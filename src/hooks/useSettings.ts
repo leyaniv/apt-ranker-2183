@@ -25,6 +25,14 @@ export interface AppSettings {
    * the user opts in via the toggle.
    */
   showExcluded: boolean;
+  /**
+   * Layout mode for the Buildings tab.
+   *  - "wide" (default): per-lot 3-column layout — big building on the left,
+   *    smaller buildings distributed across two narrower columns.
+   *  - "narrow": one long top-to-bottom list of buildings (the original
+   *    layout). Forced on small viewports regardless of this setting.
+   */
+  buildingsViewMode: "wide" | "narrow";
 }
 
 const DEFAULTS: AppSettings = {
@@ -35,6 +43,7 @@ const DEFAULTS: AppSettings = {
   scoringInputStyle: "buttons",
   showSold: true,
   showExcluded: false,
+  buildingsViewMode: "wide",
 };
 
 function load(): AppSettings {
