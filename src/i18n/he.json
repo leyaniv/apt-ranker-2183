@@ -77,8 +77,8 @@
     "floor": "קומה",
     "floorShort": "ק'",
     "floorShort": "ק'",
-    "priceMillions": "מש\"ח",
-    "areaUnit": "מ״ר",
+    "priceMillions": "₪",
+    "areaUnit": "מ'",
     "price": "מחיר",
     "area": "שטח",
     "balcony": "מרפסת",
@@ -174,7 +174,7 @@
     "lotTitle": "מגרש {{lot}}",
     "lotSummary": "{{buildings}} בניינים · {{total}} דירות",
     "title": "תצוגת בניינים",
-    "titleShort": "לפי בניין",
+    "titleShort": "תצוגת בניינים",
     "howToUse": "צפו בדירות בפריסה לפי בניין — כל שורה היא קומה וכל עמודה היא כיוון אוויר. לחצו על תא של דירה כדי לראות את הפרטים המלאים. דירות שנמכרו או הוחרגו מעומעמות במקומן כדי לשמור על פריסת הבניין."
   },
   "detail": {
@@ -206,6 +206,7 @@
     "soldOfficial": "נמכרה (רשמית)",
     "soldOfficialTooltip": "הקבלן סימן את הדירה כנמכרת (נמכר).",
     "hasNote": "לדירה זו יש הערה",
+    "additionalInfo": "מידע נוסף",
     "scoreBreakdown": "פירוט ציון",
     "colField": "שדה",
     "colValue": "ערך",
@@ -213,6 +214,13 @@
     "colWeight": "משקל",
     "colWeighted": "משוקלל",
     "totalScore": "התאמה כוללת",
+    "manualAdjustment": "התאמה ידנית",
+    "manualAdjustmentHelp": "כוונון התאמה כוללת ב-±10%",
+    "manualAdjustmentValue": "{{sign}}{{value}}%",
+    "manualAdjustmentZero": "0%",
+    "adjustmentReset": "אפס ל-0",
+    "adjustmentTooltip": "כוונון ידני: {{sign}}{{value}}%",
+    "totalScoreAdjustedDetail": "בסיס {{base}}%, {{sign}}{{delta}}%",
     "propertySlug": "מזהה דירה"
   },
   "compare": {

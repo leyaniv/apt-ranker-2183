@@ -161,6 +161,7 @@ export function CombineView() {
       weights: merged.weights,
       ...(merged.notes ? { notes: merged.notes } : {}),
       ...(merged.manualOrder ? { manualOrder: merged.manualOrder } : {}),
+      ...(merged.manualAdjustments ? { manualAdjustments: merged.manualAdjustments } : {}),
     });
 
     setMergeModalOpen(false);

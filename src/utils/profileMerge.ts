@@ -29,6 +29,7 @@ export interface MergedProfileData {
   weights: ImportanceWeights;
   notes?: Record<string, string>;
   manualOrder?: string[];
+  manualAdjustments?: Record<string, number>;
 }
 
 export interface MergeProfilesOptions {
@@ -111,11 +112,39 @@ export function mergeProfiles(
     if (parts.length > 0) notes[slug] = parts.join("\n\n");
   }
 
+  // Manual adjustments: weighted-average per slug across profiles that set
+  // it, then round to integer to match the slider's resolution. Slugs that
+  // average to 0 are dropped to keep the merged profile clean.
+  const adjustmentSlugs = new Set<string>();
+  for (const p of sources) {
+    if (p.manualAdjustments) {
+      for (const s of Object.keys(p.manualAdjustments)) adjustmentSlugs.add(s);
+    }
+  }
+  const mergedAdjustments: Record<string, number> = {};
+  for (const slug of adjustmentSlugs) {
+    let aSum = 0;
+    let aTot = 0;
+    for (const p of sources) {
+      const v = p.manualAdjustments?.[slug];
+      if (typeof v !== "number" || !Number.isFinite(v)) continue;
+      const pw = weightOf(p);
+      aSum += v * pw;
+      aTot += pw;
+    }
+    if (aTot > 0) {
+      const avg = Math.round(aSum / aTot);
+      const clamped = Math.max(-10, Math.min(10, avg));
+      if (clamped !== 0) mergedAdjustments[slug] = clamped;
+    }
+  }
+
   const result: MergedProfileData = {
     scores: mergedScores,
     weights: mergedWeights,
   };
   if (Object.keys(notes).length > 0) result.notes = notes;
   if (manualOrder && manualOrder.length > 0) result.manualOrder = manualOrder;
+  if (Object.keys(mergedAdjustments).length > 0) result.manualAdjustments = mergedAdjustments;
   return result;
 }

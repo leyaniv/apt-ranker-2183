@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as Collapsible from "@radix-ui/react-collapsible";
+import * as Slider from "@radix-ui/react-slider";
 import type { Apartment, ParameterId } from "../../types";
 import { resolveLocale } from "../../utils/locale";
 import { useApp } from "../../context/AppContext";
@@ -10,6 +11,11 @@ import { PARAMETER_CONFIGS } from "../../utils/parameterConfigs";
 /** Default importance weight when a parameter has no explicit weight set
  *  (kept in sync with `DEFAULT_WEIGHT` in `utils/scoring.ts`). */
 const DEFAULT_WEIGHT = 3;
+
+/** Manual adjustment slider bounds (kept in sync with `clampAdjustment`
+ *  in `utils/scoring.ts`). */
+const MANUAL_ADJUSTMENT_MIN = -10;
+const MANUAL_ADJUSTMENT_MAX = 10;
 
 /** Minimum width (px) for the scoring column at which the breakdown is
  *  rendered with separate Score / Weight / Weighted columns instead of a
@@ -46,10 +52,31 @@ interface DetailRowDef {
  */
 export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNoteChange, excludedReason = null }: ApartmentDetailProps) {
   const { t, i18n } = useTranslation();
-  const { settings, toggleUserSoldMark, toggleUserExcluded, userExcludedSet, weights } = useApp();
+  const {
+    settings,
+    toggleUserSoldMark,
+    toggleUserExcluded,
+    userExcludedSet,
+    weights,
+    manualAdjustments,
+    setManualAdjustment,
+  } = useApp();
   const lang = resolveLocale(i18n.language);
   const isDesktop = useIsDesktop();
   const [notesOpen, setNotesOpen] = useState(false);
+  const [breakdownOpen, setBreakdownOpen] = useState(false);
+  const [additionalInfoOpen, setAdditionalInfoOpen] = useState(false);
+
+  // Manual scoring adjustment (per-profile, per-apartment).
+  // Local state mirrors the slider thumb during drag so we don't trigger a
+  // full re-rank on every pixel; the committed value is propagated to the
+  // active profile only on release (or keyboard adjust).
+  const persistedAdjustment = manualAdjustments[apartment.property_slug] ?? 0;
+  const [draftAdjustment, setDraftAdjustment] = useState<number>(persistedAdjustment);
+  const draggingAdjustmentRef = useRef(false);
+  useEffect(() => {
+    if (!draggingAdjustmentRef.current) setDraftAdjustment(persistedAdjustment);
+  }, [persistedAdjustment]);
 
   // Watch the scoring column's width so we can switch between the compact
   // "weighted only" breakdown and the expanded Score · Weight · Weighted
@@ -149,7 +176,13 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
   // sync with the numerator and the percentage cannot exceed 100%.
   const totalContribution = Object.values(breakdown).reduce((sum, v) => sum + v, 0);
   const maxPossible = totalWeight * 5;
-  const totalPercent = maxPossible > 0 ? (totalContribution / maxPossible) * 100 : null;
+  const basePercent = maxPossible > 0 ? (totalContribution / maxPossible) * 100 : null;
+  // Show the live (unsaved) draft so dragging the slider feels responsive.
+  // Excluded apartments don't get an applied nudge in the engine, so we hide
+  // the delta from the total here too to stay consistent.
+  const displayAdjustment = excludedReason === "scoring" ? 0 : draftAdjustment;
+  const totalPercent =
+    basePercent != null ? basePercent + displayAdjustment : null;
 
   const pdfs = [
     { label: t("detail.pdfApartment"), url: apartment.pdf_apartment_plan_url },
@@ -263,89 +296,165 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
     <div className="px-4 pt-3 pb-4 text-sm">
       {!isDesktop && actionButtons}
       <div className={`${!isDesktop ? "mt-3" : ""} grid grid-cols-1 gap-x-8 gap-y-3 ${isDesktop ? "grid-cols-2" : ""}`}>
-      <div ref={scoringColRef} className="space-y-2">
-        {/* Column header */}
-        <div
-          className={`grid items-baseline gap-x-2 px-1 pb-1 border-b border-gray-200 text-[10px] font-medium uppercase tracking-wide text-gray-500 ${
-            expandedBreakdown
-              ? "grid-cols-[1fr_1fr_2.5rem_2.5rem_2.5rem]"
-              : "grid-cols-[1fr_1fr_2.5rem]"
-          }`}
-        >
-          <span>{t("detail.colField")}</span>
-          <span>{t("detail.colValue")}</span>
-          {expandedBreakdown ? (
-            <>
-              <span className="text-end">{t("detail.colScore")}</span>
-              <span className="text-end">{t("detail.colWeight")}</span>
-              <span className="text-end">{t("detail.colWeighted")}</span>
-            </>
-          ) : (
-            <span className="text-end">{t("detail.colScore")}</span>
-          )}
-        </div>
-        {/* Merged rows: label | value | score [| weight | weighted] */}
-        <div className="space-y-1">
-          {rows.filter((r) => r.paramId).map((row) => {
-            const contribution = row.paramId ? breakdown[row.paramId] : undefined;
-            const weight = row.paramId ? weights[row.paramId] ?? DEFAULT_WEIGHT : undefined;
-            const valueScore =
-              contribution != null && weight != null && weight > 0
-                ? contribution / weight
-                : undefined;
-            return (
-              <DetailRow
-                key={row.key}
-                label={row.label}
-                value={row.value}
-                score={contribution}
-                valueScore={valueScore}
-                weight={weight}
-                expanded={expandedBreakdown}
-                maxContribution={maxContribution}
-              />
-            );
-          })}
-        </div>
-        {/* Total row */}
-        {totalPercent != null && (
-          <div
-            className={`grid items-baseline gap-x-2 mt-2 pt-2 border-t border-gray-200 text-sm font-semibold ${
-              expandedBreakdown
-                ? "grid-cols-[1fr_1fr_2.5rem_2.5rem_2.5rem]"
-                : "grid-cols-[1fr_1fr_2.5rem]"
-            }`}
+      <Collapsible.Root
+        open={isDesktop || breakdownOpen}
+        onOpenChange={setBreakdownOpen}
+        className="space-y-1"
+      >
+        {!isDesktop && (
+          <Collapsible.Trigger
+            className="w-full flex items-center justify-between gap-2 px-3 py-2
+                       text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md
+                       hover:bg-gray-50 hover:border-gray-400 transition-colors"
           >
-            <span className="text-gray-700">{t("detail.totalScore")}</span>
-            <span />
-            {expandedBreakdown && <span />}
-            {expandedBreakdown && <span />}
-            <span dir="ltr" className="tabular-nums text-end text-gray-800">
-              {totalPercent.toFixed(0)}%
+            <span className="flex items-center gap-1.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-4 h-4 text-gray-500"
+                aria-hidden="true"
+              >
+                <path d="M15.5 2A1.5 1.5 0 0 0 14 3.5v13a1.5 1.5 0 0 0 1.5 1.5h1a1.5 1.5 0 0 0 1.5-1.5v-13A1.5 1.5 0 0 0 16.5 2h-1ZM9.5 6A1.5 1.5 0 0 0 8 7.5v9A1.5 1.5 0 0 0 9.5 18h1a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 10.5 6h-1ZM3.5 10A1.5 1.5 0 0 0 2 11.5v5A1.5 1.5 0 0 0 3.5 18h1A1.5 1.5 0 0 0 6 16.5v-5A1.5 1.5 0 0 0 4.5 10h-1Z" />
+              </svg>
+              {t("detail.scoreBreakdown")}
             </span>
-          </div>
+            <span className="flex items-center gap-1.5">
+              {totalPercent != null && (
+                <span
+                  dir="ltr"
+                  className={`tabular-nums text-xs font-semibold ${
+                    displayAdjustment > 0
+                      ? "text-blue-700"
+                      : displayAdjustment < 0
+                        ? "text-amber-700"
+                        : "text-gray-700"
+                  }`}
+                >
+                  {totalPercent.toFixed(0)}%
+                </span>
+              )}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className={`w-4 h-4 text-gray-500 transition-transform ${breakdownOpen ? "rotate-180" : ""}`}
+              >
+                <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+              </svg>
+            </span>
+          </Collapsible.Trigger>
         )}
-      </div>
-
-      {/* Right column: IDs + notes + parking + PDFs */}
-      {(rows.some((r) => !r.paramId) || onNoteChange || pdfs.length > 0 || parkingSpots.length > 0) && (
-        <div className="flex flex-col gap-3">
-          {/* Unscored / metadata rows (storage ID, property ID) */}
-          {rows.some((r) => !r.paramId) && (
-            <div className="space-y-1">
-              {rows.filter((r) => !r.paramId).map((row) => (
-                <div key={row.key} className="flex items-baseline justify-between gap-2">
-                  <span className="text-gray-500 truncate">{row.label}</span>
-                  <span className="font-medium text-gray-800 text-end truncate">{row.value}</span>
-                </div>
-              ))}
+        <Collapsible.Content className="data-[state=open]:block">
+          <div ref={scoringColRef} className="space-y-2">
+            {/* Column header */}
+            <div
+              className={`grid items-baseline gap-x-2 px-1 pb-1 border-b border-gray-200 text-[10px] font-medium uppercase tracking-wide text-gray-500 ${
+                expandedBreakdown
+                  ? "grid-cols-[1fr_1fr_2.5rem_2.5rem_2.5rem]"
+                  : "grid-cols-[1fr_1fr_2.5rem]"
+              }`}
+            >
+              <span>{t("detail.colField")}</span>
+              <span>{t("detail.colValue")}</span>
+              {expandedBreakdown ? (
+                <>
+                  <span className="text-end">{t("detail.colScore")}</span>
+                  <span className="text-end">{t("detail.colWeight")}</span>
+                  <span className="text-end">{t("detail.colWeighted")}</span>
+                </>
+              ) : (
+                <span className="text-end">{t("detail.colScore")}</span>
+              )}
             </div>
-          )}
+            {/* Merged rows: label | value | score [| weight | weighted] */}
+            <div className="space-y-1">
+              {rows.filter((r) => r.paramId).map((row) => {
+                const contribution = row.paramId ? breakdown[row.paramId] : undefined;
+                const weight = row.paramId ? weights[row.paramId] ?? DEFAULT_WEIGHT : undefined;
+                const valueScore =
+                  contribution != null && weight != null && weight > 0
+                    ? contribution / weight
+                    : undefined;
+                return (
+                  <DetailRow
+                    key={row.key}
+                    label={row.label}
+                    value={row.value}
+                    score={contribution}
+                    valueScore={valueScore}
+                    weight={weight}
+                    expanded={expandedBreakdown}
+                    maxContribution={maxContribution}
+                  />
+                );
+              })}
+            </div>
+            {/* Total row */}
+            {totalPercent != null && basePercent != null && (
+              <div
+                className={`grid items-baseline gap-x-2 mt-2 pt-2 border-t border-gray-200 text-sm font-semibold ${
+                  expandedBreakdown
+                    ? "grid-cols-[1fr_1fr_2.5rem_2.5rem_2.5rem]"
+                    : "grid-cols-[1fr_1fr_2.5rem]"
+                }`}
+              >
+                <span className="text-gray-700">{t("detail.totalScore")}</span>
+                {displayAdjustment !== 0 ? (
+                  <span dir="ltr" className="text-[10px] font-normal text-gray-500 truncate">
+                    {t("detail.totalScoreAdjustedDetail", {
+                      base: basePercent.toFixed(0),
+                      sign: displayAdjustment > 0 ? "+" : "−",
+                      delta: Math.abs(displayAdjustment).toFixed(0),
+                    })}
+                  </span>
+                ) : (
+                  <span />
+                )}
+                {expandedBreakdown && <span />}
+                {expandedBreakdown && <span />}
+                <span
+                  dir="ltr"
+                  className={`tabular-nums text-end ${
+                    displayAdjustment > 0
+                      ? "text-blue-700"
+                      : displayAdjustment < 0
+                        ? "text-amber-700"
+                        : "text-gray-800"
+                  }`}
+                >
+                  {totalPercent.toFixed(0)}%
+                </span>
+              </div>
+            )}
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
 
+      {/* Right column: IDs + notes + manual adjustment + parking + PDFs.
+          Always renders because the manual adjustment slider is always
+          available; inner blocks remain individually conditional. */}
+      <div className="flex flex-col gap-3">
           {/* Mark-as-sold + Mark-as-excluded controls.
               On mobile these are rendered above the grid; on desktop they
               stay in the right column alongside notes and PDFs. */}
           {isDesktop && actionButtons}
+
+          <ManualAdjustmentSlider
+            value={draftAdjustment}
+            persistedValue={persistedAdjustment}
+            onDrag={(v) => {
+              draggingAdjustmentRef.current = true;
+              setDraftAdjustment(v);
+            }}
+            onCommit={(v) => {
+              draggingAdjustmentRef.current = false;
+              setDraftAdjustment(v);
+              if (v !== persistedAdjustment) {
+                setManualAdjustment(apartment.property_slug, v);
+              }
+            }}
+          />
 
           {onNoteChange && (
             <Collapsible.Root
@@ -406,43 +515,118 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
             </Collapsible.Root>
           )}
 
-          {parkingSpots.length > 0 && (
-            <div className="flex items-baseline justify-between gap-2">
-              <span className="text-gray-500 truncate">{t("detail.parking")}</span>
-              <span dir="ltr" className="font-medium text-gray-800 text-end tabular-nums">
-                {parkingSpots.join(", ")}
-              </span>
-            </div>
-          )}
+          {/* Parking + PDF links + (developer) property ID.
+              Desktop: rendered inline as separate blocks.
+              Mobile : grouped into an "Additional Info" collapsible to keep
+                       the apartment detail compact. The collapsible only renders
+                       if at least one of the three sub-blocks has content. */}
+          {(() => {
+            const unscoredRows = rows.filter((r) => !r.paramId);
+            const hasAdditional =
+              parkingSpots.length > 0 || pdfs.length > 0 || unscoredRows.length > 0;
+            if (!hasAdditional) return null;
 
-          {pdfs.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {pdfs.map((pdf) => (
-                <a
-                  key={pdf.label}
-                  href={pdf.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs
-                             font-medium text-blue-600 bg-blue-50 rounded-md
-                             hover:bg-blue-100 transition-colors"
+            const unscoredBlock = unscoredRows.length > 0 && (
+              <div className="space-y-1">
+                {unscoredRows.map((row) => (
+                  <div key={row.key} className="flex items-baseline justify-between gap-2">
+                    <span className="text-gray-500 truncate">{row.label}</span>
+                    <span className="font-medium text-gray-800 text-end truncate">{row.value}</span>
+                  </div>
+                ))}
+              </div>
+            );
+            const parkingBlock = parkingSpots.length > 0 && (
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-gray-500 truncate">{t("detail.parking")}</span>
+                <span dir="ltr" className="font-medium text-gray-800 text-end tabular-nums">
+                  {parkingSpots.join(", ")}
+                </span>
+              </div>
+            );
+            const pdfsBlock = pdfs.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {pdfs.map((pdf) => (
+                  <a
+                    key={pdf.label}
+                    href={pdf.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs
+                               font-medium text-blue-600 bg-blue-50 rounded-md
+                               hover:bg-blue-100 transition-colors"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-3.5 h-3.5"
+                      aria-hidden="true"
+                    >
+                      <path fillRule="evenodd" d="M4 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.414A2 2 0 0 0 17.414 7L13 2.586A2 2 0 0 0 11.586 2H4Zm8 1.5V7a1 1 0 0 0 1 1h3.5L12 3.5ZM6 10.75A.75.75 0 0 1 6.75 10h6.5a.75.75 0 0 1 0 1.5h-6.5A.75.75 0 0 1 6 10.75Zm.75 2.75a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5h-4.5Z" clipRule="evenodd" />
+                    </svg>
+                    {pdf.label}
+                  </a>
+                ))}
+              </div>
+            );
+
+            if (isDesktop) {
+              // Desktop keeps the original layout: unscored rows up top
+              // (rendered earlier in the column on mobile, here at the bottom
+              // for desktop visual flow), parking, then PDFs.
+              return (
+                <>
+                  {unscoredBlock}
+                  {parkingBlock}
+                  {pdfsBlock}
+                </>
+              );
+            }
+
+            return (
+              <Collapsible.Root
+                open={additionalInfoOpen}
+                onOpenChange={setAdditionalInfoOpen}
+                className="space-y-2"
+              >
+                <Collapsible.Trigger
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2
+                             text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md
+                             hover:bg-gray-50 hover:border-gray-400 transition-colors"
                 >
+                  <span className="flex items-center gap-1.5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-gray-500"
+                      aria-hidden="true"
+                    >
+                      <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clipRule="evenodd" />
+                    </svg>
+                    {t("detail.additionalInfo")}
+                  </span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
-                    className="w-3.5 h-3.5"
-                    aria-hidden="true"
+                    className={`w-4 h-4 text-gray-500 transition-transform ${additionalInfoOpen ? "rotate-180" : ""}`}
                   >
-                    <path fillRule="evenodd" d="M4 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.414A2 2 0 0 0 17.414 7L13 2.586A2 2 0 0 0 11.586 2H4Zm8 1.5V7a1 1 0 0 0 1 1h3.5L12 3.5ZM6 10.75A.75.75 0 0 1 6.75 10h6.5a.75.75 0 0 1 0 1.5h-6.5A.75.75 0 0 1 6 10.75Zm.75 2.75a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5h-4.5Z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                   </svg>
-                  {pdf.label}
-                </a>
-              ))}
-            </div>
-          )}
+                </Collapsible.Trigger>
+                <Collapsible.Content className="data-[state=open]:block">
+                  <div className="flex flex-col gap-3 pt-1">
+                    {parkingBlock}
+                    {pdfsBlock}
+                    {unscoredBlock}
+                  </div>
+                </Collapsible.Content>
+              </Collapsible.Root>
+            );
+          })()}
         </div>
-      )}
       </div>
     </div>
   );
@@ -508,6 +692,130 @@ function DetailRow({
           {score != null ? score.toFixed(1) : "—"}
         </span>
       )}
+    </div>
+  );
+}
+
+/**
+ * Per-apartment manual scoring nudge slider, -10 to +10 percentage points
+ * applied on top of the apartment's Overall Match. Local state mirrors the
+ * thumb during drag and only commits to the active profile on release, to
+ * avoid re-ranking every apartment on each pixel of motion.
+ */
+function ManualAdjustmentSlider({
+  value,
+  persistedValue,
+  onDrag,
+  onCommit,
+}: {
+  value: number;
+  /** Last persisted value — used to render the reset button visibility. */
+  persistedValue: number;
+  onDrag: (v: number) => void;
+  onCommit: (v: number) => void;
+}) {
+  const { t } = useTranslation();
+  const isPositive = value > 0;
+  const isNegative = value < 0;
+  const sign = isPositive ? "+" : isNegative ? "−" : "";
+  const badgeLabel =
+    value === 0
+      ? t("detail.manualAdjustmentZero")
+      : t("detail.manualAdjustmentValue", { sign, value: Math.abs(value) });
+  const badgeColor =
+    isPositive
+      ? "bg-blue-50 text-blue-700 border-blue-200"
+      : isNegative
+        ? "bg-amber-50 text-amber-800 border-amber-200"
+        : "bg-gray-50 text-gray-500 border-gray-200";
+  const rangeColor =
+    isPositive
+      ? "bg-blue-500"
+      : isNegative
+        ? "bg-amber-500"
+        : "bg-gray-300";
+  const thumbBorderColor =
+    isPositive
+      ? "border-blue-500"
+      : isNegative
+        ? "border-amber-500"
+        : "border-gray-400";
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-xs font-medium text-gray-700 whitespace-nowrap">
+          {t("detail.manualAdjustment")}
+        </span>
+        <span className="text-[11px] font-normal text-gray-400 truncate flex-1">
+          {t("detail.manualAdjustmentHelp")}
+        </span>
+        <span
+          dir="ltr"
+          className={`text-[11px] font-mono tabular-nums px-1.5 py-0.5 rounded border ${badgeColor}`}
+        >
+          {badgeLabel}
+        </span>
+        {persistedValue !== 0 && (
+          <button
+            type="button"
+            onClick={() => onCommit(0)}
+            title={t("detail.adjustmentReset")}
+            aria-label={t("detail.adjustmentReset")}
+            className="inline-flex items-center justify-center w-5 h-5 rounded
+                       text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clipRule="evenodd" />
+            </svg>
+          </button>
+        )}
+      </div>
+      <div className="relative px-2">
+        {/* Center tick at 0 to make the neutral position discoverable. */}
+        <div
+          aria-hidden="true"
+          className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-px h-3 bg-gray-300 pointer-events-none"
+        />
+        <Slider.Root
+          className="relative flex items-center select-none touch-none w-full h-5"
+          value={[value]}
+          min={MANUAL_ADJUSTMENT_MIN}
+          max={MANUAL_ADJUSTMENT_MAX}
+          step={1}
+          onValueChange={(vs) => onDrag(vs[0])}
+          onValueCommit={(vs) => onCommit(vs[0])}
+          aria-label={t("detail.manualAdjustment")}
+          dir="ltr"
+        >
+          <Slider.Track className="bg-gray-200 relative grow rounded-full h-1.5">
+            {/*
+              Custom range bar: Radix's <Slider.Range> always draws from `min`
+              to the thumb, but for a centered slider we want the colored bar
+              to go from 50% to the thumb on either side. We render our own
+              absolute-positioned bar instead.
+            */}
+            <div
+              className={`absolute h-full rounded-full ${rangeColor}`}
+              style={
+                value >= 0
+                  ? {
+                      left: "50%",
+                      width: `${(value / MANUAL_ADJUSTMENT_MAX) * 50}%`,
+                    }
+                  : {
+                      right: "50%",
+                      width: `${(Math.abs(value) / Math.abs(MANUAL_ADJUSTMENT_MIN)) * 50}%`,
+                    }
+              }
+            />
+          </Slider.Track>
+          <Slider.Thumb
+            className={`block w-4 h-4 bg-white border-2 rounded-full shadow
+                       focus:outline-none focus:ring-2 focus:ring-blue-400 ${thumbBorderColor}`}
+          />
+        </Slider.Root>
+      </div>
     </div>
   );
 }

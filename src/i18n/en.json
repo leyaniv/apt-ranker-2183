@@ -77,7 +77,7 @@
     "floor": "Floor",
     "floorShort": "F",
     "floorShort": "fl",
-    "priceMillions": "m₪",
+    "priceMillions": "₪",
     "areaUnit": "m²",
     "price": "Price",
     "area": "Area",
@@ -147,7 +147,7 @@
     "unsavedOrderMessage": "You have unsaved changes to the manual order. Would you like to save or discard them before leaving?",
     "discardOrder": "Discard",
     "title": "Ranked Apartments",
-    "titleShort": "Ranked Apts.",
+    "titleShort": "Ranked Apartments",
     "howToUse": "Browse your ranked apartments. Use the filters to narrow the list, click a row to see full details and add notes, or drag rows to set a manual order.",
     "viewMode": "View mode",
     "viewModeWide": "Wide",
@@ -174,7 +174,7 @@
     "lotTitle": "Lot {{lot}}",
     "lotSummary": "{{buildings}} buildings · {{total}} apartments",
     "title": "Buildings Layout",
-    "titleShort": "By Building",
+    "titleShort": "Buildings Layout",
     "howToUse": "View apartments laid out by building — each row is a floor and each column an air direction. Click any apartment cell to see full details. Sold or excluded apartments are dimmed in place to keep the building's layout intact."
   },
   "detail": {
@@ -206,6 +206,7 @@
     "soldOfficial": "Sold (official)",
     "soldOfficialTooltip": "This apartment is marked sold by the contractor (נמכר).",
     "hasNote": "This apartment has a note",
+    "additionalInfo": "Additional Info",
     "scoreBreakdown": "Score Breakdown",
     "colField": "Field",
     "colValue": "Value",
@@ -213,6 +214,13 @@
     "colWeight": "Weight",
     "colWeighted": "Weighted",
     "totalScore": "Overall Match",
+    "manualAdjustment": "Manual adjustment",
+    "manualAdjustmentHelp": "Nudge overall match by ±10%",
+    "manualAdjustmentValue": "{{sign}}{{value}}%",
+    "manualAdjustmentZero": "0%",
+    "adjustmentReset": "Reset to 0",
+    "adjustmentTooltip": "Manually adjusted: {{sign}}{{value}}%",
+    "totalScoreAdjustedDetail": "base {{base}}%, {{sign}}{{delta}}%",
     "propertySlug": "Property ID"
   },
   "compare": {

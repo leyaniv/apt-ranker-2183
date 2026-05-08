@@ -25,6 +25,23 @@ const DEFAULT_SCORE = 3;
 /** Default importance weight */
 const DEFAULT_WEIGHT = 3;
 
+/** Allowed range for the per-apartment manual adjustment (in percentage
+ *  points of the displayed Overall Match). Mirrors the slider in the
+ *  apartment detail view. */
+const MANUAL_ADJUSTMENT_MIN = -10;
+const MANUAL_ADJUSTMENT_MAX = 10;
+
+/**
+ * Clamp a manual adjustment to the supported range. Treats non-finite values
+ * as 0 so a stray NaN or undefined never poisons the ranking math.
+ */
+function clampAdjustment(value: number | undefined | null): number {
+  if (value == null || !Number.isFinite(value)) return 0;
+  if (value < MANUAL_ADJUSTMENT_MIN) return MANUAL_ADJUSTMENT_MIN;
+  if (value > MANUAL_ADJUSTMENT_MAX) return MANUAL_ADJUSTMENT_MAX;
+  return value;
+}
+
 /**
  * Get the value key for an apartment for a given parameter.
  * This maps the apartment's actual data to the key used in ValueScores.
@@ -128,13 +145,22 @@ function getParameterScore(
  * Returns `excluded: true` when at least one contributing parameter has
  * score 0 for this apartment (and `respectExclusions` is true). Excluded
  * apartments should be removed from the ranking before normalization.
+ *
+ * `adjustment` is the user's manual nudge in [-10, +10] percentage points
+ * (see the slider below the notes section in `ApartmentDetail`). The
+ * displayed Overall Match is `weightedSum / (totalWeight * 5) * 100`, so
+ * adding `M` percentage points to that display equals adding `M / 20` to the
+ * per-unit-weight `totalScore`. Excluded apartments do not have the
+ * adjustment applied (their score is meaningless until exclusions are
+ * lifted via `respectExclusions=false`).
  */
 export function computeApartmentScore(
   apt: Apartment,
   scores: ValueScores,
   weights: ImportanceWeights,
   buckets: BucketMap,
-  respectExclusions: boolean = true
+  respectExclusions: boolean = true,
+  adjustment: number = 0
 ): {
   totalScore: number;
   totalWeight: number;
@@ -171,7 +197,11 @@ export function computeApartmentScore(
     totalWeight += weight;
   }
 
-  const totalScore = totalWeight > 0 ? weightedSum / totalWeight : DEFAULT_SCORE;
+  let totalScore = totalWeight > 0 ? weightedSum / totalWeight : DEFAULT_SCORE;
+  if (!excluded) {
+    const m = clampAdjustment(adjustment);
+    if (m !== 0) totalScore += m / 20;
+  }
   return { totalScore, totalWeight, breakdown, excluded };
 }
 
@@ -189,6 +219,9 @@ export function computeApartmentScore(
  * number, and are excluded from the min/max used for normalization
  * (the same linear transform is then applied to them, so they typically
  * sink to the bottom of the list).
+ *
+ * `adjustments` (property_slug → -10..+10) applies the user's manual
+ * per-apartment nudge before normalization. See `computeApartmentScore`.
  */
 export function rankApartments(
   apartments: Apartment[],
@@ -196,17 +229,20 @@ export function rankApartments(
   weights: ImportanceWeights,
   buckets: BucketMap,
   respectExclusions: boolean = true,
-  includeExcluded: boolean = false
+  includeExcluded: boolean = false,
+  adjustments?: Record<string, number>
 ): RankedApartment[] {
   const ranked: RankedApartment[] = [];
   for (const apt of apartments) {
+    const adj = adjustments?.[apt.property_slug] ?? 0;
     const { totalScore, totalWeight, breakdown, excluded } =
-      computeApartmentScore(apt, scores, weights, buckets, respectExclusions);
+      computeApartmentScore(apt, scores, weights, buckets, respectExclusions, adj);
     if (excluded) {
       if (!includeExcluded) continue;
       // Re-score with exclusions disabled (0→1) so excluded apts have a
-      // real, sortable number rather than 0.
-      const noVeto = computeApartmentScore(apt, scores, weights, buckets, false);
+      // real, sortable number rather than 0. The manual nudge still applies
+      // so excluded entries that the user has down-weighted stay sunk.
+      const noVeto = computeApartmentScore(apt, scores, weights, buckets, false, adj);
       ranked.push({
         apartment: apt,
         totalScore: noVeto.totalScore,
@@ -276,7 +312,15 @@ export function computeCombinedRanking(
   const excludedFromCombined = new Set<string>();
   for (const p of profiles) {
     const respect = respectExclusions?.[p.id] ?? false;
-    const ranked = rankApartments(apartments, p.scores, p.weights, buckets, respect);
+    const ranked = rankApartments(
+      apartments,
+      p.scores,
+      p.weights,
+      buckets,
+      respect,
+      false,
+      p.manualAdjustments
+    );
     const slugMap = new Map<string, number>();
     for (const r of ranked) {
       slugMap.set(r.apartment.property_slug, r.totalScore);

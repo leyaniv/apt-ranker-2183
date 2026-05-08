@@ -18,6 +18,12 @@ interface ApartmentRowProps {
   note?: string;
   onNoteChange?: (slug: string, text: string) => void;
   /**
+   * Manual scoring adjustment for this apartment under the active profile,
+   * in percentage points. `0` or absent = no nudge. Surfaced as an inline
+   * up/down arrow next to the score badge.
+   */
+  adjustment?: number;
+  /**
    * Why this apartment is excluded in the active profile, if at all.
    *  - `manual`  — user clicked "Mark as excluded" in the detail view.
    *  - `scoring` — at least one contributing parameter scored 0 (✕) for
@@ -50,7 +56,7 @@ function scoreColor(score: number): string {
  */
 export const ApartmentRow = memo(function ApartmentRow({
   ranked, rank, isOpen, onToggle, isDesktop, tier = 1,
-  hasNote, note, onNoteChange, excludedReason = null, originalRank, dropTargetSlug,
+  hasNote, note, onNoteChange, adjustment = 0, excludedReason = null, originalRank, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: ApartmentRowProps) {
   const { t } = useTranslation();
@@ -203,13 +209,11 @@ export const ApartmentRow = memo(function ApartmentRow({
                   >
                     {totalScore.toFixed(2)}
                   </span>
+                  {adjustment !== 0 && (
+                    <AdjustmentArrow adjustment={adjustment} />
+                  )}
                   {hasNote && (
-                    <span
-                      className="text-amber-500 text-base font-bold leading-none cursor-default"
-                      title={t("detail.hasNote")}
-                    >
-                      *
-                    </span>
+                    <NoteIcon title={t("detail.hasNote")} />
                   )}
                 </span>
               </Collapsible.Trigger>
@@ -222,7 +226,7 @@ export const ApartmentRow = memo(function ApartmentRow({
                 e.dataTransfer.setData("text/plain", slug);
                 onDragStart?.(slug);
               }}
-              className={`flex items-center gap-1.5 px-3 py-2 hover:bg-gray-50 transition-colors cursor-grab active:cursor-grabbing
+              className={`@container/row flex items-center gap-1.5 px-3 py-2 hover:bg-gray-50 transition-colors cursor-grab active:cursor-grabbing
                           ${isOpen ? "bg-gray-50" : ""}`}
               title={t("results.dragHint")}
             >
@@ -261,10 +265,13 @@ export const ApartmentRow = memo(function ApartmentRow({
                 </span>
                 <span className="flex items-center gap-1 text-[11px] text-gray-500 shrink-0 whitespace-nowrap">
                   <span>{apartment.rooms} {t("results.roomsShort")}</span>
+                  {/* Floor info is the lowest-priority detail. Hide it on narrow rows
+                      whenever extra-width markers (note / manual adjustment) are present,
+                      since those are what tend to push the apt label off the line. */}
+                  <span className={`opacity-40 ${(hasNote || adjustment !== 0) ? "@max-[420px]/row:hidden" : "@max-[340px]/row:hidden"}`}>·</span>
+                  <span className={(hasNote || adjustment !== 0) ? "@max-[420px]/row:hidden" : "@max-[340px]/row:hidden"}>{t("results.floorShort")} {apartment.floor}</span>
                   <span className="opacity-40">·</span>
-                  <span>{t("results.floorShort")} {apartment.floor}</span>
-                  <span className="opacity-40">·</span>
-                  <span>{apartment.area_sqm} {t("results.areaUnit")}</span>
+                  <span>{Math.round(apartment.area_sqm)} {t("results.areaUnit")}</span>
                   <span className="opacity-40">·</span>
                   <span>{(apartment.price / 1_000_000).toFixed(3)} {t("results.priceMillions")}</span>
                 </span>
@@ -273,8 +280,11 @@ export const ApartmentRow = memo(function ApartmentRow({
                 >
                   {totalScore.toFixed(2)}
                 </span>
+                {adjustment !== 0 && (
+                  <AdjustmentArrow adjustment={adjustment} />
+                )}
                 {hasNote && (
-                  <span className="text-amber-500 text-base font-bold leading-none shrink-0" title={t("detail.hasNote")}>*</span>
+                  <NoteIcon title={t("detail.hasNote")} />
                 )}
               </Collapsible.Trigger>
             </div>
@@ -298,3 +308,60 @@ export const ApartmentRow = memo(function ApartmentRow({
     </div>
   );
 });
+
+/**
+ * Inline marker showing that the apartment has a free-text note in the
+ * active profile. Pencil-square icon in the same amber palette as the rest
+ * of the "note" affordances.
+ */
+function NoteIcon({ title }: { title: string }) {
+  return (
+    <span
+      title={title}
+      aria-label={title}
+      className="shrink-0 text-amber-500 inline-flex items-center cursor-default"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        className="w-3.5 h-3.5"
+        aria-hidden="true"
+      >
+        <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
+        <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
+      </svg>
+    </span>
+  );
+}
+
+/**
+ * Inline marker showing that the active profile has manually nudged this
+ * apartment's score. Direction-aware: blue triangle up for a positive nudge,
+ * amber triangle down for a negative nudge. Tooltip carries the exact value.
+ *
+ * Notes get their own pencil-square next to this — the two markers can
+ * coexist (e.g. an apartment with both a note and a +12% nudge shows `▲ ✎`).
+ */
+function AdjustmentArrow({ adjustment }: { adjustment: number }) {
+  const { t } = useTranslation();
+  if (adjustment === 0) return null;
+  const isPositive = adjustment > 0;
+  const sign = isPositive ? "+" : "−";
+  const tooltip = t("detail.adjustmentTooltip", {
+    sign,
+    value: Math.abs(adjustment),
+  });
+  const colorClass = isPositive
+    ? "text-blue-500"
+    : "text-amber-600 dark:text-amber-700";
+  return (
+    <span
+      aria-label={tooltip}
+      title={tooltip}
+      className={`text-[11px] leading-none shrink-0 cursor-default ${colorClass}`}
+    >
+      {isPositive ? "▲" : "▼"}
+    </span>
+  );
+}

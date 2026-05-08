@@ -117,6 +117,9 @@ export function duplicateProfile(sourceId: string, newName: string): Profile | n
     ...(source.excludedSlugs && source.excludedSlugs.length > 0
       ? { excludedSlugs: [...source.excludedSlugs] }
       : {}),
+    ...(source.manualAdjustments && Object.keys(source.manualAdjustments).length > 0
+      ? { manualAdjustments: { ...source.manualAdjustments } }
+      : {}),
   };
   profiles.push(clone);
   saveProfiles(profiles);
@@ -269,6 +272,15 @@ function isValidProfilePayload(parsed: unknown): parsed is Profile {
   for (const weight of Object.values(p.weights as ImportanceWeights)) {
     if (typeof weight !== "number" || weight < 1 || weight > 5) return false;
   }
+  // Optional manualAdjustments must be a flat slug→number map; values are
+  // sanitized in `materializeImportedProfile`, so we only enforce structure
+  // here (rejecting malformed shapes like nested objects or strings).
+  if (p.manualAdjustments !== undefined) {
+    if (!p.manualAdjustments || typeof p.manualAdjustments !== "object") return false;
+    for (const v of Object.values(p.manualAdjustments as Record<string, unknown>)) {
+      if (typeof v !== "number") return false;
+    }
+  }
   return true;
 }
 
@@ -298,6 +310,19 @@ function migrateProfileEnvelope<T extends ProfileEnvelope | ProfilesEnvelope>(en
 }
 
 function materializeImportedProfile(source: Profile): Profile {
+  // Sanitize manualAdjustments: keep only finite numeric values clamped to
+  // the supported [-10, 10] range, drop zeros, and round to integers so
+  // imported profiles stay aligned with the slider's resolution.
+  let cleanAdjustments: Record<string, number> | undefined;
+  if (source.manualAdjustments && typeof source.manualAdjustments === "object") {
+    const out: Record<string, number> = {};
+    for (const [slug, v] of Object.entries(source.manualAdjustments)) {
+      if (typeof v !== "number" || !Number.isFinite(v)) continue;
+      const clamped = Math.max(-10, Math.min(10, Math.round(v)));
+      if (clamped !== 0) out[slug] = clamped;
+    }
+    if (Object.keys(out).length > 0) cleanAdjustments = out;
+  }
   return {
     id: randomUUID(),
     name: source.name + " (imported)",
@@ -310,6 +335,7 @@ function materializeImportedProfile(source: Profile): Profile {
     ...(Array.isArray(source.excludedSlugs)
       ? { excludedSlugs: source.excludedSlugs.filter((s): s is string => typeof s === "string") }
       : {}),
+    ...(cleanAdjustments ? { manualAdjustments: cleanAdjustments } : {}),
   };
 }
 

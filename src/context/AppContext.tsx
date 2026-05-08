@@ -49,6 +49,13 @@ interface AppContextValue {
   notes: Record<string, string>;
   setNote: (slug: string, text: string) => void;
 
+  /**
+   * Per-apartment manual scoring nudge (property_slug → integer in [-10, 10]).
+   * Stored on the active profile. Slugs at 0 are not stored.
+   */
+  manualAdjustments: Record<string, number>;
+  setManualAdjustment: (slug: string, value: number) => void;
+
   // Scoring — read/write scores and weights for active profile
   scores: ValueScores;
   weights: ImportanceWeights;
@@ -264,6 +271,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const scores = activeProfile?.scores ?? {};
   const weights = activeProfile?.weights ?? {};
   const notes = activeProfile?.notes ?? {};
+  const manualAdjustments = activeProfile?.manualAdjustments ?? {};
 
   const setNote = useCallback(
     (slug: string, text: string) => {
@@ -275,6 +283,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         delete newNotes[slug];
       }
       saveProfile({ ...activeProfile, notes: newNotes });
+    },
+    [activeProfile, saveProfile]
+  );
+
+  const setManualAdjustment = useCallback(
+    (slug: string, value: number) => {
+      if (!activeProfile) return;
+      // Clamp to the supported slider range and round to integer; the engine
+      // does the same defensively, but clean storage keeps profiles tidy.
+      const clamped = Math.max(-10, Math.min(10, Math.round(value)));
+      const next: Record<string, number> = { ...(activeProfile.manualAdjustments ?? {}) };
+      if (clamped === 0) {
+        delete next[slug];
+      } else {
+        next[slug] = clamped;
+      }
+      const updated: Profile = { ...activeProfile };
+      if (Object.keys(next).length > 0) updated.manualAdjustments = next;
+      else delete updated.manualAdjustments;
+      saveProfile(updated);
     },
     [activeProfile, saveProfile]
   );
@@ -557,8 +585,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Include scoring-excluded apts in the result (tagged with
     // `excluded: true`) so the Results table can choose to surface them
     // when "Show excluded" is on, alongside manually-excluded apts.
-    return rankApartments(apartments, scores, weights, buckets, true, true);
-  }, [apartments, scores, weights, buckets]);
+    return rankApartments(apartments, scores, weights, buckets, true, true, manualAdjustments);
+  }, [apartments, scores, weights, buckets, manualAdjustments]);
 
   /** Active profile's excluded slugs as a Set for O(1) membership tests. */
   const userExcludedSet = useMemo(
@@ -627,6 +655,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     importProfile: doImport,
     notes,
     setNote,
+    manualAdjustments,
+    setManualAdjustment,
     scores,
     weights,
     setScore,

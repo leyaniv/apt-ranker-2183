@@ -184,6 +184,12 @@ export interface Profile {
    * Stored as a deduplicated list of property_slug values.
    */
   excludedSlugs?: string[];
+  /**
+   * Per-apartment manual score nudge. property_slug → integer in [-10, 10].
+   * Added as percentage points to the apartment's pre-normalization weighted
+   * score (see `computeApartmentScore`). Slugs at 0 are not stored.
+   */
+  manualAdjustments?: Record<string, number>;
 }
 
 /** Ranked apartment with computed score */

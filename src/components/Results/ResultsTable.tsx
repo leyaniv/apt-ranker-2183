@@ -21,6 +21,7 @@ interface RowData {
   tier: TableTier;
   notes: Record<string, string>;
   setNote: (slug: string, text: string) => void;
+  manualAdjustments: Record<string, number>;
   manualOrder: string[] | null;
   scoreRankMap: Map<string, number | null>;
   rankLabelMap: Map<string, number | null>;
@@ -32,7 +33,7 @@ interface RowData {
 
 const VirtualRow = function VirtualRow({
   index, style, displayed, openSlugs, toggleOpen, isDesktop, tier,
-  notes, setNote, manualOrder, scoreRankMap, rankLabelMap, userExcludedSet, dropTargetSlug,
+  notes, setNote, manualAdjustments, manualOrder, scoreRankMap, rankLabelMap, userExcludedSet, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: RowComponentProps<RowData>) {
   const ranked = displayed[index];
@@ -61,6 +62,7 @@ const VirtualRow = function VirtualRow({
         hasNote={!!notes[slug]}
         note={notes[slug]}
         onNoteChange={setNote}
+        adjustment={manualAdjustments[slug] ?? 0}
         originalRank={scoreRank ?? undefined}
         excludedReason={excludedReason}
         dropTargetSlug={dropTargetSlug}
@@ -84,6 +86,7 @@ export function ResultsTable() {
     settings, setHasUnsavedManualOrder, registerManualOrderActions,
     notes, setNote, updateSettings,
     userExcludedSet,
+    manualAdjustments,
   } = useApp();
 
   // Filter state. Categorical filters hold an array of selected values
@@ -407,6 +410,41 @@ export function ResultsTable() {
     }
     return map;
   }, [displayed, userExcludedSet]);
+
+  // After a manual adjustment edit (slider in the apartment detail), follow
+  // the apartment to its new position so the user can see where their nudge
+  // landed. We only scroll when exactly one slug's value changed — multi-slug
+  // changes (profile switches, imports) shouldn't yank the viewport. The
+  // virtualizer remeasures heights asynchronously after the re-rank, so we
+  // defer the scroll to the next frame to avoid landing on a stale offset.
+  const prevAdjustmentsRef = useRef<Record<string, number>>(manualAdjustments);
+  const prevProfileIdForScrollRef = useRef(activeProfile?.id);
+  useEffect(() => {
+    const prev = prevAdjustmentsRef.current;
+    const curr = manualAdjustments;
+    prevAdjustmentsRef.current = curr;
+
+    // Skip on profile switches — those swap the entire map at once.
+    if (activeProfile?.id !== prevProfileIdForScrollRef.current) {
+      prevProfileIdForScrollRef.current = activeProfile?.id;
+      return;
+    }
+
+    const allSlugs = new Set<string>([...Object.keys(prev), ...Object.keys(curr)]);
+    const changed: string[] = [];
+    for (const slug of allSlugs) {
+      if ((prev[slug] ?? 0) !== (curr[slug] ?? 0)) changed.push(slug);
+    }
+    if (changed.length !== 1) return;
+    const slug = changed[0];
+    const idx = displayed.findIndex((r) => r.apartment.property_slug === slug);
+    if (idx < 0) return;
+
+    const raf = requestAnimationFrame(() => {
+      listRef.current?.scrollToRow({ index: idx, align: "center", behavior: "smooth" });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [manualAdjustments, displayed, activeProfile?.id, listRef]);
 
   // Number of active filter *fields* — categorical fields with at least one
   // selection plus min/max price counted independently. Mirrors the previous
@@ -952,6 +990,7 @@ export function ResultsTable() {
               tier,
               notes,
               setNote,
+              manualAdjustments,
               manualOrder,
               scoreRankMap,
               rankLabelMap,

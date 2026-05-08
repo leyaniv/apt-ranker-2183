@@ -55,7 +55,15 @@ export function SideBySideRanking({
     for (const profile of profiles) {
       map.set(
         profile.id,
-        rankApartments(apartments, profile.scores, profile.weights, buckets),
+        rankApartments(
+          apartments,
+          profile.scores,
+          profile.weights,
+          buckets,
+          true,
+          false,
+          profile.manualAdjustments,
+        ),
       );
     }
     return map;

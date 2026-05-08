@@ -816,11 +816,14 @@ function DetailModal({
         className="bg-white dark:bg-white rounded-lg shadow-xl border border-gray-200 max-w-3xl w-full max-h-full overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-end p-2 border-b border-gray-100">
+        <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-gray-100">
+          <h2 className="font-semibold text-gray-800 truncate min-w-0">
+            {ranked.apartment.buildingKey}#{ranked.apartment.apartment_number}
+          </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+            className="shrink-0 p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100"
             aria-label="Close"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
