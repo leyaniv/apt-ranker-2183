@@ -6,6 +6,7 @@ import { useApp } from "../../context/AppContext";
 import { ApartmentRow } from "./ApartmentRow";
 import { TabHeader } from "../Layout/TabHeader";
 import { ConfirmDialog } from "../Layout/ConfirmDialog";
+import { MultiSelectPopover } from "../Layout/MultiSelectPopover";
 import { PrintModal } from "../Print/PrintModal";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { useTableTier, TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
@@ -85,11 +86,14 @@ export function ResultsTable() {
     userExcludedSet,
   } = useApp();
 
-  // Filter state
-  const [filterRooms, setFilterRooms] = useState<string>("");
-  const [filterBuilding, setFilterBuilding] = useState<string>("");
-  const [filterLayout, setFilterLayout] = useState<string>("");
-  const [filterType, setFilterType] = useState<string>("");
+  // Filter state. Categorical filters hold an array of selected values
+  // (empty array = "no constraint, show all"). Empty array semantics keep
+  // parity with the previous empty-string behavior.
+  const [filterRooms, setFilterRooms] = useState<string[]>([]);
+  const [filterBuilding, setFilterBuilding] = useState<string[]>([]);
+  const [filterLayout, setFilterLayout] = useState<string[]>([]);
+  const [filterType, setFilterType] = useState<string[]>([]);
+  const [filterDirections, setFilterDirections] = useState<string[]>([]);
   const [filterMinPrice, setFilterMinPrice] = useState<string>("");
   const [filterMaxPrice, setFilterMaxPrice] = useState<string>("");
 
@@ -275,6 +279,17 @@ export function ResultsTable() {
     [rankedApartments]
   );
 
+  // Air directions — fixed compass order (N, E, S, W) rather than alphabetical.
+  // Restricted to directions that actually appear in the data so the dropdown
+  // never shows an option that would match nothing.
+  const uniqueDirections = useMemo(() => {
+    const present = new Set<string>();
+    for (const r of rankedApartments) {
+      for (const d of r.apartment.directions) present.add(d);
+    }
+    return (["N", "E", "S", "W"] as const).filter((d) => present.has(d));
+  }, [rankedApartments]);
+
   // The full ranked list with the persistent "Show sold" / "Show excluded"
   // toggles applied (but no quick-filters and no maxResults). Used as the
   // "All" scope for printing so the printed view matches what the user is
@@ -290,6 +305,15 @@ export function ResultsTable() {
     });
   }, [rankedApartments, settings.showSold, settings.showExcluded, userExcludedSet]);
 
+  // Memoized Sets for O(1) membership checks inside the per-row predicate.
+  // The predicate runs once per ranked apartment on every filter change, so
+  // we avoid rebuilding these sets per row.
+  const roomsFilterSet = useMemo(() => new Set(filterRooms), [filterRooms]);
+  const buildingFilterSet = useMemo(() => new Set(filterBuilding), [filterBuilding]);
+  const layoutFilterSet = useMemo(() => new Set(filterLayout), [filterLayout]);
+  const typeFilterSet = useMemo(() => new Set(filterType), [filterType]);
+  const directionsFilterSet = useMemo(() => new Set(filterDirections), [filterDirections]);
+
   // Apply filters
   const filtered = useMemo(() => {
     const filterFn = (r: RankedApartment) => {
@@ -300,10 +324,20 @@ export function ResultsTable() {
       // the user sees a single "excluded" experience.
       const isExcluded = userExcludedSet.has(apt.property_slug) || r.excluded === true;
       if (!settings.showExcluded && isExcluded) return false;
-      if (filterRooms && apt.rooms !== filterRooms) return false;
-      if (filterBuilding && apt.buildingKey !== filterBuilding) return false;
-      if (filterLayout && apt.layout !== filterLayout) return false;
-      if (filterType && apt.type !== filterType) return false;
+      // Empty filter set = no constraint (show all).
+      if (roomsFilterSet.size > 0 && !roomsFilterSet.has(apt.rooms)) return false;
+      if (buildingFilterSet.size > 0 && !buildingFilterSet.has(apt.buildingKey)) return false;
+      if (layoutFilterSet.size > 0 && !layoutFilterSet.has(apt.layout)) return false;
+      if (typeFilterSet.size > 0 && !typeFilterSet.has(apt.type)) return false;
+      // Air-direction match is OR-within-filter: an apartment matches if any
+      // of its directions is in the selected set. So selecting N + E shows
+      // apts facing N, apts facing E, and apts facing both.
+      if (
+        directionsFilterSet.size > 0 &&
+        !apt.directions.some((d) => directionsFilterSet.has(d))
+      ) {
+        return false;
+      }
       if (filterMinPrice && apt.price < parseInt(filterMinPrice)) return false;
       if (filterMaxPrice && apt.price > parseInt(filterMaxPrice)) return false;
       return true;
@@ -328,7 +362,7 @@ export function ResultsTable() {
     }
 
     return rankedApartments.filter(filterFn);
-  }, [rankedApartments, filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice, manualOrder, settings.showSold, settings.showExcluded, userExcludedSet]);
+  }, [rankedApartments, roomsFilterSet, buildingFilterSet, layoutFilterSet, typeFilterSet, directionsFilterSet, filterMinPrice, filterMaxPrice, manualOrder, settings.showSold, settings.showExcluded, userExcludedSet]);
 
   // Score-based rank lookup: counts only non-sold, non-excluded apartments.
   // Sold or excluded apts get `null`. Used to render the (parens) "original
@@ -374,13 +408,25 @@ export function ResultsTable() {
     return map;
   }, [displayed, userExcludedSet]);
 
-  const hasFilters = filterRooms || filterBuilding || filterLayout || filterType || filterMinPrice || filterMaxPrice;
+  // Number of active filter *fields* — categorical fields with at least one
+  // selection plus min/max price counted independently. Mirrors the previous
+  // single-select semantics (a field is "active" if it constrains results).
+  const activeFilterFieldCount =
+    (filterRooms.length > 0 ? 1 : 0) +
+    (filterBuilding.length > 0 ? 1 : 0) +
+    (filterLayout.length > 0 ? 1 : 0) +
+    (filterType.length > 0 ? 1 : 0) +
+    (filterDirections.length > 0 ? 1 : 0) +
+    (filterMinPrice ? 1 : 0) +
+    (filterMaxPrice ? 1 : 0);
+  const hasFilters = activeFilterFieldCount > 0;
 
   const clearFilters = () => {
-    setFilterRooms("");
-    setFilterBuilding("");
-    setFilterLayout("");
-    setFilterType("");
+    setFilterRooms([]);
+    setFilterBuilding([]);
+    setFilterLayout([]);
+    setFilterType([]);
+    setFilterDirections([]);
     setFilterMinPrice("");
     setFilterMaxPrice("");
   };
@@ -735,13 +781,21 @@ export function ResultsTable() {
           <div className="order-3 basis-full h-0 sm:hidden" aria-hidden="true" />
 
           <Collapsible.Trigger className="order-5 sm:order-first inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors whitespace-nowrap">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className={`w-4 h-4 shrink-0 transition-colors ${
+                hasFilters ? "text-blue-600" : "text-gray-500"
+              }`}
+              aria-hidden
+            >
               <path fillRule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clipRule="evenodd" />
             </svg>
             <span>{t("results.additionalFilters")}</span>
             {hasFilters && (
-              <span className="text-xs text-blue-600 font-normal">
-                ({t("results.filtersActive", { count: [filterRooms, filterBuilding, filterLayout, filterType, filterMinPrice, filterMaxPrice].filter(Boolean).length })})
+              <span className="hidden sm:inline text-xs text-blue-600 font-normal">
+                ({t("results.filtersActive", { count: activeFilterFieldCount })})
               </span>
             )}
             <svg
@@ -759,57 +813,51 @@ export function ResultsTable() {
       <div
         className="flex flex-wrap items-center gap-3 px-4 sm:px-6 py-3"
       >
-        {/* Rooms filter */}
-        <select
+        {/* Rooms filter — popover, no search needed for ≤6 values */}
+        <MultiSelectPopover
+          label={t("results.filterRooms")}
+          options={uniqueRooms}
           value={filterRooms}
-          onChange={(e) => setFilterRooms(e.target.value)}
-          aria-label={t("results.filterRooms")}
-          className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
-        >
-          <option value="">{t("results.filterRooms")}</option>
-          {uniqueRooms.map((r) => (
-            <option key={r} value={r}>{r}</option>
-          ))}
-        </select>
+          onChange={setFilterRooms}
+        />
 
-        {/* Building filter */}
-        <select
+        {/* Building filter — popover, no search needed for ≤6 values */}
+        <MultiSelectPopover
+          label={t("results.filterBuilding")}
+          options={uniqueBuildings}
           value={filterBuilding}
-          onChange={(e) => setFilterBuilding(e.target.value)}
-          aria-label={t("results.filterBuilding")}
-          className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
-        >
-          <option value="">{t("results.filterBuilding")}</option>
-          {uniqueBuildings.map((b) => (
-            <option key={b} value={b}>{b}</option>
-          ))}
-        </select>
+          onChange={setFilterBuilding}
+        />
 
-        {/* Layout filter */}
-        <select
+        {/* Layout filter — popover, no search; values are translated via i18n */}
+        <MultiSelectPopover
+          label={t("results.filterLayout")}
+          options={uniqueLayouts}
           value={filterLayout}
-          onChange={(e) => setFilterLayout(e.target.value)}
-          aria-label={t("results.filterLayout")}
-          className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
-        >
-          <option value="">{t("results.filterLayout")}</option>
-          {uniqueLayouts.map((l) => (
-            <option key={l} value={l}>{t(`results.layout_${l}`)}</option>
-          ))}
-        </select>
+          onChange={setFilterLayout}
+          renderOption={(l) => t(`results.layout_${l}`)}
+        />
 
-        {/* Type filter */}
-        <select
+        {/* Air direction filter — N/E/S/W in compass order. Multi-direction
+            apartments match if ANY of their directions is selected. */}
+        <MultiSelectPopover
+          label={t("results.filterAirDirection")}
+          options={uniqueDirections}
+          value={filterDirections}
+          onChange={setFilterDirections}
+          renderOption={(d) => t(`results.directionFull_${d}`)}
+        />
+
+        {/* Type filter — searchable popover grouped by leading letter
+            since there are ~45 distinct values. */}
+        <MultiSelectPopover
+          label={t("results.filterType")}
+          options={uniqueTypes}
           value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          aria-label={t("results.filterType")}
-          className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
-        >
-          <option value="">{t("results.filterType")}</option>
-          {uniqueTypes.map((tp) => (
-            <option key={tp} value={tp}>{tp}</option>
-          ))}
-        </select>
+          onChange={setFilterType}
+          searchable
+          groupByFirstLetter
+        />
 
         {/* Price range */}
         <div className="flex items-center gap-1">

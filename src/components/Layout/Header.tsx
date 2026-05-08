@@ -14,7 +14,7 @@ export function Header() {
 
   return (
     <header className="bg-white border-b border-gray-200 mb-1 sm:mb-0 px-4 py-1.5 sm:py-3 sm:px-6">
-      <div className="flex items-start justify-between gap-2 sm:gap-4 sm:flex-wrap">
+      <div className="flex items-center justify-between gap-2 sm:gap-4 sm:flex-wrap">
         {/* Title */}
         <div className="min-w-0 flex-1">
           <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">

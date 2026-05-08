@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Added assigned parking spot numbers to apartment data and the detail view.
 - Main tab bar: Buildings is its own tab; Change history is opened from a clock icon next to the profile selector.
 - Buildings tab: Wide and Narrow layout modes. Wide groups buildings per lot into three columns.
+- Ranking tab filters: Support selecting multiple values at once via a checkbox dropdown. Direction is a new filter (N/E/S/W).
 
 ## [1.4.1] - 2026-05-06
 
