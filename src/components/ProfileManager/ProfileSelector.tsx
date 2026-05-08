@@ -80,7 +80,9 @@ export function ProfileSelector() {
           <option value="__new__">+ {t("profile.create")}</option>
         </select>
 
-        <InfoTooltip text={t("profile.profileTip")} />
+        <div className="-mx-1.5">
+          <InfoTooltip text={t("profile.profileTip")} />
+        </div>
 
         {/* Action buttons */}
         <div className="flex items-center gap-1">
