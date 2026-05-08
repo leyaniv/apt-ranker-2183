@@ -261,7 +261,9 @@ function isValidProfilePayload(parsed: unknown): parsed is Profile {
   for (const paramScores of Object.values(p.scores as ValueScores)) {
     if (!paramScores || typeof paramScores !== "object") return false;
     for (const score of Object.values(paramScores)) {
-      if (typeof score !== "number" || score < 1 || score > 5) return false;
+      // Score 0 is the "exclude" (✕) sentinel — see ScoreButtonGroup; valid
+      // user scores are 1–5, plus 0 meaning "deal-breaker, drop this apt".
+      if (typeof score !== "number" || score < 0 || score > 5) return false;
     }
   }
   for (const weight of Object.values(p.weights as ImportanceWeights)) {
