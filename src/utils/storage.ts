@@ -62,12 +62,56 @@ function stripStaleDirectionScores(profile: Profile): Profile {
   };
 }
 
+/**
+ * Old (≤ v2) → new (v3) bucket-index mapping for `area_sqm` scores.
+ *
+ * The previous 5-bucket layout (<90 / 90–110 / 110–115 / 115–130 / ≥130 m²)
+ * had an always-empty 90–110 bucket; v3 collapses to 4 buckets
+ * (<100 / 100–115 / 115–130 / ≥130 m²). Bucket scores are keyed by their
+ * stringified index, so the upgrade is a pure key rename.
+ *
+ * Old "1" (90–110) is intentionally absent — that bucket was empty in the
+ * data, so no profile can have a meaningful score under it.
+ */
+const SCHEMA_V3_AREA_BUCKET_REMAP: Record<string, string> = {
+  "0": "0",
+  "2": "1",
+  "3": "2",
+  "4": "3",
+};
+
+/** Re-key `scores.area_sqm` from the old 5-bucket layout to the v3 4-bucket layout. */
+function migrateAreaBucketsV3(profile: Profile): Profile {
+  const areaScores = profile.scores?.area_sqm;
+  if (!areaScores || Object.keys(areaScores).length === 0) return profile;
+  const remapped: Record<string, number> = {};
+  for (const [oldKey, value] of Object.entries(areaScores)) {
+    const newKey = SCHEMA_V3_AREA_BUCKET_REMAP[oldKey];
+    if (newKey !== undefined) remapped[newKey] = value;
+  }
+  return {
+    ...profile,
+    scores: { ...profile.scores, area_sqm: remapped },
+  };
+}
+
 /** Load all profiles from LocalStorage */
 export function loadProfiles(): Profile[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    const profiles = (JSON.parse(raw) as Profile[]).map(stripStaleDirectionScores);
+    const stored = JSON.parse(raw) as Profile[];
+    let mutated = false;
+    const profiles = stored.map((p) => {
+      let next = stripStaleDirectionScores(p);
+      if ((next.schemaVersion ?? 0) < 3) {
+        next = migrateAreaBucketsV3(next);
+        next = { ...next, schemaVersion: PROFILE_SCHEMA_VERSION };
+      }
+      if (next !== p) mutated = true;
+      return next;
+    });
+    if (mutated) saveProfiles(profiles);
     return profiles;
   } catch {
     return [];
@@ -93,6 +137,7 @@ export function createProfile(name: string): Profile {
     updatedAt: Date.now(),
     scores: {},
     weights: {},
+    schemaVersion: PROFILE_SCHEMA_VERSION,
   };
   const profiles = loadProfiles();
   profiles.push(profile);
@@ -112,6 +157,7 @@ export function duplicateProfile(sourceId: string, newName: string): Profile | n
     updatedAt: Date.now(),
     scores: structuredClone(source.scores),
     weights: { ...source.weights },
+    schemaVersion: PROFILE_SCHEMA_VERSION,
     ...(source.manualOrder ? { manualOrder: [...source.manualOrder] } : {}),
     ...(source.notes ? { notes: { ...source.notes } } : {}),
     ...(source.excludedSlugs && source.excludedSlugs.length > 0
@@ -186,7 +232,7 @@ export function reorderProfiles(orderedIds: string[]): void {
  * `migrateProfileEnvelope` so files exported by previous versions can still
  * be read.
  */
-export const PROFILE_SCHEMA_VERSION = 2;
+export const PROFILE_SCHEMA_VERSION = 3;
 
 /** Discriminator for the kind of payload contained in an export file */
 type EnvelopeKind = "profile" | "profiles";
@@ -290,23 +336,28 @@ function isValidProfilePayload(parsed: unknown): parsed is Profile {
  * v1 → v2: the `air_direction` scoring parameter switched from 6 directions
  * (N/NE/NW/S/SE/SW) to 4 cardinals (N/E/S/W). Stale keys are dropped so the
  * user re-scores them; valid keys (N, S) carry over unchanged.
+ *
+ * v2 → v3: the `area_sqm` parameter dropped its always-empty 90–110 m²
+ * bucket, collapsing to 4 buckets (<100 / 100–115 / 115–130 / ≥130).
+ * Stored bucket-index keys are re-mapped accordingly.
  */
 function migrateProfileEnvelope<T extends ProfileEnvelope | ProfilesEnvelope>(envelope: T): T {
-  if (envelope.schemaVersion < 2) {
-    if (envelope.kind === "profile") {
-      return {
-        ...envelope,
-        schemaVersion: 2,
-        profile: stripStaleDirectionScores(envelope.profile),
-      };
-    }
-    return {
-      ...envelope,
-      schemaVersion: 2,
-      profiles: envelope.profiles.map(stripStaleDirectionScores),
-    };
+  let env: T = envelope;
+  if (env.schemaVersion < 2) {
+    env = (
+      env.kind === "profile"
+        ? { ...env, schemaVersion: 2, profile: stripStaleDirectionScores(env.profile) }
+        : { ...env, schemaVersion: 2, profiles: env.profiles.map(stripStaleDirectionScores) }
+    ) as T;
   }
-  return envelope;
+  if (env.schemaVersion < 3) {
+    env = (
+      env.kind === "profile"
+        ? { ...env, schemaVersion: 3, profile: migrateAreaBucketsV3(env.profile) }
+        : { ...env, schemaVersion: 3, profiles: env.profiles.map(migrateAreaBucketsV3) }
+    ) as T;
+  }
+  return env;
 }
 
 function materializeImportedProfile(source: Profile): Profile {
@@ -330,6 +381,7 @@ function materializeImportedProfile(source: Profile): Profile {
     updatedAt: Date.now(),
     scores: source.scores,
     weights: source.weights,
+    schemaVersion: PROFILE_SCHEMA_VERSION,
     ...(Array.isArray(source.manualOrder) ? { manualOrder: source.manualOrder } : {}),
     ...(source.notes && typeof source.notes === "object" ? { notes: source.notes } : {}),
     ...(Array.isArray(source.excludedSlugs)

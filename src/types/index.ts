@@ -190,6 +190,14 @@ export interface Profile {
    * score (see `computeApartmentScore`). Slugs at 0 are not stored.
    */
   manualAdjustments?: Record<string, number>;
+  /**
+   * Schema version of this profile's persisted shape. Used to detect when
+   * stored scores need to be remapped after a bucket-layout change (e.g.
+   * the v3 area-bucket reshuffle). Profiles missing this field are treated
+   * as pre-v3 and migrated on load. See `PROFILE_SCHEMA_VERSION` in
+   * `utils/storage.ts`.
+   */
+  schemaVersion?: number;
 }
 
 /** Ranked apartment with computed score */

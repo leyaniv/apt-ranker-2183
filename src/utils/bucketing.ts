@@ -56,8 +56,8 @@ const BUCKET_CONFIGS: BucketConfig[] = [
   {
     paramId: "area_sqm",
     accessor: (apt) => apt.area_sqm,
-    // 5 buckets: <90, 90–110, 110–115, 115–130, ≥130 m²
-    boundaries: [90, 110, 115, 130],
+    // 4 buckets: <100, 100–115, 115–130, ≥130 m²
+    boundaries: [100, 115, 130],
     formatEn: (n) => formatArea(n, " m²"),
     formatHe: (n) => formatArea(n, " מ״ר"),
   },

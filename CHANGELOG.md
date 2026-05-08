@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Buildings tab: Wide and Narrow layout modes. Wide groups buildings per lot into three columns.
 - Ranking tab filters: Support selecting multiple values at once via a checkbox dropdown. Direction is a new filter (N/E/S/W).
 - Apartment detail: manual adjustment slider (-10%..+10%) to nudge an apartment's overall match up or down per profile.
+- Apartment area now uses four buckets instead of five. The previously empty 90–110 m² bucket has been folded in. Existing profiles and imported JSON files are migrated automatically.
 
 ## [1.4.1] - 2026-05-06
 
