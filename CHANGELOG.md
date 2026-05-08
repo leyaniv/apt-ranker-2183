@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.5.0] - 2026-05-08
 
 - Scoring panel shows a sold/available stats bar for each value.
 - Added assigned parking spot numbers to apartment data and the detail view.
