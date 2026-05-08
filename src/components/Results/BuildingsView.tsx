@@ -55,9 +55,13 @@ interface CellRendererProps {
   columnCount: number;
   isUserExcluded: (slug: string) => boolean;
   onOpenRanked: (ranked: RankedApartment) => void;
+  /** Global most-recent sold date (today or any date inside the recent
+   *  window). Sold apts whose `status_changed_date` equals this get the
+   *  brighter red hatch. `null` when no highlight applies. */
+  highlightDate: string | null;
 }
 
-function ApartmentCell({ cell, rowSpan, columnCount, isUserExcluded, onOpenRanked }: CellRendererProps) {
+function ApartmentCell({ cell, rowSpan, columnCount, isUserExcluded, onOpenRanked, highlightDate }: CellRendererProps) {
   const { t } = useTranslation();
   if (cell.kind !== "apt") return null;
 
@@ -83,17 +87,21 @@ function ApartmentCell({ cell, rowSpan, columnCount, isUserExcluded, onOpenRanke
   const isSold = primary.kind === "ranked" && primary.ranked.apartment.isSold;
   const isUnavailable = isOpenMarket || isSold;
 
-  // Highlight apartments sold today with a brighter red
-  const today = new Date().toISOString().slice(0, 10);
-  const isSoldToday =
-    isSold && primary.kind === "ranked" && primary.ranked.apartment.status_changed_date === today;
+  // Brighter red hatch for sold apts that share the dataset's most-recent
+  // sold date — whether that date is literally today or just "recently"
+  // (the chip in the building header conveys which).
+  const isSoldOnHighlightDate =
+    isSold &&
+    highlightDate !== null &&
+    primary.kind === "ranked" &&
+    primary.ranked.apartment.status_changed_date === highlightDate;
 
   const baseClasses =
     "align-top border border-gray-100 dark:border-gray-200 p-0 " +
     (isUnavailable ? "" : "bg-green-50 dark:bg-green-50 ");
 
   let tdStyle: React.CSSProperties | undefined;
-  if (isSoldToday) {
+  if (isSoldOnHighlightDate) {
     tdStyle = {
       backgroundImage:
         "repeating-linear-gradient(135deg, var(--color-red-200), var(--color-red-200) 6px, var(--color-red-300) 6px, var(--color-red-300) 12px)",
@@ -344,10 +352,18 @@ interface BuildingCardProps {
   isUserExcluded: (slug: string) => boolean;
 }
 
+/** "YYYY-MM-DD" → "DD/MM" (year stripped — chip space is tight, year is
+ *  implied by "recently"). Falls back to the input if the shape is wrong. */
+function formatHighlightDate(iso: string): string {
+  const parts = iso.split("-");
+  if (parts.length < 3) return iso;
+  return `${parts[2]}/${parts[1]}`;
+}
+
 function BuildingCard({ layout, open, onOpenChange, onOpenRanked, isUserExcluded }: BuildingCardProps) {
   const { t } = useTranslation();
 
-  const { counts, groups, floorCount, topScore } = layout;
+  const { counts, groups, floorCount, topScore, highlightDate, highlightKind } = layout;
 
   return (
     <Collapsible.Root
@@ -401,9 +417,18 @@ function BuildingCard({ layout, open, onOpenChange, onOpenRanked, isUserExcluded
           )}
           {counts.sold > 0 && (
             <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 dark:text-red-800">
-              {counts.soldToday > 0
-                ? t("buildingsView.soldCountToday", { count: counts.sold, today: counts.soldToday })
-                : t("buildingsView.soldCount", { count: counts.sold })}
+              {counts.soldHighlight > 0 && highlightKind === "today"
+                ? t("buildingsView.soldCountToday", {
+                    count: counts.sold,
+                    today: counts.soldHighlight,
+                  })
+                : counts.soldHighlight > 0 && highlightKind === "recently" && highlightDate
+                  ? t("buildingsView.soldCountRecently", {
+                      count: counts.sold,
+                      recently: counts.soldHighlight,
+                      date: formatHighlightDate(highlightDate),
+                    })
+                  : t("buildingsView.soldCount", { count: counts.sold })}
             </span>
           )}
           {counts.freeMarketing > 0 && (
@@ -422,6 +447,7 @@ function BuildingCard({ layout, open, onOpenChange, onOpenRanked, isUserExcluded
               group={group}
               isUserExcluded={isUserExcluded}
               onOpenRanked={onOpenRanked}
+              highlightDate={highlightDate}
             />
           ))}
         </div>
@@ -437,10 +463,12 @@ function FloorGroupTable({
   group,
   isUserExcluded,
   onOpenRanked,
+  highlightDate,
 }: {
   group: FloorGroup;
   isUserExcluded: (slug: string) => boolean;
   onOpenRanked: (ranked: RankedApartment) => void;
+  highlightDate: string | null;
 }) {
   const { t } = useTranslation();
   const { columns, rows, cells } = group;
@@ -513,6 +541,7 @@ function FloorGroupTable({
                   columnCount={columns.length}
                   isUserExcluded={isUserExcluded}
                   onOpenRanked={onOpenRanked}
+                  highlightDate={highlightDate}
                 />
               );
             })}

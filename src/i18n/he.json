@@ -154,6 +154,7 @@
     "availableCount": "{{count}} זמינות",
     "soldCount": "{{count}} נמכרו",
     "soldCountToday": "{{count}} נמכרו ({{today}} היום)",
+    "soldCountRecently": "{{count}} נמכרו ({{recently}} לאחרונה · {{date}})",
     "openMarketCount": "{{count}} שוק חופשי",
     "openMarket": "שוק חופשי",
     "openMarketTooltip": "דירה בשוק חופשי — לא חלק מההגרלה ולא מדורגת.",

@@ -93,8 +93,10 @@ export interface BuildingCounts {
   available: number;
   /** Ranked, sold (scrape or user-marked). */
   sold: number;
-  /** Sold with status_changed_date matching today. */
-  soldToday: number;
+  /** Sold with status_changed_date equal to the global highlight date
+   *  (today, or the most-recent date within `RECENT_WINDOW_DAYS`).
+   *  Always 0 when no global highlight applies. */
+  soldHighlight: number;
   /** Open-market units (any state). */
   freeMarketing: number;
   /** Sum of all (ranked + free-marketing). */
@@ -114,7 +116,20 @@ export interface BuildingLayout {
   groups: FloorGroup[];
   /** Total floor count across all groups (for the building summary). */
   floorCount: number;
+  /** Global most-recent `status_changed_date` among all sold ranked apts
+   *  (not just this building), in YYYY-MM-DD form. `null` when no sold
+   *  apt has a date or the most-recent date is older than the recent
+   *  window. Same value on every building in the result. */
+  highlightDate: string | null;
+  /** "today" if `highlightDate === today`, "recently" if it's an earlier
+   *  date inside the recent window, `null` when there's nothing to
+   *  highlight. */
+  highlightKind: "today" | "recently" | null;
 }
+
+/** Days inside which a past most-recent status change is still labeled
+ *  "recently"; older max dates are suppressed (no highlight). */
+export const RECENT_WINDOW_DAYS = 7;
 
 /* ─── helpers ─────────────────────────────────────────────────────────── */
 
@@ -160,6 +175,42 @@ function compareBuildingKey(a: string, b: string): number {
   const [bLot, bBld] = b.split("/").map((s) => parseInt(s, 10));
   if (aLot !== bLot) return aLot - bLot;
   return aBld - bBld;
+}
+
+/** Today as YYYY-MM-DD in UTC — matches how `status_changed_date` is
+ *  written by the scraper and the existing comparisons in this file. */
+function isoToday(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** ISO date `n` days before today (UTC). */
+function isoDaysAgo(n: number): string {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Find the global most-recent `status_changed_date` among sold ranked
+ *  apartments. Returns `{ date, kind }` describing the highlight to apply,
+ *  or `null` when there is none (no sold apt has a date, or the max is
+ *  older than the recent window). User-marked sold apts that lack a
+ *  `status_changed_date` are intentionally ignored. */
+function computeHighlight(
+  ranked: RankedApartment[]
+): { date: string; kind: "today" | "recently" } | null {
+  let max: string | null = null;
+  for (const r of ranked) {
+    const apt = r.apartment;
+    if (!apt.isSold) continue;
+    const d = apt.status_changed_date;
+    if (!d) continue;
+    if (max === null || d > max) max = d;
+  }
+  if (max === null) return null;
+  const today = isoToday();
+  const cutoff = isoDaysAgo(RECENT_WINDOW_DAYS);
+  if (max < cutoff) return null;
+  return { date: max, kind: max === today ? "today" : "recently" };
 }
 
 /* ─── main ────────────────────────────────────────────────────────────── */
@@ -224,6 +275,10 @@ export function buildBuildingsLayout(
   }
 
   const buildings: BuildingLayout[] = [];
+
+  // Compute the global highlight once, before per-building accounting,
+  // so every building shares the same `highlightDate` / `highlightKind`.
+  const highlight = computeHighlight(ranked);
 
   for (const [buildingKey, g] of buildingsMap) {
     if (g.records.length === 0) continue;
@@ -481,10 +536,9 @@ export function buildBuildingsLayout(
 
 
     // ─ Header counts + top score ───────────────────────────────────────
-    const today = new Date().toISOString().slice(0, 10);
     let available = 0;
     let sold = 0;
-    let soldToday = 0;
+    let soldHighlight = 0;
     let freeMarketingCount = 0;
     let topScore: number | null = null;
     for (const rec of g.records) {
@@ -494,8 +548,11 @@ export function buildBuildingsLayout(
       }
       if (rec.isSold) {
         sold += 1;
-        if (rec.placement.ranked.apartment.status_changed_date === today) {
-          soldToday += 1;
+        if (
+          highlight !== null &&
+          rec.placement.ranked.apartment.status_changed_date === highlight.date
+        ) {
+          soldHighlight += 1;
         }
       } else {
         available += 1;
@@ -512,12 +569,14 @@ export function buildBuildingsLayout(
       counts: {
         available,
         sold,
-        soldToday,
+        soldHighlight,
         freeMarketing: freeMarketingCount,
         total: available + sold + freeMarketingCount,
       },
       groups,
       floorCount: allFloors.length,
+      highlightDate: highlight?.date ?? null,
+      highlightKind: highlight?.kind ?? null,
     });
   }
 

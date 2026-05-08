@@ -154,6 +154,7 @@
     "availableCount": "{{count}} available",
     "soldCount": "{{count}} sold",
     "soldCountToday": "{{count}} sold ({{today}} today)",
+    "soldCountRecently": "{{count}} sold ({{recently}} recently · {{date}})",
     "openMarketCount": "{{count}} open market",
     "openMarket": "Open market",
     "openMarketTooltip": "Open-market unit (שיווק חופשי). Not part of the lottery and not ranked.",
