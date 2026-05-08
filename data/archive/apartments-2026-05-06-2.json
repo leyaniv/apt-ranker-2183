@@ -22,8 +22,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13696.33,
-    "parking_spot_1": 71,
-    "parking_spot_2": 70,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -89,8 +87,6 @@
     "lot": "208",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15270.23,
-    "parking_spot_1": 112,
-    "parking_spot_2": 111,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -115,9 +111,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14473.01,
-    "parking_spot_1": 132,
-    "parking_spot_2": 131
+    "price_per_sqm": 14473.01
   },
   {
     "property_slug": "100353",
@@ -142,8 +136,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13712.6,
-    "parking_spot_1": 134,
-    "parking_spot_2": 133,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -168,9 +160,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14807.98,
-    "parking_spot_1": 136,
-    "parking_spot_2": 135
+    "price_per_sqm": 14807.98
   },
   {
     "property_slug": "100355",
@@ -195,8 +185,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14438.08,
-    "parking_spot_1": 69,
-    "parking_spot_2": 68,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -221,9 +209,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14866.45,
-    "parking_spot_1": 118,
-    "parking_spot_2": 117
+    "price_per_sqm": 14866.45
   },
   {
     "property_slug": "100346",
@@ -247,9 +233,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14472.53,
-    "parking_spot_1": 120,
-    "parking_spot_2": 119
+    "price_per_sqm": 14472.53
   },
   {
     "property_slug": "100347",
@@ -273,9 +257,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13713.22,
-    "parking_spot_1": 122,
-    "parking_spot_2": 121
+    "price_per_sqm": 13713.22
   },
   {
     "property_slug": "100348",
@@ -299,9 +281,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14819.25,
-    "parking_spot_1": 124,
-    "parking_spot_2": 123
+    "price_per_sqm": 14819.25
   },
   {
     "property_slug": "100349",
@@ -325,9 +305,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14457.69,
-    "parking_spot_1": 126,
-    "parking_spot_2": 125
+    "price_per_sqm": 14457.69
   },
   {
     "property_slug": "100350",
@@ -352,8 +330,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13734.5,
-    "parking_spot_1": 128,
-    "parking_spot_2": 127,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -378,9 +354,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14837.22,
-    "parking_spot_1": 130,
-    "parking_spot_2": 129
+    "price_per_sqm": 14837.22
   },
   {
     "property_slug": "100340",
@@ -444,9 +418,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14800.46,
-    "parking_spot_1": 73,
-    "parking_spot_2": 72
+    "price_per_sqm": 14800.46
   },
   {
     "property_slug": "100343",
@@ -470,9 +442,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14460.57,
-    "parking_spot_1": 114,
-    "parking_spot_2": 113
+    "price_per_sqm": 14460.57
   },
   {
     "property_slug": "100344",
@@ -496,9 +466,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13951.55,
-    "parking_spot_1": 116,
-    "parking_spot_2": 115
+    "price_per_sqm": 13951.55
   },
   {
     "property_slug": "100334",
@@ -522,9 +490,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14550.24,
-    "parking_spot_1": 312,
-    "parking_spot_2": 311
+    "price_per_sqm": 14550.24
   },
   {
     "property_slug": "100335",
@@ -548,9 +514,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14605.87,
-    "parking_spot_1": 310,
-    "parking_spot_2": 309
+    "price_per_sqm": 14605.87
   },
   {
     "property_slug": "100336",
@@ -574,9 +538,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14451.39,
-    "parking_spot_1": 308,
-    "parking_spot_2": 307
+    "price_per_sqm": 14451.39
   },
   {
     "property_slug": "100337",
@@ -661,8 +623,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14807.98,
-    "parking_spot_1": 64,
-    "parking_spot_2": 65,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -687,9 +647,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דופלקס גג",
-    "price_per_sqm": 15270.23,
-    "parking_spot_1": 9,
-    "parking_spot_2": 10
+    "price_per_sqm": 15270.23
   },
   {
     "property_slug": "100327",
@@ -793,9 +751,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירת גן",
-    "price_per_sqm": 15342.21,
-    "parking_spot_1": 318,
-    "parking_spot_2": 317
+    "price_per_sqm": 15342.21
   },
   {
     "property_slug": "100332",
@@ -820,8 +776,6 @@
     "lot": "208",
     "remarks": "דירת גן",
     "price_per_sqm": 15532.91,
-    "parking_spot_1": 316,
-    "parking_spot_2": 315,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -847,8 +801,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14639.46,
-    "parking_spot_1": 314,
-    "parking_spot_2": 313,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -874,8 +826,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14438.08,
-    "parking_spot_1": 31,
-    "parking_spot_2": 32,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -900,9 +850,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13713.22,
-    "parking_spot_1": 17,
-    "parking_spot_2": 18
+    "price_per_sqm": 13713.22
   },
   {
     "property_slug": "100318",
@@ -927,8 +875,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14457.69,
-    "parking_spot_1": 19,
-    "parking_spot_2": 20,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -953,9 +899,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14833.46,
-    "parking_spot_1": 21,
-    "parking_spot_2": 22
+    "price_per_sqm": 14833.46
   },
   {
     "property_slug": "100320",
@@ -979,9 +923,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13740.12,
-    "parking_spot_1": 23,
-    "parking_spot_2": 24
+    "price_per_sqm": 13740.12
   },
   {
     "property_slug": "100321",
@@ -1006,8 +948,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14473.01,
-    "parking_spot_1": 25,
-    "parking_spot_2": 26,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1032,9 +972,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14818.84,
-    "parking_spot_1": 27,
-    "parking_spot_2": 28
+    "price_per_sqm": 14818.84
   },
   {
     "property_slug": "100323",
@@ -1058,9 +996,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13696.33,
-    "parking_spot_1": 29,
-    "parking_spot_2": 30
+    "price_per_sqm": 13696.33
   },
   {
     "property_slug": "100308",
@@ -1145,8 +1081,6 @@
     "lot": "208",
     "remarks": "דירת גן",
     "price_per_sqm": 15854.83,
-    "parking_spot_1": 5,
-    "parking_spot_2": 6,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1172,8 +1106,6 @@
     "lot": "208",
     "remarks": "דירת גן",
     "price_per_sqm": 15897.27,
-    "parking_spot_1": 7,
-    "parking_spot_2": 8,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1198,9 +1130,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14845.15,
-    "parking_spot_1": 66,
-    "parking_spot_2": 67
+    "price_per_sqm": 14845.15
   },
   {
     "property_slug": "100314",
@@ -1224,9 +1154,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13783.93,
-    "parking_spot_1": 11,
-    "parking_spot_2": 12
+    "price_per_sqm": 13783.93
   },
   {
     "property_slug": "100315",
@@ -1251,8 +1179,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14472.53,
-    "parking_spot_1": 13,
-    "parking_spot_2": 14,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1277,9 +1203,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14819.25,
-    "parking_spot_1": 15,
-    "parking_spot_2": 16
+    "price_per_sqm": 14819.25
   },
   {
     "property_slug": "100304",
@@ -1304,8 +1228,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14467.27,
-    "parking_spot_1": 344,
-    "parking_spot_2": 355,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1331,8 +1253,6 @@
     "lot": "208",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15338.86,
-    "parking_spot_1": 343,
-    "parking_spot_2": 356,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1397,9 +1317,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14825.1,
-    "parking_spot_1": 332,
-    "parking_spot_2": 331
+    "price_per_sqm": 14825.1
   },
   {
     "property_slug": "100298",
@@ -1424,8 +1342,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14450.52,
-    "parking_spot_1": 337,
-    "parking_spot_2": 336,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1451,8 +1367,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13696.33,
-    "parking_spot_1": 350,
-    "parking_spot_2": 349,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1478,8 +1392,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14807.98,
-    "parking_spot_1": 348,
-    "parking_spot_2": 351,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1505,8 +1417,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14438.08,
-    "parking_spot_1": 347,
-    "parking_spot_2": 352,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1532,8 +1442,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13712.6,
-    "parking_spot_1": 346,
-    "parking_spot_2": 353,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1559,8 +1467,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14837.22,
-    "parking_spot_1": 345,
-    "parking_spot_2": 354,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1586,8 +1492,6 @@
     "lot": "208",
     "remarks": "דירת גן",
     "price_per_sqm": 16004.0,
-    "parking_spot_1": 302,
-    "parking_spot_2": 301,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1613,8 +1517,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13983.55,
-    "parking_spot_1": 304,
-    "parking_spot_2": 303,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1639,9 +1541,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14838.05,
-    "parking_spot_1": 306,
-    "parking_spot_2": 305
+    "price_per_sqm": 14838.05
   },
   {
     "property_slug": "100295",
@@ -1666,8 +1566,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14450.99,
-    "parking_spot_1": 328,
-    "parking_spot_2": 327,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1692,9 +1590,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13713.22,
-    "parking_spot_1": 330,
-    "parking_spot_2": 329
+    "price_per_sqm": 13713.22
   },
   {
     "property_slug": "100283",
@@ -1719,8 +1615,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14845.57,
-    "parking_spot_1": 61,
-    "parking_spot_2": 60,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1746,8 +1640,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13725.74,
-    "parking_spot_1": 39,
-    "parking_spot_2": 38,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1813,8 +1705,6 @@
     "lot": "208",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15249.55,
-    "parking_spot_1": 37,
-    "parking_spot_2": 36,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -1879,9 +1769,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירת גן",
-    "price_per_sqm": 16071.85,
-    "parking_spot_1": 298,
-    "parking_spot_2": 297
+    "price_per_sqm": 16071.85
   },
   {
     "property_slug": "100291",
@@ -1905,9 +1793,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14827.61,
-    "parking_spot_1": 300,
-    "parking_spot_2": 299
+    "price_per_sqm": 14827.61
   },
   {
     "property_slug": "100276",
@@ -1932,8 +1818,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14505.07,
-    "parking_spot_1": 47,
-    "parking_spot_2": 46,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1959,8 +1843,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14845.15,
-    "parking_spot_1": 49,
-    "parking_spot_2": 48,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -1985,9 +1867,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13725.74,
-    "parking_spot_1": 51,
-    "parking_spot_2": 50
+    "price_per_sqm": 13725.74
   },
   {
     "property_slug": "100279",
@@ -2012,8 +1892,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14518.48,
-    "parking_spot_1": 53,
-    "parking_spot_2": 52,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -2039,8 +1917,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14873.55,
-    "parking_spot_1": 55,
-    "parking_spot_2": 54,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -2066,8 +1942,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13830.24,
-    "parking_spot_1": 57,
-    "parking_spot_2": 56,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -2093,8 +1967,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14459.13,
-    "parking_spot_1": 59,
-    "parking_spot_2": 58,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -2119,9 +1991,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14819.25,
-    "parking_spot_1": 87,
-    "parking_spot_2": 86
+    "price_per_sqm": 14819.25
   },
   {
     "property_slug": "100275",
@@ -2146,8 +2016,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13940.89,
-    "parking_spot_1": 45,
-    "parking_spot_2": 44,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -2212,9 +2080,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14886.07,
-    "parking_spot_1": 93,
-    "parking_spot_2": 92
+    "price_per_sqm": 14886.07
   },
   {
     "property_slug": "100272",
@@ -2238,9 +2104,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירת גן",
-    "price_per_sqm": 16459.74,
-    "parking_spot_1": 91,
-    "parking_spot_2": 90
+    "price_per_sqm": 16459.74
   },
   {
     "property_slug": "100273",
@@ -2264,9 +2128,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14450.99,
-    "parking_spot_1": 89,
-    "parking_spot_2": 88
+    "price_per_sqm": 14450.99
   },
   {
     "property_slug": "100260",
@@ -2551,8 +2413,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14599.76,
-    "parking_spot_1": 244,
-    "parking_spot_2": 243,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -2578,8 +2438,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14626.02,
-    "parking_spot_1": 246,
-    "parking_spot_2": 245,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -2604,9 +2462,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14000.72,
-    "parking_spot_1": 248,
-    "parking_spot_2": 247
+    "price_per_sqm": 14000.72
   },
   {
     "property_slug": "100247",
@@ -2630,9 +2486,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14799.56,
-    "parking_spot_1": 250,
-    "parking_spot_2": 249
+    "price_per_sqm": 14799.56
   },
   {
     "property_slug": "100248",
@@ -2656,9 +2510,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14664.26,
-    "parking_spot_1": 252,
-    "parking_spot_2": 251
+    "price_per_sqm": 14664.26
   },
   {
     "property_slug": "100249",
@@ -2683,8 +2535,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14080.03,
-    "parking_spot_1": 256,
-    "parking_spot_2": 255,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -2710,8 +2560,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14584.34,
-    "parking_spot_1": 258,
-    "parking_spot_2": 257,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -2737,8 +2585,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14732.02,
-    "parking_spot_1": 260,
-    "parking_spot_2": 259,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -2763,9 +2609,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14118.33,
-    "parking_spot_1": 262,
-    "parking_spot_2": 261
+    "price_per_sqm": 14118.33
   },
   {
     "property_slug": "100253",
@@ -2849,9 +2693,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14479.85,
-    "parking_spot_1": 228,
-    "parking_spot_2": 227
+    "price_per_sqm": 14479.85
   },
   {
     "property_slug": "100237",
@@ -2876,8 +2718,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13949.2,
-    "parking_spot_1": 230,
-    "parking_spot_2": 229,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -2903,8 +2743,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14689.25,
-    "parking_spot_1": 232,
-    "parking_spot_2": 231,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -2930,8 +2768,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14658.12,
-    "parking_spot_1": 234,
-    "parking_spot_2": 233,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -2956,9 +2792,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14115.35,
-    "parking_spot_1": 236,
-    "parking_spot_2": 235
+    "price_per_sqm": 14115.35
   },
   {
     "property_slug": "100241",
@@ -2982,9 +2816,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14753.58,
-    "parking_spot_1": 238,
-    "parking_spot_2": 237
+    "price_per_sqm": 14753.58
   },
   {
     "property_slug": "100242",
@@ -3008,9 +2840,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14569.23,
-    "parking_spot_1": 240,
-    "parking_spot_2": 239
+    "price_per_sqm": 14569.23
   },
   {
     "property_slug": "100243",
@@ -3035,8 +2865,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14046.7,
-    "parking_spot_1": 242,
-    "parking_spot_2": 241,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -3061,9 +2889,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13839.71,
-    "parking_spot_1": 207,
-    "parking_spot_2": 206
+    "price_per_sqm": 13839.71
   },
   {
     "property_slug": "100229",
@@ -3087,9 +2913,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14441.39,
-    "parking_spot_1": 209,
-    "parking_spot_2": 208
+    "price_per_sqm": 14441.39
   },
   {
     "property_slug": "100230",
@@ -3113,9 +2937,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14439.74,
-    "parking_spot_1": 216,
-    "parking_spot_2": 215
+    "price_per_sqm": 14439.74
   },
   {
     "property_slug": "100231",
@@ -3140,8 +2962,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13910.7,
-    "parking_spot_1": 218,
-    "parking_spot_2": 217,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -3167,8 +2987,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14413.54,
-    "parking_spot_1": 220,
-    "parking_spot_2": 219,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -3194,8 +3012,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14396.94,
-    "parking_spot_1": 222,
-    "parking_spot_2": 221,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -3220,9 +3036,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13864.58,
-    "parking_spot_1": 224,
-    "parking_spot_2": 223
+    "price_per_sqm": 13864.58
   },
   {
     "property_slug": "100235",
@@ -3246,9 +3060,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14490.96,
-    "parking_spot_1": 226,
-    "parking_spot_2": 225
+    "price_per_sqm": 14490.96
   },
   {
     "property_slug": "100225",
@@ -3272,9 +3084,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13796.2,
-    "parking_spot_1": 198,
-    "parking_spot_2": 197
+    "price_per_sqm": 13796.2
   },
   {
     "property_slug": "100226",
@@ -3299,8 +3109,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14308.72,
-    "parking_spot_1": 200,
-    "parking_spot_2": 199,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -3326,8 +3134,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14330.18,
-    "parking_spot_1": 202,
-    "parking_spot_2": 201,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -3352,9 +3158,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14264.33,
-    "parking_spot_1": 194,
-    "parking_spot_2": 193
+    "price_per_sqm": 14264.33
   },
   {
     "property_slug": "100215",
@@ -3379,8 +3183,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14200.25,
-    "parking_spot_1": 196,
-    "parking_spot_2": 195,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -3405,9 +3207,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13824.47,
-    "parking_spot_1": 280,
-    "parking_spot_2": 279
+    "price_per_sqm": 13824.47
   },
   {
     "property_slug": "100217",
@@ -3431,9 +3231,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14417.89,
-    "parking_spot_1": 282,
-    "parking_spot_2": 281
+    "price_per_sqm": 14417.89
   },
   {
     "property_slug": "100218",
@@ -3457,9 +3255,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14463.03,
-    "parking_spot_1": 284,
-    "parking_spot_2": 283
+    "price_per_sqm": 14463.03
   },
   {
     "property_slug": "100219",
@@ -3483,9 +3279,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13966.65,
-    "parking_spot_1": 286,
-    "parking_spot_2": 285
+    "price_per_sqm": 13966.65
   },
   {
     "property_slug": "100220",
@@ -3510,8 +3304,6 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14360.45,
-    "parking_spot_1": 288,
-    "parking_spot_2": 287,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -3536,9 +3328,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14407.24,
-    "parking_spot_1": 290,
-    "parking_spot_2": 289
+    "price_per_sqm": 14407.24
   },
   {
     "property_slug": "100222",
@@ -3562,9 +3352,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13809.9,
-    "parking_spot_1": 292,
-    "parking_spot_2": 291
+    "price_per_sqm": 13809.9
   },
   {
     "property_slug": "100223",
@@ -3588,9 +3376,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14296.8,
-    "parking_spot_1": 294,
-    "parking_spot_2": 293
+    "price_per_sqm": 14296.8
   },
   {
     "property_slug": "100224",
@@ -3614,9 +3400,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14317.17,
-    "parking_spot_1": 296,
-    "parking_spot_2": 295
+    "price_per_sqm": 14317.17
   },
   {
     "property_slug": "100212",
@@ -3640,9 +3424,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14206.48,
-    "parking_spot_1": 188,
-    "parking_spot_2": 187
+    "price_per_sqm": 14206.48
   },
   {
     "property_slug": "100213",
@@ -3666,9 +3448,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13654.87,
-    "parking_spot_1": 192,
-    "parking_spot_2": 191
+    "price_per_sqm": 13654.87
   },
   {
     "property_slug": "100201",
@@ -3692,9 +3472,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13600.41,
-    "parking_spot_1": 166,
-    "parking_spot_2": 165
+    "price_per_sqm": 13600.41
   },
   {
     "property_slug": "100202",
@@ -3718,9 +3496,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14086.52,
-    "parking_spot_1": 168,
-    "parking_spot_2": 167
+    "price_per_sqm": 14086.52
   },
   {
     "property_slug": "100203",
@@ -3744,9 +3520,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14053.44,
-    "parking_spot_1": 170,
-    "parking_spot_2": 169
+    "price_per_sqm": 14053.44
   },
   {
     "property_slug": "100204",
@@ -3770,9 +3544,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13612.16,
-    "parking_spot_1": 172,
-    "parking_spot_2": 171
+    "price_per_sqm": 13612.16
   },
   {
     "property_slug": "100205",
@@ -3796,9 +3568,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14189.23,
-    "parking_spot_1": 174,
-    "parking_spot_2": 173
+    "price_per_sqm": 14189.23
   },
   {
     "property_slug": "100206",
@@ -3822,9 +3592,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14208.84,
-    "parking_spot_1": 176,
-    "parking_spot_2": 175
+    "price_per_sqm": 14208.84
   },
   {
     "property_slug": "100207",
@@ -3848,9 +3616,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13677.12,
-    "parking_spot_1": 178,
-    "parking_spot_2": 177
+    "price_per_sqm": 13677.12
   },
   {
     "property_slug": "100208",
@@ -3874,9 +3640,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14166.14,
-    "parking_spot_1": 180,
-    "parking_spot_2": 179
+    "price_per_sqm": 14166.14
   },
   {
     "property_slug": "100209",
@@ -3900,9 +3664,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14124.72,
-    "parking_spot_1": 182,
-    "parking_spot_2": 181
+    "price_per_sqm": 14124.72
   },
   {
     "property_slug": "100210",
@@ -3926,9 +3688,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13649.38,
-    "parking_spot_1": 184,
-    "parking_spot_2": 183
+    "price_per_sqm": 13649.38
   },
   {
     "property_slug": "100211",
@@ -3952,9 +3712,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14221.81,
-    "parking_spot_1": 186,
-    "parking_spot_2": 185
+    "price_per_sqm": 14221.81
   },
   {
     "property_slug": "100196",
@@ -3978,9 +3736,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14006.83,
-    "parking_spot_1": 156,
-    "parking_spot_2": 155
+    "price_per_sqm": 14006.83
   },
   {
     "property_slug": "100197",
@@ -4004,9 +3760,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14160.04,
-    "parking_spot_1": 158,
-    "parking_spot_2": 157
+    "price_per_sqm": 14160.04
   },
   {
     "property_slug": "100198",
@@ -4030,9 +3784,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13718.86,
-    "parking_spot_1": 160,
-    "parking_spot_2": 159
+    "price_per_sqm": 13718.86
   },
   {
     "property_slug": "100199",
@@ -4056,9 +3808,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13989.13,
-    "parking_spot_1": 162,
-    "parking_spot_2": 161
+    "price_per_sqm": 13989.13
   },
   {
     "property_slug": "100184",
@@ -4082,9 +3832,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13475.39,
-    "parking_spot_1": 79,
-    "parking_spot_2": 78
+    "price_per_sqm": 13475.39
   },
   {
     "property_slug": "100200",
@@ -4108,9 +3856,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14055.81,
-    "parking_spot_1": 164,
-    "parking_spot_2": 163
+    "price_per_sqm": 14055.81
   },
   {
     "property_slug": "100185",
@@ -4134,9 +3880,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13986.38,
-    "parking_spot_1": 81,
-    "parking_spot_2": 80
+    "price_per_sqm": 13986.38
   },
   {
     "property_slug": "100186",
@@ -4160,9 +3904,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13821.99,
-    "parking_spot_1": 83,
-    "parking_spot_2": 82
+    "price_per_sqm": 13821.99
   },
   {
     "property_slug": "100187",
@@ -4186,9 +3928,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14079.16,
-    "parking_spot_1": 138,
-    "parking_spot_2": 137
+    "price_per_sqm": 14079.16
   },
   {
     "property_slug": "100188",
@@ -4212,9 +3952,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13921.4,
-    "parking_spot_1": 140,
-    "parking_spot_2": 139
+    "price_per_sqm": 13921.4
   },
   {
     "property_slug": "100189",
@@ -4238,9 +3976,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13448.38,
-    "parking_spot_1": 142,
-    "parking_spot_2": 141
+    "price_per_sqm": 13448.38
   },
   {
     "property_slug": "100190",
@@ -4264,9 +4000,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13869.67,
-    "parking_spot_1": 144,
-    "parking_spot_2": 143
+    "price_per_sqm": 13869.67
   },
   {
     "property_slug": "100191",
@@ -4290,9 +4024,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13884.16,
-    "parking_spot_1": 146,
-    "parking_spot_2": 145
+    "price_per_sqm": 13884.16
   },
   {
     "property_slug": "100192",
@@ -4316,9 +4048,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13443.16,
-    "parking_spot_1": 148,
-    "parking_spot_2": 147
+    "price_per_sqm": 13443.16
   },
   {
     "property_slug": "100193",
@@ -4342,9 +4072,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13987.08,
-    "parking_spot_1": 150,
-    "parking_spot_2": 149
+    "price_per_sqm": 13987.08
   },
   {
     "property_slug": "100194",
@@ -4368,9 +4096,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 14008.65,
-    "parking_spot_1": 152,
-    "parking_spot_2": 151
+    "price_per_sqm": 14008.65
   },
   {
     "property_slug": "100195",
@@ -4394,9 +4120,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13547.73,
-    "parking_spot_1": 154,
-    "parking_spot_2": 153
+    "price_per_sqm": 13547.73
   },
   {
     "property_slug": "100177",
@@ -4465,9 +4189,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13809.85,
-    "parking_spot_1": 75,
-    "parking_spot_2": 74
+    "price_per_sqm": 13809.85
   },
   {
     "property_slug": "100183",
@@ -4491,9 +4213,7 @@
     "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
-    "price_per_sqm": 13806.23,
-    "parking_spot_1": 77,
-    "parking_spot_2": 76
+    "price_per_sqm": 13806.23
   },
   {
     "property_slug": "100172",
@@ -4699,9 +4419,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14874.76,
-    "parking_spot_1": 5,
-    "parking_spot_2": 4
+    "price_per_sqm": 14874.76
   },
   {
     "property_slug": "100165",
@@ -4725,9 +4443,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14480.67,
-    "parking_spot_1": 7,
-    "parking_spot_2": 6
+    "price_per_sqm": 14480.67
   },
   {
     "property_slug": "100166",
@@ -4752,8 +4468,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14038.21,
-    "parking_spot_1": 9,
-    "parking_spot_2": 8,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -4778,9 +4492,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14885.29,
-    "parking_spot_1": 11,
-    "parking_spot_2": 10
+    "price_per_sqm": 14885.29
   },
   {
     "property_slug": "100168",
@@ -4804,9 +4516,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14450.99,
-    "parking_spot_1": 13,
-    "parking_spot_2": 12
+    "price_per_sqm": 14450.99
   },
   {
     "property_slug": "100169",
@@ -4831,8 +4541,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13969.26,
-    "parking_spot_1": 25,
-    "parking_spot_2": 24,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -4857,9 +4565,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14872.23,
-    "parking_spot_1": 27,
-    "parking_spot_2": 26
+    "price_per_sqm": 14872.23
   },
   {
     "property_slug": "100171",
@@ -4883,9 +4589,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14507.47,
-    "parking_spot_1": 29,
-    "parking_spot_2": 28
+    "price_per_sqm": 14507.47
   },
   {
     "property_slug": "100159",
@@ -4953,9 +4657,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14418.45,
-    "parking_spot_1": 312,
-    "parking_spot_2": 311
+    "price_per_sqm": 14418.45
   },
   {
     "property_slug": "100152",
@@ -4980,8 +4682,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13957.2,
-    "parking_spot_1": 366,
-    "parking_spot_2": 365,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -5006,9 +4706,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14871.04,
-    "parking_spot_1": 364,
-    "parking_spot_2": 363
+    "price_per_sqm": 14871.04
   },
   {
     "property_slug": "100154",
@@ -5032,9 +4730,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14530.92,
-    "parking_spot_1": 362,
-    "parking_spot_2": 361
+    "price_per_sqm": 14530.92
   },
   {
     "property_slug": "100155",
@@ -5059,8 +4755,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13822.09,
-    "parking_spot_1": 360,
-    "parking_spot_2": 359,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -5085,9 +4779,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14877.72,
-    "parking_spot_1": 358,
-    "parking_spot_2": 357
+    "price_per_sqm": 14877.72
   },
   {
     "property_slug": "100157",
@@ -5111,9 +4803,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14589.78,
-    "parking_spot_1": 323,
-    "parking_spot_2": 322
+    "price_per_sqm": 14589.78
   },
   {
     "property_slug": "100158",
@@ -5275,9 +4965,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 16440.58,
-    "parking_spot_1": 310,
-    "parking_spot_2": 309
+    "price_per_sqm": 16440.58
   },
   {
     "property_slug": "100140",
@@ -5301,9 +4989,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14879.81,
-    "parking_spot_1": 118,
-    "parking_spot_2": 117
+    "price_per_sqm": 14879.81
   },
   {
     "property_slug": "100141",
@@ -5327,9 +5013,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13734.5,
-    "parking_spot_1": 87,
-    "parking_spot_2": 86
+    "price_per_sqm": 13734.5
   },
   {
     "property_slug": "100142",
@@ -5353,9 +5037,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14450.52,
-    "parking_spot_1": 89,
-    "parking_spot_2": 88
+    "price_per_sqm": 14450.52
   },
   {
     "property_slug": "100143",
@@ -5556,9 +5238,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 16118.23,
-    "parking_spot_1": 120,
-    "parking_spot_2": 119
+    "price_per_sqm": 16118.23
   },
   {
     "property_slug": "100136",
@@ -5583,8 +5263,6 @@
     "lot": "207",
     "remarks": "דירת גן",
     "price_per_sqm": 15759.08,
-    "parking_spot_1": 110,
-    "parking_spot_2": 109,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -5609,9 +5287,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 14838.05,
-    "parking_spot_1": 112,
-    "parking_spot_2": 111
+    "price_per_sqm": 14838.05
   },
   {
     "property_slug": "100138",
@@ -5635,9 +5311,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13912.67,
-    "parking_spot_1": 114,
-    "parking_spot_2": 113
+    "price_per_sqm": 13912.67
   },
   {
     "property_slug": "100139",
@@ -5661,9 +5335,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14527.57,
-    "parking_spot_1": 116,
-    "parking_spot_2": 115
+    "price_per_sqm": 14527.57
   },
   {
     "property_slug": "100121",
@@ -5687,9 +5359,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13755.77,
-    "parking_spot_1": 325,
-    "parking_spot_2": 324
+    "price_per_sqm": 13755.77
   },
   {
     "property_slug": "100122",
@@ -5713,9 +5383,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14818.84,
-    "parking_spot_1": 52,
-    "parking_spot_2": 336
+    "price_per_sqm": 14818.84
   },
   {
     "property_slug": "100123",
@@ -5739,9 +5407,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14438.08,
-    "parking_spot_1": 356,
-    "parking_spot_2": 355
+    "price_per_sqm": 14438.08
   },
   {
     "property_slug": "100124",
@@ -5886,8 +5552,6 @@
     "lot": "207",
     "remarks": "דירת גן",
     "price_per_sqm": 15785.88,
-    "parking_spot_1": 327,
-    "parking_spot_2": 326,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -5952,9 +5616,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 16369.28,
-    "parking_spot_1": 335,
-    "parking_spot_2": 334
+    "price_per_sqm": 16369.28
   },
   {
     "property_slug": "100116",
@@ -5978,9 +5640,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14838.05,
-    "parking_spot_1": 333,
-    "parking_spot_2": 332
+    "price_per_sqm": 14838.05
   },
   {
     "property_slug": "100117",
@@ -6025,8 +5685,6 @@
     "lot": "207",
     "remarks": "דירת גן",
     "price_per_sqm": 15287.97,
-    "parking_spot_1": 331,
-    "parking_spot_2": 330,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -6051,9 +5709,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14976.7,
-    "parking_spot_1": 329,
-    "parking_spot_2": 328
+    "price_per_sqm": 14976.7
   },
   {
     "property_slug": "100110",
@@ -6077,9 +5733,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14421.35,
-    "parking_spot_1": 101,
-    "parking_spot_2": 100
+    "price_per_sqm": 14421.35
   },
   {
     "property_slug": "100111",
@@ -6103,9 +5757,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14631.27,
-    "parking_spot_1": 99,
-    "parking_spot_2": 98
+    "price_per_sqm": 14631.27
   },
   {
     "property_slug": "100112",
@@ -6349,9 +6001,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 15901.41,
-    "parking_spot_1": 105,
-    "parking_spot_2": 104
+    "price_per_sqm": 15901.41
   },
   {
     "property_slug": "100109",
@@ -6375,9 +6025,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירת גן",
-    "price_per_sqm": 15531.29,
-    "parking_spot_1": 103,
-    "parking_spot_2": 102
+    "price_per_sqm": 15531.29
   },
   {
     "property_slug": "100097",
@@ -6542,8 +6190,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14218.07,
-    "parking_spot_1": 45,
-    "parking_spot_2": 44,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -6569,8 +6215,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14753.54,
-    "parking_spot_1": 47,
-    "parking_spot_2": 46,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -6596,8 +6240,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14902.66,
-    "parking_spot_1": 49,
-    "parking_spot_2": 48,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -6622,9 +6264,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14256.74,
-    "parking_spot_1": 51,
-    "parking_spot_2": 50
+    "price_per_sqm": 14256.74
   },
   {
     "property_slug": "100090",
@@ -6669,8 +6309,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14769.93,
-    "parking_spot_1": 257,
-    "parking_spot_2": 202,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -6696,8 +6334,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14796.45,
-    "parking_spot_1": 37,
-    "parking_spot_2": 36,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -6722,9 +6358,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14138.66,
-    "parking_spot_1": 39,
-    "parking_spot_2": 38
+    "price_per_sqm": 14138.66
   },
   {
     "property_slug": "100084",
@@ -6748,9 +6382,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14970.86,
-    "parking_spot_1": 41,
-    "parking_spot_2": 40
+    "price_per_sqm": 14970.86
   },
   {
     "property_slug": "100085",
@@ -6774,9 +6406,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14834.24,
-    "parking_spot_1": 43,
-    "parking_spot_2": 42
+    "price_per_sqm": 14834.24
   },
   {
     "property_slug": "100073",
@@ -6800,9 +6430,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14828.2,
-    "parking_spot_1": 289,
-    "parking_spot_2": 288
+    "price_per_sqm": 14828.2
   },
   {
     "property_slug": "100074",
@@ -6826,9 +6454,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14267.27,
-    "parking_spot_1": 291,
-    "parking_spot_2": 290
+    "price_per_sqm": 14267.27
   },
   {
     "property_slug": "100075",
@@ -6853,8 +6479,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14655.65,
-    "parking_spot_1": 293,
-    "parking_spot_2": 292,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -6880,8 +6504,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14701.13,
-    "parking_spot_1": 295,
-    "parking_spot_2": 294,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -6906,9 +6528,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14052.06,
-    "parking_spot_1": 297,
-    "parking_spot_2": 296
+    "price_per_sqm": 14052.06
   },
   {
     "property_slug": "100078",
@@ -6932,9 +6552,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14677.04,
-    "parking_spot_1": 299,
-    "parking_spot_2": 298
+    "price_per_sqm": 14677.04
   },
   {
     "property_slug": "100079",
@@ -6958,9 +6576,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14811.31,
-    "parking_spot_1": 301,
-    "parking_spot_2": 300
+    "price_per_sqm": 14811.31
   },
   {
     "property_slug": "100080",
@@ -6984,9 +6600,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14256.56,
-    "parking_spot_1": 303,
-    "parking_spot_2": 302
+    "price_per_sqm": 14256.56
   },
   {
     "property_slug": "100065",
@@ -7010,9 +6624,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13924.53,
-    "parking_spot_1": 273,
-    "parking_spot_2": 272
+    "price_per_sqm": 13924.53
   },
   {
     "property_slug": "100066",
@@ -7036,9 +6648,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14573.7,
-    "parking_spot_1": 275,
-    "parking_spot_2": 274
+    "price_per_sqm": 14573.7
   },
   {
     "property_slug": "100067",
@@ -7062,9 +6672,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14575.93,
-    "parking_spot_1": 277,
-    "parking_spot_2": 276
+    "price_per_sqm": 14575.93
   },
   {
     "property_slug": "100068",
@@ -7088,9 +6696,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13974.71,
-    "parking_spot_1": 279,
-    "parking_spot_2": 278
+    "price_per_sqm": 13974.71
   },
   {
     "property_slug": "100069",
@@ -7115,8 +6721,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14569.03,
-    "parking_spot_1": 281,
-    "parking_spot_2": 280,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -7142,8 +6746,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14589.7,
-    "parking_spot_1": 283,
-    "parking_spot_2": 282,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -7169,8 +6771,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14219.1,
-    "parking_spot_1": 285,
-    "parking_spot_2": 284,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -7195,9 +6795,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14828.2,
-    "parking_spot_1": 287,
-    "parking_spot_2": 286
+    "price_per_sqm": 14828.2
   },
   {
     "property_slug": "100061",
@@ -7221,9 +6819,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14526.54,
-    "parking_spot_1": 265,
-    "parking_spot_2": 264
+    "price_per_sqm": 14526.54
   },
   {
     "property_slug": "100062",
@@ -7247,9 +6843,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13972.68,
-    "parking_spot_1": 267,
-    "parking_spot_2": 266
+    "price_per_sqm": 13972.68
   },
   {
     "property_slug": "100063",
@@ -7274,8 +6868,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14533.02,
-    "parking_spot_1": 269,
-    "parking_spot_2": 268,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -7301,8 +6893,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14498.55,
-    "parking_spot_1": 271,
-    "parking_spot_2": 270,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -7327,9 +6917,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13919.79,
-    "parking_spot_1": 163,
-    "parking_spot_2": 162
+    "price_per_sqm": 13919.79
   },
   {
     "property_slug": "100020",
@@ -7353,9 +6941,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13434.44,
-    "parking_spot_1": 190,
-    "parking_spot_2": 189
+    "price_per_sqm": 13434.44
   },
   {
     "property_slug": "100021",
@@ -7379,9 +6965,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13885.77,
-    "parking_spot_1": 188,
-    "parking_spot_2": 187
+    "price_per_sqm": 13885.77
   },
   {
     "property_slug": "100022",
@@ -7405,9 +6989,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13887.38,
-    "parking_spot_1": 186,
-    "parking_spot_2": 185
+    "price_per_sqm": 13887.38
   },
   {
     "property_slug": "100023",
@@ -7431,9 +7013,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13437.93,
-    "parking_spot_1": 184,
-    "parking_spot_2": 183
+    "price_per_sqm": 13437.93
   },
   {
     "property_slug": "100024",
@@ -7457,9 +7037,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13953.1,
-    "parking_spot_1": 182,
-    "parking_spot_2": 181
+    "price_per_sqm": 13953.1
   },
   {
     "property_slug": "100025",
@@ -7483,9 +7061,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13977.37,
-    "parking_spot_1": 180,
-    "parking_spot_2": 179
+    "price_per_sqm": 13977.37
   },
   {
     "property_slug": "100026",
@@ -7509,9 +7085,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13548.31,
-    "parking_spot_1": 178,
-    "parking_spot_2": 177
+    "price_per_sqm": 13548.31
   },
   {
     "property_slug": "100027",
@@ -7535,9 +7109,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13997.67,
-    "parking_spot_1": 176,
-    "parking_spot_2": 175
+    "price_per_sqm": 13997.67
   },
   {
     "property_slug": "100028",
@@ -7561,9 +7133,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13985.25,
-    "parking_spot_1": 174,
-    "parking_spot_2": 173
+    "price_per_sqm": 13985.25
   },
   {
     "property_slug": "100029",
@@ -7587,9 +7157,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13714.19,
-    "parking_spot_1": 136,
-    "parking_spot_2": 135
+    "price_per_sqm": 13714.19
   },
   {
     "property_slug": "100030",
@@ -7613,9 +7181,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14248.82,
-    "parking_spot_1": 138,
-    "parking_spot_2": 137
+    "price_per_sqm": 14248.82
   },
   {
     "property_slug": "100016",
@@ -7639,9 +7205,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13818.47,
-    "parking_spot_1": 157,
-    "parking_spot_2": 156
+    "price_per_sqm": 13818.47
   },
   {
     "property_slug": "100017",
@@ -7665,9 +7229,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13413.53,
-    "parking_spot_1": 159,
-    "parking_spot_2": 158
+    "price_per_sqm": 13413.53
   },
   {
     "property_slug": "100018",
@@ -7691,9 +7253,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13919.79,
-    "parking_spot_1": 161,
-    "parking_spot_2": 160
+    "price_per_sqm": 13919.79
   },
   {
     "property_slug": "100003",
@@ -7717,9 +7277,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13265.52,
-    "parking_spot_1": 64,
-    "parking_spot_2": 63
+    "price_per_sqm": 13265.52
   },
   {
     "property_slug": "100004",
@@ -7743,9 +7301,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13657.23,
-    "parking_spot_1": 66,
-    "parking_spot_2": 65
+    "price_per_sqm": 13657.23
   },
   {
     "property_slug": "100005",
@@ -7769,9 +7325,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13614.27,
-    "parking_spot_1": 68,
-    "parking_spot_2": 67
+    "price_per_sqm": 13614.27
   },
   {
     "property_slug": "100006",
@@ -7795,9 +7349,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13714.02,
-    "parking_spot_1": 70,
-    "parking_spot_2": 69
+    "price_per_sqm": 13714.02
   },
   {
     "property_slug": "100007",
@@ -7821,9 +7373,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13717.2,
-    "parking_spot_1": 72,
-    "parking_spot_2": 71
+    "price_per_sqm": 13717.2
   },
   {
     "property_slug": "100008",
@@ -7847,9 +7397,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13333.47,
-    "parking_spot_1": 81,
-    "parking_spot_2": 80
+    "price_per_sqm": 13333.47
   },
   {
     "property_slug": "100009",
@@ -7873,9 +7421,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13747.81,
-    "parking_spot_1": 83,
-    "parking_spot_2": 82
+    "price_per_sqm": 13747.81
   },
   {
     "property_slug": "100010",
@@ -7899,9 +7445,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13748.33,
-    "parking_spot_1": 85,
-    "parking_spot_2": 84
+    "price_per_sqm": 13748.33
   },
   {
     "property_slug": "100011",
@@ -7925,9 +7469,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13342.09,
-    "parking_spot_1": 147,
-    "parking_spot_2": 146
+    "price_per_sqm": 13342.09
   },
   {
     "property_slug": "100012",
@@ -7951,9 +7493,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13806.93,
-    "parking_spot_1": 149,
-    "parking_spot_2": 148
+    "price_per_sqm": 13806.93
   },
   {
     "property_slug": "100013",
@@ -7977,9 +7517,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13783.45,
-    "parking_spot_1": 151,
-    "parking_spot_2": 150
+    "price_per_sqm": 13783.45
   },
   {
     "property_slug": "100014",
@@ -8003,9 +7541,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13369.6,
-    "parking_spot_1": 153,
-    "parking_spot_2": 152
+    "price_per_sqm": 13369.6
   },
   {
     "property_slug": "100015",
@@ -8029,9 +7565,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13803.52,
-    "parking_spot_1": 155,
-    "parking_spot_2": 154
+    "price_per_sqm": 13803.52
   },
   {
     "property_slug": "100001",
@@ -8055,9 +7589,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13640.07,
-    "parking_spot_1": 60,
-    "parking_spot_2": 59
+    "price_per_sqm": 13640.07
   },
   {
     "property_slug": "100002",
@@ -8081,9 +7613,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13636.32,
-    "parking_spot_1": 62,
-    "parking_spot_2": 61
+    "price_per_sqm": 13636.32
   },
   {
     "property_slug": "100047",
@@ -8107,9 +7637,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13688.68,
-    "parking_spot_1": 234,
-    "parking_spot_2": 233
+    "price_per_sqm": 13688.68
   },
   {
     "property_slug": "100048",
@@ -8133,9 +7661,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14409.63,
-    "parking_spot_1": 236,
-    "parking_spot_2": 235
+    "price_per_sqm": 14409.63
   },
   {
     "property_slug": "100049",
@@ -8159,9 +7685,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14417.89,
-    "parking_spot_1": 238,
-    "parking_spot_2": 237
+    "price_per_sqm": 14417.89
   },
   {
     "property_slug": "100050",
@@ -8185,9 +7709,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13951.76,
-    "parking_spot_1": 242,
-    "parking_spot_2": 241
+    "price_per_sqm": 13951.76
   },
   {
     "property_slug": "100051",
@@ -8212,8 +7734,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14478.26,
-    "parking_spot_1": 244,
-    "parking_spot_2": 243,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -8239,8 +7759,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14360.45,
-    "parking_spot_1": 246,
-    "parking_spot_2": 245,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -8265,9 +7783,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13889.77,
-    "parking_spot_1": 248,
-    "parking_spot_2": 247
+    "price_per_sqm": 13889.77
   },
   {
     "property_slug": "100054",
@@ -8291,9 +7807,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14417.05,
-    "parking_spot_1": 250,
-    "parking_spot_2": 249
+    "price_per_sqm": 14417.05
   },
   {
     "property_slug": "100055",
@@ -8317,9 +7831,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14381.66,
-    "parking_spot_1": 252,
-    "parking_spot_2": 251
+    "price_per_sqm": 14381.66
   },
   {
     "property_slug": "100056",
@@ -8343,9 +7855,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13862.78,
-    "parking_spot_1": 254,
-    "parking_spot_2": 253
+    "price_per_sqm": 13862.78
   },
   {
     "property_slug": "100057",
@@ -8370,8 +7880,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14405.79,
-    "parking_spot_1": 256,
-    "parking_spot_2": 255,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -8397,8 +7905,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14393.62,
-    "parking_spot_1": 259,
-    "parking_spot_2": 258,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -8424,8 +7930,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13875.36,
-    "parking_spot_1": 261,
-    "parking_spot_2": 260,
     "status_changed_date": "2026-05-03"
   },
   {
@@ -8450,9 +7954,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14529.87,
-    "parking_spot_1": 263,
-    "parking_spot_2": 262
+    "price_per_sqm": 14529.87
   },
   {
     "property_slug": "100046",
@@ -8477,8 +7979,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14264.33,
-    "parking_spot_1": 232,
-    "parking_spot_2": 231,
     "status_changed_date": "2026-05-06"
   },
   {
@@ -8503,9 +8003,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13989.13,
-    "parking_spot_1": 140,
-    "parking_spot_2": 139
+    "price_per_sqm": 13989.13
   },
   {
     "property_slug": "100032",
@@ -8529,9 +8027,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13579.86,
-    "parking_spot_1": 204,
-    "parking_spot_2": 203
+    "price_per_sqm": 13579.86
   },
   {
     "property_slug": "100033",
@@ -8555,9 +8051,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14076.21,
-    "parking_spot_1": 206,
-    "parking_spot_2": 205
+    "price_per_sqm": 14076.21
   },
   {
     "property_slug": "100034",
@@ -8581,9 +8075,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14086.52,
-    "parking_spot_1": 208,
-    "parking_spot_2": 207
+    "price_per_sqm": 14086.52
   },
   {
     "property_slug": "100035",
@@ -8607,9 +8099,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13575.75,
-    "parking_spot_1": 210,
-    "parking_spot_2": 209
+    "price_per_sqm": 13575.75
   },
   {
     "property_slug": "100036",
@@ -8633,9 +8123,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14170.7,
-    "parking_spot_1": 212,
-    "parking_spot_2": 211
+    "price_per_sqm": 14170.7
   },
   {
     "property_slug": "100037",
@@ -8659,9 +8147,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14189.23,
-    "parking_spot_1": 214,
-    "parking_spot_2": 213
+    "price_per_sqm": 14189.23
   },
   {
     "property_slug": "100038",
@@ -8685,9 +8171,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13722.55,
-    "parking_spot_1": 216,
-    "parking_spot_2": 215
+    "price_per_sqm": 13722.55
   },
   {
     "property_slug": "100039",
@@ -8711,9 +8195,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14168.32,
-    "parking_spot_1": 218,
-    "parking_spot_2": 217
+    "price_per_sqm": 14168.32
   },
   {
     "property_slug": "100040",
@@ -8737,9 +8219,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14166.14,
-    "parking_spot_1": 220,
-    "parking_spot_2": 219
+    "price_per_sqm": 14166.14
   },
   {
     "property_slug": "100041",
@@ -8763,9 +8243,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13629.92,
-    "parking_spot_1": 222,
-    "parking_spot_2": 221
+    "price_per_sqm": 13629.92
   },
   {
     "property_slug": "100042",
@@ -8789,9 +8267,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14226.19,
-    "parking_spot_1": 224,
-    "parking_spot_2": 223
+    "price_per_sqm": 14226.19
   },
   {
     "property_slug": "100043",
@@ -8815,9 +8291,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 14221.81,
-    "parking_spot_1": 226,
-    "parking_spot_2": 225
+    "price_per_sqm": 14221.81
   },
   {
     "property_slug": "100044",
@@ -8841,9 +8315,7 @@
     "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
-    "price_per_sqm": 13696.97,
-    "parking_spot_1": 228,
-    "parking_spot_2": 227
+    "price_per_sqm": 13696.97
   },
   {
     "property_slug": "100045",
@@ -8868,8 +8340,6 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14169.03,
-    "parking_spot_1": 230,
-    "parking_spot_2": 229,
     "status_changed_date": "2026-05-06"
   }
 ]

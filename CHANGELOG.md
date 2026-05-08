@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- Scoring panel shows a sold/available stats bar for each value
+- Scoring panel shows a sold/available stats bar for each value.
+- Added assigned parking spot numbers to apartment data and the detail view.
+- Main tab bar: Buildings is its own tab; Change history is opened from a clock icon next to the profile selector.
+- Buildings tab: Wide and Narrow layout modes. Wide groups buildings per lot into three columns.
 
 ## [1.4.1] - 2026-05-06
 

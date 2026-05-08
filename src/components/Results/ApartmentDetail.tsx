@@ -158,6 +158,13 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
     { label: t("detail.pdfDevelopment"), url: apartment.pdf_development_url },
   ].filter((p) => p.url);
 
+  // Assigned covered-parking spot numbers from the contractor's per-lot
+  // parking PDFs. Show whichever of the two are present; hide the row entirely
+  // when neither has been transcribed (open-market units, or apartments not
+  // yet covered in data/parking.json).
+  const parkingSpots = [apartment.parking_spot_1, apartment.parking_spot_2]
+    .filter((n): n is number => n != null);
+
   // Mark-as-sold + Mark-as-excluded controls.
   // Sold is cross-profile (when the scrape already reports the apartment as
   // sold the control is disabled and shows the official-source label).
@@ -320,8 +327,8 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
         )}
       </div>
 
-      {/* Right column: IDs + notes + PDFs */}
-      {(rows.some((r) => !r.paramId) || onNoteChange || pdfs.length > 0) && (
+      {/* Right column: IDs + notes + parking + PDFs */}
+      {(rows.some((r) => !r.paramId) || onNoteChange || pdfs.length > 0 || parkingSpots.length > 0) && (
         <div className="flex flex-col gap-3">
           {/* Unscored / metadata rows (storage ID, property ID) */}
           {rows.some((r) => !r.paramId) && (
@@ -397,6 +404,15 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
                 />
               </Collapsible.Content>
             </Collapsible.Root>
+          )}
+
+          {parkingSpots.length > 0 && (
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="text-gray-500 truncate">{t("detail.parking")}</span>
+              <span dir="ltr" className="font-medium text-gray-800 text-end tabular-nums">
+                {parkingSpots.join(", ")}
+              </span>
+            </div>
           )}
 
           {pdfs.length > 0 && (

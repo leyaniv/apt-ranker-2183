@@ -23,6 +23,15 @@ export interface RawApartment {
   storage_area_sqm?: number;
   storage_id?: string;
   parking_count?: number;
+  /**
+   * Assigned covered-parking spot numbers from the contractor's per-lot
+   * parking PDFs (section 6.2). The two fields mirror the source's column
+   * names: `parking_spot_1` ⇄ `מס׳ חניה 1`, `parking_spot_2` ⇄ `מס׳ חניה 2`.
+   * Both are absent for open-market units and for any apartment whose
+   * parking allocation hasn't been transcribed yet (see `data/parking.json`).
+   */
+  parking_spot_1?: number;
+  parking_spot_2?: number;
   building?: number;
   apartment_number?: number;
   /** Building number as returned by the WP REST API. Present on

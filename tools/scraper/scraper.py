@@ -26,6 +26,7 @@ SCRAPER_DIR = Path(__file__).parent
 REPO_ROOT = SCRAPER_DIR.parent.parent
 PDFS_DIR = SCRAPER_DIR / "pdfs"
 OUTPUT_JSON = REPO_ROOT / "data" / "apartments.json"
+PARKING_JSON = REPO_ROOT / "data" / "parking.json"
 ARCHIVE_DIR = REPO_ROOT / "data" / "archive"
 
 session = requests.Session()
@@ -381,6 +382,191 @@ def map_pdf_local_paths(apartments: list[dict], url_to_local: dict[str, str]) ->
 
 
 # ---------------------------------------------------------------------------
+# Phase 5a: Enrich with parking data
+# ---------------------------------------------------------------------------
+
+# Apartment statuses that are expected to appear in the parking table. Open-
+# market ('שיווק חופשי') units are documented in a separate section of the
+# contractor's parking PDFs and are intentionally NOT in parking.json.
+PARKING_TABLE_STATUSES = {"פנוי", "נמכר"}
+
+
+PARKING_SPOT_FIELDS = ("parking_spot_1", "parking_spot_2")
+
+
+def load_parking_records() -> list[dict]:
+    """Load and lightly validate the manually-transcribed parking table.
+
+    parking.json is a flat array of records:
+        {"lot": 207, "building": 1, "apartment": 1,
+         "parking_spot_1": 60, "parking_spot_2": 59}
+    The two spot fields mirror the source's column names — ``parking_spot_1``
+    comes from ``מס׳ חניה 1`` and ``parking_spot_2`` from ``מס׳ חניה 2``. The
+    column order is preserved (not sorted ascending) because the source PDFs
+    distinguish them. Apartments with a single covered parking spot would
+    only have ``parking_spot_1`` set; the current source only documents
+    two-spot apartments.
+    """
+    if not PARKING_JSON.exists():
+        raise FileNotFoundError(f"parking.json not found at {PARKING_JSON}")
+
+    with open(PARKING_JSON, "r", encoding="utf-8") as f:
+        records = json.load(f)
+
+    if not isinstance(records, list):
+        raise ValueError("parking.json must be a JSON array")
+
+    seen_keys: set[tuple[int, int, int]] = set()
+    for i, rec in enumerate(records):
+        for field in ("lot", "building", "apartment"):
+            if field not in rec:
+                raise ValueError(f"parking.json record {i}: missing field {field!r}")
+        key = (int(rec["lot"]), int(rec["building"]), int(rec["apartment"]))
+        if key in seen_keys:
+            raise ValueError(f"parking.json record {i}: duplicate key {key}")
+        seen_keys.add(key)
+
+        spots_present = [f for f in PARKING_SPOT_FIELDS if f in rec]
+        if not spots_present:
+            raise ValueError(f"parking.json record {i}: must have at least one of {PARKING_SPOT_FIELDS}")
+        for f in spots_present:
+            if not isinstance(rec[f], int):
+                raise ValueError(f"parking.json record {i}: {f} must be an int")
+
+    return records
+
+
+def validate_parking_consistency(apartments: list[dict], parking_records: list[dict]) -> tuple[list[str], list[str]]:
+    """Cross-check parking.json against the (already enriched) apartments list.
+
+    Returns ``(errors, warnings)``. Errors block the scrape because they
+    indicate a real data integrity problem; warnings are informational
+    (e.g. apartments still missing from parking.json while we wait for
+    additional source pages).
+    """
+    apt_index: dict[tuple[int, int, int], dict] = {}
+    for apt in apartments:
+        try:
+            key = (int(apt.get("lot")), int(apt.get("building")), int(apt.get("apartment_number")))
+        except (TypeError, ValueError):
+            continue
+        apt_index[key] = apt
+
+    parking_keys = {(r["lot"], r["building"], r["apartment"]) for r in parking_records}
+
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    # 1. Every parking record must point at a known apartment.
+    for rec in parking_records:
+        key = (rec["lot"], rec["building"], rec["apartment"])
+        apt = apt_index.get(key)
+        if apt is None:
+            errors.append(f"parking.json {key}: no matching apartment in apartments.json")
+            continue
+        status = apt.get("status")
+        if status == FREE_MARKETING_STATUS:
+            errors.append(
+                f"parking.json {key}: apartment status is '{FREE_MARKETING_STATUS}' "
+                f"(parking PDFs document open-market units in a separate section)"
+            )
+        spot_count = sum(1 for f in PARKING_SPOT_FIELDS if f in rec)
+        if apt.get("parking_count") != spot_count:
+            warnings.append(
+                f"parking.json {key}: parking_count={apt.get('parking_count')} "
+                f"but parking.json has {spot_count} spot(s)"
+            )
+
+    # 2. Apartments that *should* have parking info but don't.
+    expected_keys = set()
+    for apt in apartments:
+        if apt.get("parking_count") != 2:
+            continue
+        if apt.get("status") in PARKING_TABLE_STATUSES:
+            try:
+                expected_keys.add((int(apt["lot"]), int(apt["building"]), int(apt["apartment_number"])))
+            except (TypeError, ValueError):
+                continue
+
+    missing = sorted(expected_keys - parking_keys)
+    if missing:
+        warnings.append(f"{len(missing)} apartment(s) with parking_count==2 missing from parking.json:")
+        # Group by (lot, building) for readability.
+        from collections import defaultdict
+        by_lb: dict[tuple[int, int], list[int]] = defaultdict(list)
+        for k in missing:
+            by_lb[(k[0], k[1])].append(k[2])
+        for k in sorted(by_lb.keys()):
+            warnings.append(f"    lot {k[0]} bldg {k[1]}: {sorted(by_lb[k])}")
+
+    # 3. No parking spot may be assigned twice within the same lot.
+    from collections import Counter
+    by_lot_spots: dict[int, list[tuple[int, tuple[int, int, int]]]] = {}
+    for rec in parking_records:
+        for f in PARKING_SPOT_FIELDS:
+            if f in rec:
+                by_lot_spots.setdefault(rec["lot"], []).append(
+                    (rec[f], (rec["lot"], rec["building"], rec["apartment"]))
+                )
+    for lot, spots in by_lot_spots.items():
+        counts = Counter(s[0] for s in spots)
+        for spot, count in counts.items():
+            if count > 1:
+                owners = [s[1] for s in spots if s[0] == spot]
+                errors.append(f"lot {lot}: parking spot #{spot} assigned to {count} apartments: {owners}")
+
+    return errors, warnings
+
+
+def enrich_with_parking(apartments: list[dict], parking_records: list[dict]) -> int:
+    """Attach parking_spot_1/parking_spot_2 to apartments by (lot, building, apt). Returns count enriched."""
+    by_key = {(r["lot"], r["building"], r["apartment"]): r for r in parking_records}
+    enriched = 0
+    for apt in apartments:
+        try:
+            key = (int(apt.get("lot")), int(apt.get("building")), int(apt.get("apartment_number")))
+        except (TypeError, ValueError):
+            continue
+        # Clear any stale parking fields first (entries may have been removed
+        # from parking.json, or we're migrating from an older array shape).
+        apt.pop("parking", None)
+        for f in PARKING_SPOT_FIELDS:
+            apt.pop(f, None)
+        rec = by_key.get(key)
+        if rec is not None:
+            for f in PARKING_SPOT_FIELDS:
+                if f in rec:
+                    apt[f] = rec[f]
+            enriched += 1
+    return enriched
+
+
+def run_parking_enrichment(apartments: list[dict], *, label: str = "[Phase 5a]") -> int:
+    """Load parking.json, validate, and attach parking spots to apartments.
+
+    Errors abort the run; warnings are printed and ignored. Returns the
+    number of apartments that received a parking field.
+    """
+    print(f"\n{label} Loading parking.json...")
+    parking_records = load_parking_records()
+    print(f"  Loaded {len(parking_records)} parking record(s)")
+
+    print(f"\n{label} Validating parking ↔ apartments consistency...")
+    errors, warnings = validate_parking_consistency(apartments, parking_records)
+    for w in warnings:
+        print(f"  WARN: {w}")
+    if errors:
+        for e in errors:
+            print(f"  ERROR: {e}")
+        raise SystemExit(f"{label} parking validation failed with {len(errors)} error(s)")
+
+    print(f"\n{label} Attaching parking spots to apartments...")
+    enriched = enrich_with_parking(apartments, parking_records)
+    print(f"  Enriched {enriched} apartment(s) with parking spots")
+    return enriched
+
+
+# ---------------------------------------------------------------------------
 # Phase 5: Export
 # ---------------------------------------------------------------------------
 
@@ -507,6 +693,15 @@ def print_summary(apartments: list[dict], pdf_count: int, new_downloads: int) ->
 
     # PDFs
     print(f"\nUnique PDFs: {pdf_count} ({new_downloads} newly downloaded)")
+
+    # Parking
+    eligible_for_parking = sum(
+        1 for a in apartments
+        if a.get("parking_count") == 2 and a.get("status") in PARKING_TABLE_STATUSES
+    )
+    have_parking = sum(1 for a in apartments if any(a.get(f) for f in PARKING_SPOT_FIELDS))
+    print(f"\nParking coverage: {have_parking}/{eligible_for_parking} eligible apartments")
+
     print("=" * 60)
 
 
@@ -595,14 +790,48 @@ def status_only_check() -> None:
         print(f"\nUpdated {OUTPUT_JSON} with {len(changes)} status change(s).")
 
 
+def parking_only_update() -> None:
+    """Re-enrich an existing apartments.json with parking data only.
+
+    Intended for the common case where parking.json was edited (e.g. a new
+    page transcribed) and we want to refresh apartments.json without doing
+    a full network scrape. The previous apartments.json is archived.
+    """
+    print("=" * 60)
+    print("Eshel Haifa - Parking-only Enrichment")
+    print("=" * 60)
+
+    if not OUTPUT_JSON.exists():
+        print(f"ERROR: {OUTPUT_JSON} not found. Run a full scrape first.")
+        sys.exit(1)
+
+    with open(OUTPUT_JSON, "r", encoding="utf-8") as f:
+        apartments = json.load(f)
+    print(f"Loaded {len(apartments)} apartment(s) from {OUTPUT_JSON}")
+
+    run_parking_enrichment(apartments, label="[parking-only]")
+
+    print("\nWriting updated apartments.json...")
+    archive_existing_output()
+    with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
+        json.dump(apartments, f, ensure_ascii=False, indent=2)
+    print(f"Updated {OUTPUT_JSON}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Eshel Haifa Apartment Scraper - Lottery 771")
     parser.add_argument("--skip-pdfs", action="store_true", help="Skip PDF downloading (Phase 4), only export JSON")
+    parser.add_argument("--skip-parking", action="store_true", help="Skip parking enrichment (Phase 5a)")
     parser.add_argument("--status-only", action="store_true", help="Quick status check — only fetch statuses from API and compare against existing data")
+    parser.add_argument("--parking-only", action="store_true", help="Re-enrich existing apartments.json with parking data (no network scrape)")
     args = parser.parse_args()
 
     if args.status_only:
         status_only_check()
+        return
+
+    if args.parking_only:
+        parking_only_update()
         return
 
     print("=" * 60)
@@ -649,6 +878,14 @@ def main():
     # Phase 5: Export
     print("\n[Phase 5] Enriching with taxonomy labels...")
     enrich_with_taxonomy_labels(apartments, taxonomies)
+
+    # Phase 5a: Enrich with parking data from the manually-curated parking.json.
+    # Runs after taxonomy enrichment so we can validate against final
+    # `status` and `lot` labels (not raw API IDs).
+    if not args.skip_parking:
+        run_parking_enrichment(apartments)
+    else:
+        print("\n[Phase 5a] Skipped (--skip-parking)")
 
     # Track status changes: compare against previous data and set status_changed_date
     import datetime
