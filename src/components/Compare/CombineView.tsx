@@ -164,8 +164,8 @@ export function CombineView() {
     });
 
     setMergeModalOpen(false);
-    // Jump to the Results tab so the user sees the ranking immediately
-    requestTabChange("results");
+    // Jump to the Ranking tab so the user sees the ranking immediately
+    requestTabChange("ranking");
   };
 
   const handleMergeKeyDown = (e: React.KeyboardEvent) => {

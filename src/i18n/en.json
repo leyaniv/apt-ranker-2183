@@ -10,7 +10,8 @@
   },
   "tabs": {
     "scoring": "Scoring",
-    "results": "Results",
+    "ranking": "Ranking",
+    "buildings": "Buildings",
     "history": "History",
     "combine": "Combine",
     "compare": "Compare"
@@ -162,7 +163,10 @@
     "empty_state": "No apartments to show.",
     "alsoHere": "also",
     "collapseAll": "Collapse all",
-    "expandAll": "Expand all"
+    "expandAll": "Expand all",
+    "title": "Apartments by Building",
+    "titleShort": "By Building",
+    "howToUse": "View apartments laid out by building — each row is a floor and each column an air direction. Click any apartment cell to see full details. Sold or excluded apartments are dimmed in place to keep the building's layout intact."
   },
   "detail": {
     "balcony": "Balcony",
@@ -365,6 +369,10 @@
     "combine": {
       "title": "Combine profiles into one ranking",
       "body": "The Combine tab merges several profiles into a single weighted ranking. Set each profile's importance and see a unified list — great when two people want to agree on a shared shortlist."
+    },
+    "buildings": {
+      "title": "See apartments by building",
+      "body": "The Buildings tab lays apartments out by building — rows are floors and columns are air directions. Use it to spot which units are still available where, and to compare neighbors at a glance. Sold or excluded apartments are dimmed in place to preserve the layout."
     },
     "done": {
       "title": "You're all set!",

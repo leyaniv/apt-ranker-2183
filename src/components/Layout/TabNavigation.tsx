@@ -12,7 +12,7 @@ export function TabNavigation({ children }: TabNavigationProps) {
   return (
     <Tabs.Root defaultValue="scoring" className="flex-1 flex flex-col">
       <Tabs.List className="flex border-b border-gray-200 bg-white px-4 sm:px-6">
-        {(["scoring", "results", "compare"] as const).map((tab) => (
+        {(["scoring", "ranking", "buildings", "compare"] as const).map((tab) => (
           <Tabs.Trigger
             key={tab}
             value={tab}

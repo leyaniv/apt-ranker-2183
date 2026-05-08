@@ -14,6 +14,9 @@ import { track } from "./utils/analytics";
 const ResultsTable = lazy(() =>
   import("./components/Results/ResultsTable").then((m) => ({ default: m.ResultsTable }))
 );
+const BuildingsView = lazy(() =>
+  import("./components/Results/BuildingsView").then((m) => ({ default: m.BuildingsView }))
+);
 const ChangeHistory = lazy(() =>
   import("./components/History/ChangeHistory").then((m) => ({ default: m.ChangeHistory }))
 );
@@ -45,7 +48,7 @@ function AppContent() {
 
   const handleTabChange = useCallback(
     (newTab: string) => {
-      if (activeTab === "results" && hasUnsavedManualOrder) {
+      if (activeTab === "ranking" && hasUnsavedManualOrder) {
         setPendingTab(newTab);
         return;
       }
@@ -170,16 +173,20 @@ function AppContent() {
       <Tabs.Root value={activeTab} onValueChange={handleTabChange} className="flex-1 min-h-0 flex flex-col">
         <Tabs.List className="flex-shrink-0 flex flex-wrap items-center gap-y-0 sm:gap-y-1 border-b border-gray-200 bg-white px-0 sm:px-6">
           <div className="flex w-full sm:w-auto order-1 sm:order-none min-w-0">
-            {(["scoring", "results", "history", "compare", "combine"] as const).map((tab) => (
+            {(["scoring", "ranking", "buildings", "compare", "combine"] as const).map((tab) => (
               <Tabs.Trigger
                 key={tab}
                 value={tab}
                 data-tour-id={
-                  tab === "compare"
-                    ? "compare-tab"
-                    : tab === "combine"
-                      ? "combine-tab"
-                      : undefined
+                  tab === "ranking"
+                    ? "ranking-tab"
+                    : tab === "buildings"
+                      ? "buildings-tab"
+                      : tab === "compare"
+                        ? "compare-tab"
+                        : tab === "combine"
+                          ? "combine-tab"
+                          : undefined
                 }
                 className="flex-1 sm:flex-initial px-1 sm:px-4 py-2.5 text-xs sm:text-sm font-medium text-gray-500
                            border-b-2 border-transparent text-center
@@ -248,12 +255,21 @@ function AppContent() {
           <ScoringPanel />
         </Tabs.Content>
 
-        <Tabs.Content value="results" className="flex-1 min-h-0 overflow-hidden flex flex-col">
+        <Tabs.Content value="ranking" className="flex-1 min-h-0 overflow-hidden flex flex-col">
           <Suspense fallback={<TabLoadingFallback />}>
             <ResultsTable />
           </Suspense>
         </Tabs.Content>
 
+        <Tabs.Content value="buildings" className="flex-1 min-h-0 overflow-hidden flex flex-col">
+          <Suspense fallback={<TabLoadingFallback />}>
+            <BuildingsView />
+          </Suspense>
+        </Tabs.Content>
+
+        {/* History panel stays mounted so the history icon button next to
+            undo/redo can still navigate here, even though it's no longer
+            shown in the tab triggers row. */}
         <Tabs.Content value="history" className="flex-1 overflow-y-auto">
           <Suspense fallback={<TabLoadingFallback />}>
             <ChangeHistory />

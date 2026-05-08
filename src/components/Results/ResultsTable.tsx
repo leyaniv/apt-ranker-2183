@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { List, useDynamicRowHeight, useListRef, type RowComponentProps } from "react-window";
 import { useTranslation } from "react-i18next";
 import * as Collapsible from "@radix-ui/react-collapsible";
@@ -10,12 +10,6 @@ import { PrintModal } from "../Print/PrintModal";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { useTableTier, TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
 import type { RankedApartment } from "../../types";
-
-// Lazy-load the buildings grid so the default list view doesn't pay its
-// cost up-front. Switching to buildings mode triggers the chunk fetch.
-const BuildingsView = lazy(() =>
-  import("./BuildingsView").then((m) => ({ default: m.BuildingsView }))
-);
 
 /** Per-row props supplied to every virtualized row via `List.rowProps`. */
 interface RowData {
@@ -500,10 +494,6 @@ export function ResultsTable() {
   // Print modal
   const [showPrintModal, setShowPrintModal] = useState(false);
 
-  // Collapse/expand toggle for buildings view
-  const [collapseSignal, setCollapseSignal] = useState(0);
-  const [allBuildingsExpanded, setAllBuildingsExpanded] = useState(true);
-
   // Save manual order as a new profile (copies current scores/weights)
   const [showSaveAsModal, setShowSaveAsModal] = useState(false);
   const [saveAsName, setSaveAsName] = useState("");
@@ -551,60 +541,12 @@ export function ResultsTable() {
     >
       <div className="px-4 sm:px-6 pt-2 sm:pt-6 mb-2 flex-shrink-0 flex items-center gap-2">
         <TabHeader title={t("results.title")} titleShort={t("results.titleShort")} tooltip={t("results.howToUse")} />
-        <div
-          role="tablist"
-          aria-label={t("results.viewMode")}
-          className="order-2 inline-flex rounded-md border border-gray-300 bg-white p-0.5 text-xs sm:text-sm"
-        >
-          <button
-            type="button"
-            role="tab"
-            aria-selected={settings.resultsViewMode !== "buildings"}
-            onClick={() => updateSettings({ resultsViewMode: "list" })}
-            className={`px-2.5 sm:px-3 py-1 rounded transition-colors ${
-              settings.resultsViewMode !== "buildings"
-                ? "bg-blue-50 text-blue-700 font-medium dark:text-blue-800"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {t("results.viewModeList")}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={settings.resultsViewMode === "buildings"}
-            onClick={() => updateSettings({ resultsViewMode: "buildings" })}
-            className={`px-2.5 sm:px-3 py-1 rounded transition-colors ${
-              settings.resultsViewMode === "buildings"
-                ? "bg-blue-50 text-blue-700 font-medium dark:text-blue-800"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {t("results.viewModeBuildings")}
-          </button>
-        </div>
-        {settings.resultsViewMode === "buildings" && (
-        <button
-          type="button"
-          onClick={() => setCollapseSignal((s) => s + 1)}
-          title={allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}
-          aria-label={allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}
-          className="order-1 ms-auto inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700
-                     bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="hidden sm:block w-4 h-4 text-gray-500">
-            <path fillRule="evenodd" d="M3.22 7.595a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l3.25-3.25a.75.75 0 1 0-1.06-1.06L7 10.19 4.28 7.595a.75.75 0 0 0-1.06 0ZM9.22 7.595a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l3.25-3.25a.75.75 0 1 0-1.06-1.06L13 10.19l-2.72-2.595a.75.75 0 0 0-1.06 0Z" clipRule="evenodd" />
-          </svg>
-          <span>{allBuildingsExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}</span>
-        </button>
-        )}
-        {settings.resultsViewMode !== "buildings" && (
         <button
           type="button"
           onClick={() => setShowPrintModal(true)}
           title={t("print.buttonTip")}
           aria-label={t("print.buttonAria")}
-          className="order-1 ms-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
+          className="ms-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
                      bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
@@ -612,14 +554,7 @@ export function ResultsTable() {
           </svg>
           <span>{t("print.button")}</span>
         </button>
-        )}
       </div>
-      {settings.resultsViewMode === "buildings" ? (
-        <Suspense fallback={<div className="p-6 text-center text-gray-400 text-sm">{t("common.loading")}</div>}>
-          <BuildingsView toggleSignal={collapseSignal} onAllExpandedChange={setAllBuildingsExpanded} />
-        </Suspense>
-      ) : (
-      <>
       {/* Manual reorder banner */}
       {manualOrder && (
         <div className="flex-shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 bg-amber-50 border-b border-amber-200">
@@ -985,8 +920,6 @@ export function ResultsTable() {
         )}
       </div>
       </div>
-      </>
-      )}
 
       {/* Save as new profile modal */}
       {showSaveAsModal && (

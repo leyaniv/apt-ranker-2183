@@ -25,13 +25,6 @@ export interface AppSettings {
    * the user opts in via the toggle.
    */
   showExcluded: boolean;
-  /**
-   * Active rendering mode for the Results tab.
-   *  - "list":      virtualized ranked list (default)
-   *  - "buildings": floor / direction grid grouped by building
-   * Persisted across reloads.
-   */
-  resultsViewMode: "list" | "buildings";
 }
 
 const DEFAULTS: AppSettings = {
@@ -42,7 +35,6 @@ const DEFAULTS: AppSettings = {
   scoringInputStyle: "buttons",
   showSold: true,
   showExcluded: false,
-  resultsViewMode: "list",
 };
 
 function load(): AppSettings {

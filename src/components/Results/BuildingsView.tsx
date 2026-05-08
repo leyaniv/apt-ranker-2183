@@ -1,10 +1,9 @@
 /**
- * Buildings view — alternative rendering for the Results tab that lays
- * apartments out as a per-building grid of (floor × air-direction) cells.
+ * Buildings view — alternative rendering of the ranked apartments that
+ * lays them out as a per-building grid of (floor × air-direction) cells.
  *
- * Used when `settings.resultsViewMode === "buildings"`. Wired in by
- * `ResultsTable.tsx`. See `utils/buildingsLayout.ts` for the (pure)
- * layout pipeline.
+ * Mounted as the `buildings` tab in `App.tsx`. See
+ * `utils/buildingsLayout.ts` for the (pure) layout pipeline.
  *
  * Design notes:
  *  - The grid table inherits the document direction so cells and chips
@@ -22,11 +21,12 @@
  *    score chip; on desktop rows widen to show type / rooms too.
  */
 
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { useApp } from "../../context/AppContext";
 import { ApartmentDetail } from "./ApartmentDetail";
+import { TabHeader } from "../Layout/TabHeader";
 import {
   buildBuildingsLayout,
   type BuildingLayout,
@@ -608,7 +608,7 @@ function DetailModal({
 
 /* ─── Main view ───────────────────────────────────────────────────────── */
 
-export function BuildingsView({ toggleSignal, onAllExpandedChange }: { toggleSignal: number; onAllExpandedChange: (v: boolean) => void }) {
+export function BuildingsView() {
   const { t } = useTranslation();
   const {
     rankedApartments,
@@ -637,20 +637,12 @@ export function BuildingsView({ toggleSignal, onAllExpandedChange }: { toggleSig
 
   const allExpanded = layouts.length > 0 && layouts.every((l) => openSet.has(l.buildingKey));
 
-  // Report allExpanded state to parent
-  useEffect(() => {
-    onAllExpandedChange(allExpanded);
-  }, [allExpanded, onAllExpandedChange]);
-
-  // Toggle all when the parent increments the signal
-  useEffect(() => {
-    if (toggleSignal > 0) {
-      setOpenSet((prev) => {
-        const currentlyAll = layouts.every((l) => prev.has(l.buildingKey));
-        return currentlyAll ? new Set() : new Set(layouts.map((l) => l.buildingKey));
-      });
-    }
-  }, [toggleSignal, layouts]);
+  const toggleAll = useCallback(() => {
+    setOpenSet((prev) => {
+      const currentlyAll = layouts.every((l) => prev.has(l.buildingKey));
+      return currentlyAll ? new Set() : new Set(layouts.map((l) => l.buildingKey));
+    });
+  }, [layouts]);
 
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 
@@ -668,50 +660,100 @@ export function BuildingsView({ toggleSignal, onAllExpandedChange }: { toggleSig
     [selectedSlug, rankedApartments]
   );
 
-  if (layouts.length === 0) {
-    return (
-      <div className="p-8 text-center text-gray-400 text-sm">
-        {t("buildingsView.empty_state")}
-      </div>
-    );
-  }
-
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto px-1 sm:px-6 pb-4 sm:pb-6 space-y-3">
-      <div className="mx-auto w-full max-w-3xl space-y-3">
-      {layouts.map((layout) => (
-        <BuildingCard
-          key={layout.buildingKey}
-          layout={layout}
-          open={openSet.has(layout.buildingKey)}
-          onOpenChange={(v) =>
-            setOpenSet((prev) => {
-              const next = new Set(prev);
-              v ? next.add(layout.buildingKey) : next.delete(layout.buildingKey);
-              return next;
-            })
-          }
-          onOpenRanked={handleOpenRanked}
-          isUserExcluded={isUserExcluded}
+    <div className="flex flex-col h-full min-h-0">
+      <div className="px-4 sm:px-6 pt-2 sm:pt-6 mb-2 flex-shrink-0 flex items-center gap-2">
+        <TabHeader
+          title={t("buildingsView.title")}
+          titleShort={t("buildingsView.titleShort")}
+          tooltip={t("buildingsView.howToUse")}
         />
-      ))}
-
-      {selectedRanked && (
-        <DetailModal
-          ranked={selectedRanked}
-          onClose={() => setSelectedSlug(null)}
-          note={notes[selectedRanked.apartment.property_slug]}
-          onNoteChange={setNote}
-          excludedReason={
-            userExcludedSet.has(selectedRanked.apartment.property_slug)
-              ? "manual"
-              : selectedRanked.excluded
-                ? "scoring"
-                : null
-          }
-        />
-      )}
+        {/* Placeholder segmented toggle — kept for a future feature.
+            Both buttons render but clicks are no-ops; "Buildings" stays
+            visually selected. */}
+        <div
+          role="tablist"
+          aria-label={t("results.viewMode")}
+          className="inline-flex rounded-md border border-gray-300 bg-white p-0.5 text-xs sm:text-sm"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            onClick={() => { /* placeholder — wire up later */ }}
+            className="px-2.5 sm:px-3 py-1 rounded transition-colors text-gray-500 hover:text-gray-700"
+          >
+            {t("results.viewModeList")}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={true}
+            onClick={() => { /* placeholder — wire up later */ }}
+            className="px-2.5 sm:px-3 py-1 rounded transition-colors bg-blue-50 text-blue-700 font-medium dark:text-blue-800"
+          >
+            {t("results.viewModeBuildings")}
+          </button>
+        </div>
+        {layouts.length > 0 && (
+          <button
+            type="button"
+            onClick={toggleAll}
+            title={allExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}
+            aria-label={allExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}
+            className="ms-auto inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-xs sm:text-sm text-gray-700
+                       bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="hidden sm:block w-4 h-4 text-gray-500">
+              <path fillRule="evenodd" d="M3.22 7.595a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l3.25-3.25a.75.75 0 1 0-1.06-1.06L7 10.19 4.28 7.595a.75.75 0 0 0-1.06 0ZM9.22 7.595a.75.75 0 0 0 0 1.06l3.25 3.25a.75.75 0 0 0 1.06 0l3.25-3.25a.75.75 0 1 0-1.06-1.06L13 10.19l-2.72-2.595a.75.75 0 0 0-1.06 0Z" clipRule="evenodd" />
+            </svg>
+            <span>{allExpanded ? t("buildingsView.collapseAll") : t("buildingsView.expandAll")}</span>
+          </button>
+        )}
       </div>
+
+      {layouts.length === 0 ? (
+        <div className="p-8 text-center text-gray-400 text-sm">
+          {t("buildingsView.empty_state")}
+        </div>
+      ) : (
+        <div className="flex-1 min-h-0 overflow-y-auto px-1 sm:px-6 pb-4 sm:pb-6 space-y-3">
+          <div className="mx-auto w-full max-w-3xl space-y-3">
+            {layouts.map((layout) => (
+              <BuildingCard
+                key={layout.buildingKey}
+                layout={layout}
+                open={openSet.has(layout.buildingKey)}
+                onOpenChange={(v) =>
+                  setOpenSet((prev) => {
+                    const next = new Set(prev);
+                    v ? next.add(layout.buildingKey) : next.delete(layout.buildingKey);
+                    return next;
+                  })
+                }
+                onOpenRanked={handleOpenRanked}
+                isUserExcluded={isUserExcluded}
+              />
+            ))}
+
+            {selectedRanked && (
+              <DetailModal
+                ranked={selectedRanked}
+                onClose={() => setSelectedSlug(null)}
+                note={notes[selectedRanked.apartment.property_slug]}
+                onNoteChange={setNote}
+                excludedReason={
+                  userExcludedSet.has(selectedRanked.apartment.property_slug)
+                    ? "manual"
+                    : selectedRanked.excluded
+                      ? "scoring"
+                      : null
+                }
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

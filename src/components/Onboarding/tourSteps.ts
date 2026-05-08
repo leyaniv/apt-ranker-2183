@@ -13,7 +13,7 @@ export interface TourStep {
   /** `[data-tour-id="..."]` attribute value on the target element. Omit for a centered modal. */
   targetTourId?: string;
   /** Tab to switch to before showing this step */
-  tab?: "scoring" | "results" | "history" | "combine" | "compare";
+  tab?: "scoring" | "ranking" | "buildings" | "history" | "combine" | "compare";
   /** Preferred placement relative to target (auto-flips to fit viewport) */
   placement?: TourPlacement;
 }
@@ -38,14 +38,20 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     id: "results",
-    targetTourId: "results-filters",
-    tab: "results",
+    targetTourId: "ranking-tab",
+    tab: "ranking",
     placement: "bottom",
   },
   {
     id: "apartmentRow",
     targetTourId: "apartment-row",
-    tab: "results",
+    tab: "ranking",
+    placement: "bottom",
+  },
+  {
+    id: "buildings",
+    targetTourId: "buildings-tab",
+    tab: "buildings",
     placement: "bottom",
   },
   {
