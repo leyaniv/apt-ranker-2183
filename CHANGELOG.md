@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.5.2] - 2026-05-09
 
 - Ranking table cells can be color-coded by your value score (toggle next to the Print button).
 - Compare tab: "Show apartment details" button at the bottom opens a popup with side-by-side score breakdowns.
