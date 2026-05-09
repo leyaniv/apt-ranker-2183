@@ -127,6 +127,8 @@ AIR_DIRECTION_OVERRIDES: dict[str, str] = {
 REMARKS_OVERRIDES: dict[str, str] = {
     # 100291: listed as דירת גן but is actually a regular דירה.
     "100291": "דירה",
+    # 100137: listed as דירת גן but is actually a regular דירה.
+    "100137": "דירה",
 }
 
 

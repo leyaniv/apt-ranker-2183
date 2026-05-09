@@ -819,7 +819,8 @@
     "price_per_sqm": 15342.21,
     "parking_spot_1": 318,
     "parking_spot_2": 317,
-    "balcony_1_direction": "צפון"
+    "balcony_1_direction": "צפון",
+    "balcony_2_direction": "דרום"
   },
   {
     "property_slug": "100332",
@@ -847,7 +848,8 @@
     "status_changed_date": "2026-05-06",
     "parking_spot_1": 316,
     "parking_spot_2": 315,
-    "balcony_1_direction": "צפון"
+    "balcony_1_direction": "צפון",
+    "balcony_2_direction": "דרום"
   },
   {
     "property_slug": "100333",
@@ -1182,7 +1184,8 @@
     "status_changed_date": "2026-05-03",
     "parking_spot_1": 5,
     "parking_spot_2": 6,
-    "balcony_1_direction": "מזרח"
+    "balcony_1_direction": "מזרח",
+    "balcony_2_direction": "דרום"
   },
   {
     "property_slug": "100312",
@@ -1210,7 +1213,8 @@
     "status_changed_date": "2026-05-03",
     "parking_spot_1": 7,
     "parking_spot_2": 8,
-    "balcony_1_direction": "מערב"
+    "balcony_1_direction": "מערב",
+    "balcony_2_direction": "מזרח"
   },
   {
     "property_slug": "100313",
@@ -1639,7 +1643,8 @@
     "status_changed_date": "2026-05-03",
     "parking_spot_1": 302,
     "parking_spot_2": 301,
-    "balcony_1_direction": "מערב"
+    "balcony_1_direction": "מערב",
+    "balcony_2_direction": "מזרח"
   },
   {
     "property_slug": "100293",
@@ -4584,7 +4589,8 @@
     "remarks": "דופלקס גג",
     "price_per_sqm": 15263.87,
     "status_changed_date": "2026-05-06",
-    "balcony_1_direction": "צפון"
+    "balcony_1_direction": "מערב",
+    "balcony_2_direction": "צפון"
   },
   {
     "property_slug": "100182",
@@ -5768,7 +5774,8 @@
     "status_changed_date": "2026-05-03",
     "parking_spot_1": 110,
     "parking_spot_2": 109,
-    "balcony_1_direction": "מערב"
+    "balcony_1_direction": "מערב",
+    "balcony_2_direction": "מזרח"
   },
   {
     "property_slug": "100137",
@@ -5791,7 +5798,7 @@
     "air_direction": "צפון-מערב",
     "status": "פנוי",
     "lot": "207",
-    "remarks": "דירת גן",
+    "remarks": "דירה",
     "price_per_sqm": 14838.05,
     "parking_spot_1": 112,
     "parking_spot_2": 111,
@@ -6083,7 +6090,8 @@
     "status_changed_date": "2026-05-03",
     "parking_spot_1": 327,
     "parking_spot_2": 326,
-    "balcony_1_direction": "מערב"
+    "balcony_1_direction": "מערב",
+    "balcony_2_direction": "מזרח"
   },
   {
     "property_slug": "100113",
@@ -6581,7 +6589,8 @@
     "price_per_sqm": 15531.29,
     "parking_spot_1": 103,
     "parking_spot_2": 102,
-    "balcony_1_direction": "דרום"
+    "balcony_1_direction": "דרום",
+    "balcony_2_direction": "צפון"
   },
   {
     "property_slug": "100097",
