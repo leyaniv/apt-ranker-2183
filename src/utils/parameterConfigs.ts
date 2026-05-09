@@ -152,6 +152,13 @@ export const PARAMETER_CONFIGS: ParameterConfig[] = [
     valueLabels: {},
   },
   {
+    id: "balcony_direction",
+    kind: "categorical",
+    label: { en: "Balcony Direction", he: "כיוון מרפסת" },
+    values: ["N", "E", "S", "W"],
+    valueLabels: DIRECTION_LABELS,
+  },
+  {
     id: "storage_area_sqm",
     kind: "bucketed",
     label: { en: "Storage Area", he: "שטח מחסן" },

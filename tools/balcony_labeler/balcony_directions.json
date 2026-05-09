@@ -1,0 +1,501 @@
+{
+  "1__A3": {
+    "balconies": [
+      "דרום"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-09T12:19:46",
+    "notes": "",
+    "type": "A3"
+  },
+  "1__A3M": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:05",
+    "notes": "",
+    "type": "A3M"
+  },
+  "1__A4-1": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:12",
+    "notes": "",
+    "type": "A4-1"
+  },
+  "1__A4-2": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:21",
+    "notes": "",
+    "type": "A4-2"
+  },
+  "1__A4-3": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:30",
+    "notes": "",
+    "type": "A4-3"
+  },
+  "1__A4-4": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:40",
+    "notes": "",
+    "type": "A4-4"
+  },
+  "1__A4-5": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:45",
+    "notes": "",
+    "type": "A4-5"
+  },
+  "1__A4-5M": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:47",
+    "notes": "",
+    "type": "A4-5M"
+  },
+  "1__A4-6M": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:51",
+    "notes": "",
+    "type": "A4-6M"
+  },
+  "1__A46": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 1,
+    "labeled_at": "2026-05-08T23:34:54",
+    "notes": "",
+    "type": "A46"
+  },
+  "2__B3": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-08T23:35:27",
+    "notes": "",
+    "type": "B3"
+  },
+  "2__B3-1": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-08T23:35:30",
+    "notes": "",
+    "type": "B3-1"
+  },
+  "2__B5": {
+    "balconies": [
+      "דרום"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-08T23:35:42",
+    "notes": "",
+    "type": "B5"
+  },
+  "2__B6-1": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-08T23:35:53",
+    "notes": "",
+    "type": "B6-1"
+  },
+  "2__BG3": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-08T23:36:11",
+    "notes": "",
+    "type": "BG3"
+  },
+  "2__BP3": {
+    "balconies": [
+      "צפון",
+      "מערב"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-09T00:00:55",
+    "notes": "",
+    "type": "BP3"
+  },
+  "2__C5": {
+    "balconies": [
+      "דרום"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-08T23:36:58",
+    "notes": "",
+    "type": "C5"
+  },
+  "2__C5-1": {
+    "balconies": [
+      "דרום",
+      "צפון"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-09T00:15:41",
+    "notes": "",
+    "type": "C5-1"
+  },
+  "2__C6": {
+    "balconies": [
+      "דרום"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-08T23:37:27",
+    "notes": "",
+    "type": "C6"
+  },
+  "2__C6-1": {
+    "balconies": [
+      "דרום",
+      "צפון"
+    ],
+    "building": 2,
+    "labeled_at": "2026-05-09T12:21:31",
+    "notes": "",
+    "type": "C6-1"
+  },
+  "3__B3": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 3,
+    "labeled_at": "2026-05-08T23:37:54",
+    "notes": "",
+    "type": "B3"
+  },
+  "3__B3-1": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 3,
+    "labeled_at": "2026-05-08T23:37:59",
+    "notes": "",
+    "type": "B3-1"
+  },
+  "3__B3-G": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 3,
+    "labeled_at": "2026-05-08T23:38:23",
+    "notes": "",
+    "type": "B3-G"
+  },
+  "3__B5": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 3,
+    "labeled_at": "2026-05-08T23:38:32",
+    "notes": "",
+    "type": "B5"
+  },
+  "3__B5-1": {
+    "balconies": [
+      "מערב",
+      "מזרח"
+    ],
+    "building": 3,
+    "labeled_at": "2026-05-09T12:43:40",
+    "notes": "",
+    "type": "B5-1"
+  },
+  "3__B6-1": {
+    "balconies": [
+      "דרום"
+    ],
+    "building": 3,
+    "labeled_at": "2026-05-08T23:40:47",
+    "notes": "",
+    "type": "B6-1"
+  },
+  "3__BG3": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 3,
+    "labeled_at": "2026-05-08T23:41:05",
+    "notes": "",
+    "type": "BG3"
+  },
+  "3__BP3": {
+    "balconies": [
+      "מזרח",
+      "דרום"
+    ],
+    "building": 3,
+    "labeled_at": "2026-05-09T00:01:06",
+    "notes": "",
+    "type": "BP3"
+  },
+  "4__B3": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 4,
+    "labeled_at": "2026-05-08T23:41:14",
+    "notes": "",
+    "type": "B3"
+  },
+  "4__B3-1": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 4,
+    "labeled_at": "2026-05-08T23:41:18",
+    "notes": "",
+    "type": "B3-1"
+  },
+  "4__B3-G": {
+    "balconies": [
+      "מזרח",
+      "דרום"
+    ],
+    "building": 4,
+    "labeled_at": "2026-05-09T12:44:45",
+    "notes": "",
+    "type": "B3-G"
+  },
+  "4__B5": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 4,
+    "labeled_at": "2026-05-08T23:41:33",
+    "notes": "",
+    "type": "B5"
+  },
+  "4__B5-1": {
+    "balconies": [
+      "מערב",
+      "מזרח"
+    ],
+    "building": 4,
+    "labeled_at": "2026-05-09T12:45:02",
+    "notes": "",
+    "type": "B5-1"
+  },
+  "4__B6-1": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 4,
+    "labeled_at": "2026-05-08T23:41:42",
+    "notes": "",
+    "type": "B6-1"
+  },
+  "4__BG3": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 4,
+    "labeled_at": "2026-05-08T23:54:44",
+    "notes": "",
+    "type": "BG3"
+  },
+  "4__BP3": {
+    "balconies": [
+      "מזרח",
+      "צפון"
+    ],
+    "building": 4,
+    "labeled_at": "2026-05-08T23:56:21",
+    "notes": "",
+    "type": "BP3"
+  },
+  "5__B3": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-08T23:56:33",
+    "notes": "",
+    "type": "B3"
+  },
+  "5__B3-1": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-08T23:56:41",
+    "notes": "",
+    "type": "B3-1"
+  },
+  "5__B5": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-08T23:56:46",
+    "notes": "",
+    "type": "B5"
+  },
+  "5__B6-1": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-08T23:57:06",
+    "notes": "",
+    "type": "B6-1"
+  },
+  "5__BG3-1": {
+    "balconies": [
+      "דרום"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-08T23:57:20",
+    "notes": "",
+    "type": "BG3-1"
+  },
+  "5__BP3": {
+    "balconies": [
+      "דרום",
+      "מערב"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-08T23:59:38",
+    "notes": "",
+    "type": "BP3"
+  },
+  "5__C5": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-08T23:57:51",
+    "notes": "",
+    "type": "C5"
+  },
+  "5__C5-1": {
+    "balconies": [
+      "צפון",
+      "דרום"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-09T13:00:10",
+    "notes": "",
+    "type": "C5-1"
+  },
+  "5__C6": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-08T23:58:03",
+    "notes": "",
+    "type": "C6"
+  },
+  "5__C6-1": {
+    "balconies": [
+      "צפון",
+      "דרום"
+    ],
+    "building": 5,
+    "labeled_at": "2026-05-09T13:00:22",
+    "notes": "",
+    "type": "C6-1"
+  },
+  "6__B3": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 6,
+    "labeled_at": "2026-05-08T23:58:30",
+    "notes": "",
+    "type": "B3"
+  },
+  "6__B3-1": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 6,
+    "labeled_at": "2026-05-08T23:58:33",
+    "notes": "",
+    "type": "B3-1"
+  },
+  "6__B3-3": {
+    "balconies": [
+      "מערב"
+    ],
+    "building": 6,
+    "labeled_at": "2026-05-08T23:58:41",
+    "notes": "",
+    "type": "B3-3"
+  },
+  "6__B5": {
+    "balconies": [
+      "מזרח"
+    ],
+    "building": 6,
+    "labeled_at": "2026-05-08T23:58:48",
+    "notes": "",
+    "type": "B5"
+  },
+  "6__B6-1": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 6,
+    "labeled_at": "2026-05-08T23:58:55",
+    "notes": "",
+    "type": "B6-1"
+  },
+  "6__B6-2": {
+    "balconies": [
+      "צפון"
+    ],
+    "building": 6,
+    "labeled_at": "2026-05-08T23:59:02",
+    "notes": "",
+    "type": "B6-2"
+  },
+  "6__BP3": {
+    "balconies": [
+      "מערב",
+      "צפון"
+    ],
+    "building": 6,
+    "labeled_at": "2026-05-08T23:59:52",
+    "notes": "",
+    "type": "BP3"
+  },
+  "6__BP3-1": {
+    "balconies": [
+      "מערב",
+      "צפון"
+    ],
+    "building": 6,
+    "labeled_at": "2026-05-09T13:01:41",
+    "notes": "",
+    "type": "BP3-1"
+  }
+}

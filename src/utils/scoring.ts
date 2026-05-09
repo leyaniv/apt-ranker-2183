@@ -65,6 +65,10 @@ function getValueKey(
       return apt.directions;
     case "air_direction_count":
       return String(apt.directionCount);
+    case "balcony_direction":
+      // One key per cardinal covered by the apartment's balcony
+      // entrance(s); see `balconyDirections` in dataCleaning.
+      return apt.balconyDirections;
     case "type":
       return apt.type;
     case "price":
@@ -113,9 +117,18 @@ function getParameterScore(
   const paramScores = scores[paramId] ?? {};
   const valueKey = getValueKey(apt, paramId, buckets);
 
-  if (paramId === "air_direction" && Array.isArray(valueKey)) {
-    // Average the scores of all directions the apartment faces.
+  if (
+    (paramId === "air_direction" || paramId === "balcony_direction") &&
+    Array.isArray(valueKey)
+  ) {
+    // Average the scores of all directions the apartment faces (for
+    // air_direction) / its balcony entrance(s) face (for balcony_direction).
     // Any single excluded direction vetoes the whole apartment.
+    //
+    // For balcony_direction, an empty array means the apartment hasn't
+    // been labeled yet (typically open-market units, which are filtered
+    // out of the ranking elsewhere). Treating that as DEFAULT_SCORE keeps
+    // these units from being penalized or excluded by this parameter.
     if (valueKey.length === 0) return DEFAULT_SCORE;
     let sum = 0;
     for (const dir of valueKey) {

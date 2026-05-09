@@ -97,6 +97,25 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
   const directionLabel =
     lang === "he" ? apartment.air_direction : apartment.directions.join(", ");
 
+  // Per-balcony directions, displayed as Hebrew strings (which is what
+  // the data carries) for `he` and as English-cardinal joins for `en`.
+  // Falls back to "—" for apartments that haven't been labeled yet.
+  const formatBalconyDir = (raw: string | undefined): string => {
+    if (!raw) return "";
+    if (lang === "he") return raw;
+    const parts = raw
+      .replace("דרופ", "דרום")
+      .replace(/\s+/g, "")
+      .split("-");
+    const map: Record<string, string> = { צפון: "N", דרום: "S", מזרח: "E", מערב: "W" };
+    return parts.map((p) => map[p] ?? p).join(", ");
+  };
+  const balconyParts = [
+    formatBalconyDir(apartment.balcony_1_direction),
+    formatBalconyDir(apartment.balcony_2_direction),
+  ].filter((s) => s.length > 0);
+  const balconyDirectionLabel = balconyParts.length > 0 ? balconyParts.join(" / ") : "—";
+
   // Sold-state breakdown for the mark-as-sold control:
   // - scrapeSold: status from the scraper says "נמכר" (authoritative, locked)
   // - userMarkedSold: user pressed the "mark as sold" button (cross-profile)
@@ -156,6 +175,12 @@ export function ApartmentDetail({ apartment, breakdown, totalWeight, note, onNot
       paramId: "air_direction_count",
       label: paramLabel("air_direction_count"),
       value: String(apartment.directionCount),
+    },
+    {
+      key: "balcony_direction",
+      paramId: "balcony_direction",
+      label: paramLabel("balcony_direction"),
+      value: balconyDirectionLabel,
     },
     { key: "price", paramId: "price", label: paramLabel("price"), value: fmtPrice(apartment.price) },
   ];

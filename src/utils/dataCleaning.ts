@@ -47,6 +47,20 @@ export function parseDirections(raw: string): BaseDirection[] {
   return [...new Set(directions)];
 }
 
+/**
+ * Combine the two per-balcony direction fields into a deduplicated set
+ * of cardinals. A corner balcony (e.g. "צפון-מזרח") contributes both
+ * cardinals; an apartment with two balconies on different walls
+ * contributes one cardinal per balcony. Returns an empty array when the
+ * apartment hasn't been labeled.
+ */
+export function parseBalconyDirections(apt: RawApartment): BaseDirection[] {
+  const all: BaseDirection[] = [];
+  if (apt.balcony_1_direction) all.push(...parseDirections(apt.balcony_1_direction));
+  if (apt.balcony_2_direction) all.push(...parseDirections(apt.balcony_2_direction));
+  return [...new Set(all)];
+}
+
 /* ─── Floor bucketing ────────────────────────── */
 
 /** Assign a floor bucket label based on floor string */
@@ -115,6 +129,7 @@ function resolveBuilding(apt: RawApartment): number {
 export function cleanApartments(raw: RawApartment[]): Apartment[] {
   return raw.map((apt) => {
     const directions = parseDirections(apt.air_direction);
+    const balconyDirections = parseBalconyDirections(apt);
     const building = resolveBuilding(apt);
     return {
       ...apt,
@@ -137,6 +152,7 @@ export function cleanApartments(raw: RawApartment[]): Apartment[] {
       buildingKey: `${apt.lot}/${building}`,
       directions,
       directionCount: directions.length,
+      balconyDirections,
       roomsNum: parseFloat(apt.rooms),
       floorPrimary: parsePrimaryFloor(apt.floor),
       floorBucket: getFloorBucket(apt.floor),

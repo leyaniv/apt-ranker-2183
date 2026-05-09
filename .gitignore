@@ -39,6 +39,9 @@ tools/scraper/venv/
 **/__pycache__/
 *.pyc
 
+# Balcony labeler — rendered PNGs are derived from PDFs
+tools/balcony_labeler/cache/
+
 # Cloudflare Wrangler (if/when used for direct uploads)
 .wrangler/
 

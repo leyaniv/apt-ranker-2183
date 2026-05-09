@@ -27,6 +27,7 @@ REPO_ROOT = SCRAPER_DIR.parent.parent
 PDFS_DIR = SCRAPER_DIR / "pdfs"
 OUTPUT_JSON = REPO_ROOT / "data" / "apartments.json"
 PARKING_JSON = REPO_ROOT / "data" / "parking.json"
+BALCONY_DIRECTIONS_JSON = REPO_ROOT / "tools" / "balcony_labeler" / "balcony_directions.json"
 ARCHIVE_DIR = REPO_ROOT / "data" / "archive"
 
 session = requests.Session()
@@ -541,6 +542,127 @@ def enrich_with_parking(apartments: list[dict], parking_records: list[dict]) -> 
     return enriched
 
 
+# ---------------------------------------------------------------------------
+# Phase 5b: Enrich with curated balcony directions
+# ---------------------------------------------------------------------------
+#
+# `balcony_directions.json` is produced by `tools/balcony_labeler/app.py` —
+# a small interactive tool where a human eyeballs each apartment plan PDF
+# and records which compass direction(s) the balcony entrance(s) face.
+#
+# The labels are stored once per (building, type) since same-template
+# apartments share the same plan; we fan them out to every matching
+# apartment record here as `balcony_1_direction` / `balcony_2_direction`.
+# Apartments without an entry (e.g. שיווק חופשי units that have no PDF)
+# get neither field set.
+
+# Field names exposed on each apartment record. Index 0 -> balcony_1, etc.
+BALCONY_DIRECTION_FIELDS = ("balcony_1_direction", "balcony_2_direction")
+
+
+def _normalize_type(t: str | None) -> str | None:
+    """Strip whitespace from an apartment type so 'AP 1' matches 'AP1'."""
+    if t is None:
+        return None
+    return re.sub(r"\s+", "", t)
+
+
+def _direction_tokens(s: str | None) -> set[str]:
+    """Split a Hebrew compass string like 'צפון-מזרח' into a token set."""
+    if not s:
+        return set()
+    return {p.strip() for p in re.split(r"[-\s]+", s) if p.strip()}
+
+
+def load_balcony_directions() -> dict[tuple[int, str], list[str]]:
+    """Load balcony_directions.json keyed by (building, normalized_type)."""
+    if not BALCONY_DIRECTIONS_JSON.exists():
+        return {}
+    with open(BALCONY_DIRECTIONS_JSON, encoding="utf-8") as f:
+        raw = json.load(f)
+
+    out: dict[tuple[int, str], list[str]] = {}
+    for entry in raw.values():
+        balcs = entry.get("balconies") or []
+        if not balcs:
+            continue
+        try:
+            b = int(entry["building"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        t = _normalize_type(entry.get("type"))
+        if not t:
+            continue
+        out[(b, t)] = list(balcs)
+    return out
+
+
+def enrich_with_balcony_directions(apartments: list[dict]) -> tuple[int, list[str]]:
+    """Attach `balcony_N_direction` to each apartment from the curated file.
+
+    Returns ``(enriched_count, warnings)``. Warnings flag balcony directions
+    that aren't a subset of the apartment's ``air_direction`` token set —
+    the balcony's exposure should always be a subset of the whole apartment's,
+    so a mismatch indicates either a labeling slip or upstream typo.
+    """
+    by_key = load_balcony_directions()
+
+    enriched = 0
+    warnings: list[str] = []
+    for apt in apartments:
+        # Always clear stale fields first; the entry may have been removed
+        # or shortened in the labeler since the last scrape.
+        for f in BALCONY_DIRECTION_FIELDS:
+            apt.pop(f, None)
+
+        b = apt.get("building")
+        t = _normalize_type(apt.get("type"))
+        if b is None or t is None:
+            continue
+        balcs = by_key.get((int(b), t))
+        if not balcs:
+            continue
+
+        ad_tokens = _direction_tokens(apt.get("air_direction"))
+        for i, dir_str in enumerate(balcs):
+            if i >= len(BALCONY_DIRECTION_FIELDS):
+                warnings.append(
+                    f"  apt {apt.get('property_slug')} (lot {apt.get('lot')}/"
+                    f"bldg {b}/type {t}): more than {len(BALCONY_DIRECTION_FIELDS)} "
+                    f"balconies labeled — extras dropped: {balcs[i:]}"
+                )
+                break
+            apt[BALCONY_DIRECTION_FIELDS[i]] = dir_str
+            bal_tokens = _direction_tokens(dir_str)
+            if ad_tokens and bal_tokens and not bal_tokens.issubset(ad_tokens):
+                warnings.append(
+                    f"  apt {apt.get('property_slug')} (lot {apt.get('lot')}/"
+                    f"bldg {b}/type {t}): balcony {i+1} = {dir_str!r} "
+                    f"not a subset of air_direction = {apt.get('air_direction')!r}"
+                )
+        enriched += 1
+    return enriched, warnings
+
+
+def run_balcony_enrichment(apartments: list[dict], *, label: str = "[Phase 5b]") -> int:
+    """Load balcony_directions.json and attach the per-balcony direction
+    fields to each apartment. Warnings are non-fatal: missing labels are
+    expected for שיווק חופשי units, and subset-mismatch warnings usually
+    surface upstream contractor typos."""
+    print(f"\n{label} Loading balcony_directions.json...")
+    if not BALCONY_DIRECTIONS_JSON.exists():
+        print(f"  (no file at {BALCONY_DIRECTIONS_JSON} — skipping)")
+        return 0
+    by_key = load_balcony_directions()
+    print(f"  Loaded {len(by_key)} (building, type) entries")
+
+    enriched, warnings = enrich_with_balcony_directions(apartments)
+    print(f"\n{label} Attached balcony directions to {enriched} apartment(s)")
+    for w in warnings:
+        print(f"  WARN: {w.lstrip()}")
+    return enriched
+
+
 def run_parking_enrichment(apartments: list[dict], *, label: str = "[Phase 5a]") -> int:
     """Load parking.json, validate, and attach parking spots to apartments.
 
@@ -790,15 +912,18 @@ def status_only_check() -> None:
         print(f"\nUpdated {OUTPUT_JSON} with {len(changes)} status change(s).")
 
 
-def parking_only_update() -> None:
-    """Re-enrich an existing apartments.json with parking data only.
+def enrich_only_update() -> None:
+    """Re-enrich an existing apartments.json with all curated local data
+    sources (parking + balcony directions) — no network scrape.
 
-    Intended for the common case where parking.json was edited (e.g. a new
-    page transcribed) and we want to refresh apartments.json without doing
-    a full network scrape. The previous apartments.json is archived.
+    Used after editing ``parking.json`` or
+    ``tools/balcony_labeler/balcony_directions.json``. Both refreshes are
+    cheap and run together so a single ``--enrich-only`` invocation fully
+    reflects edits to either file. The previous apartments.json is
+    archived.
     """
     print("=" * 60)
-    print("Eshel Haifa - Parking-only Enrichment")
+    print("Eshel Haifa - Local Enrichment Refresh (parking + balcony)")
     print("=" * 60)
 
     if not OUTPUT_JSON.exists():
@@ -809,7 +934,8 @@ def parking_only_update() -> None:
         apartments = json.load(f)
     print(f"Loaded {len(apartments)} apartment(s) from {OUTPUT_JSON}")
 
-    run_parking_enrichment(apartments, label="[parking-only]")
+    run_parking_enrichment(apartments, label="[enrich-only]")
+    run_balcony_enrichment(apartments, label="[enrich-only]")
 
     print("\nWriting updated apartments.json...")
     archive_existing_output()
@@ -822,16 +948,17 @@ def main():
     parser = argparse.ArgumentParser(description="Eshel Haifa Apartment Scraper - Lottery 771")
     parser.add_argument("--skip-pdfs", action="store_true", help="Skip PDF downloading (Phase 4), only export JSON")
     parser.add_argument("--skip-parking", action="store_true", help="Skip parking enrichment (Phase 5a)")
+    parser.add_argument("--skip-balcony-directions", action="store_true", help="Skip balcony-direction enrichment (Phase 5b)")
     parser.add_argument("--status-only", action="store_true", help="Quick status check — only fetch statuses from API and compare against existing data")
-    parser.add_argument("--parking-only", action="store_true", help="Re-enrich existing apartments.json with parking data (no network scrape)")
+    parser.add_argument("--enrich-only", action="store_true", help="Re-enrich existing apartments.json with all curated local data (parking + balcony directions); no network scrape")
     args = parser.parse_args()
 
     if args.status_only:
         status_only_check()
         return
 
-    if args.parking_only:
-        parking_only_update()
+    if args.enrich_only:
+        enrich_only_update()
         return
 
     print("=" * 60)
@@ -886,6 +1013,12 @@ def main():
         run_parking_enrichment(apartments)
     else:
         print("\n[Phase 5a] Skipped (--skip-parking)")
+
+    # Phase 5b: Enrich with curated balcony directions (per (building, type)).
+    if not args.skip_balcony_directions:
+        run_balcony_enrichment(apartments)
+    else:
+        print("\n[Phase 5b] Skipped (--skip-balcony-directions)")
 
     # Track status changes: compare against previous data and set status_changed_date
     import datetime

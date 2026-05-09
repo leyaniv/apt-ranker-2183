@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- New "Balcony Direction" scoring criterion (N/E/S/W), based on the actual direction each balcony's entrance faces.
+
 ## [1.5.0] - 2026-05-08
 
 - Scoring panel shows a sold/available stats bar for each value.
@@ -54,3 +58,4 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0] - 2026-04-24
 
 - Initial public release.
+

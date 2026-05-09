@@ -39,6 +39,19 @@ export interface RawApartment {
    * this is the *building* number, not the apartment number. */
   apartment_number_from_api?: string;
   air_direction: string;
+  /**
+   * Direction the entrance of each balcony faces, as one or more
+   * Hebrew cardinals separated by hyphens (e.g. "מערב" or "צפון-מזרח").
+   * Filled by the human-labeled `tools/balcony_labeler/balcony_directions.json`
+   * and copied into apartments.json by the scraper enrichment step.
+   *
+   * Apartments with two balconies set both fields; single-balcony units
+   * only set `balcony_1_direction`. Open-market ("שיווק חופשי") units are
+   * never labeled and have neither field, since their plan PDFs aren't
+   * downloaded.
+   */
+  balcony_1_direction?: string;
+  balcony_2_direction?: string;
   status: string;
   lot: string;
   price_per_sqm?: number | null;
@@ -87,6 +100,15 @@ export interface Apartment extends RawApartment {
   directions: BaseDirection[];
   /** How many directions the apartment faces (1, 2, or 3) */
   directionCount: number;
+  /**
+   * Cardinal directions covered by the apartment's balcony entrances,
+   * deduplicated across `balcony_1_direction` + `balcony_2_direction`.
+   * A balcony facing a corner (e.g. "צפון-מזרח") contributes both
+   * cardinals. Empty for unlabeled apartments — typically open-market
+   * units; lottery units that aren't yet in the curated label file also
+   * land here as empty until the next scraper run picks them up.
+   */
+  balconyDirections: BaseDirection[];
   /** Numeric rooms value */
   roomsNum: number;
   /** Primary floor number (lowest if multi-floor) */
@@ -117,6 +139,7 @@ export type ParameterId =
   | "rooms"
   | "air_direction"
   | "air_direction_count"
+  | "balcony_direction"
   | "building"
   | "floor"
   | "layout"

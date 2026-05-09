@@ -62,6 +62,8 @@ function getValueKeys(
       return apt.directions;
     case "air_direction_count":
       return [String(apt.directionCount)];
+    case "balcony_direction":
+      return apt.balconyDirections;
     case "type":
       return [apt.type];
     case "price":
