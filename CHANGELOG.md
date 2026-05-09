@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.5.1] - 2026-05-09
 
 - New "Balcony Direction" scoring criterion (N/E/S/W), based on the actual direction each balcony's entrance faces.
 - Visual polish on the Ranking and Buildings tabs
