@@ -1198,7 +1198,7 @@ export function BuildingsView() {
           {t("buildingsView.empty_state")}
         </div>
       ) : (
-        <div className="flex-1 min-h-0 overflow-y-auto px-1 sm:px-6 lg:px-10 xl:px-16 pb-4 sm:pb-6 space-y-3">
+        <div className="flex-1 min-h-0 overflow-y-auto px-1 sm:px-6 lg:px-10 xl:px-16 pb-16 sm:pb-6 space-y-3">
           {effectiveMode === "wide" ? (
             <div className="w-full space-y-3">
               {lots.map(({ lot, buildings }) => (

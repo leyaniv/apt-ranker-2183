@@ -240,9 +240,13 @@
     "titleShort": "Side-by-Side Comparison",
     "excludedByProfile": "Excluded by this profile",
     "excludedByProfileTip": "This apartment is removed from the profile's ranking by an exclusion (✕). Click to deselect.",
-    "howToUse": "See how different profiles rank the same apartments side by side. Select up to 3 profiles, then click an apartment in any column to highlight where it ranks in the others.",
-    "howToUseMobile": "See how different profiles rank the same apartments side by side. On mobile you can compare up to 2 profiles — switch to a larger screen to compare 3. Click an apartment in any column to highlight where it ranks in the other.",
-    "maxSelected": "Up to {{max}} profiles can be compared at once."
+    "howToUse": "See how different profiles rank the same apartments side by side. Select up to 4 profiles, then click an apartment in any column to highlight where it ranks in the others.",
+    "howToUseMobile": "See how different profiles rank the same apartments side by side. On mobile you can compare up to 2 profiles — switch to a larger screen to compare up to 4. Click an apartment in any column to highlight where it ranks in the other.",
+    "maxSelected": "Up to {{max}} profiles can be compared at once.",
+    "showDetails": "Show apartment details",
+    "showDetailsTooltipDisabled": "Click an apartment in any column first.",
+    "notesPerProfile": "Notes by profile",
+    "noNote": "No note"
   },
   "combine": {
     "profileImportance": "Profile importance",
@@ -385,7 +389,7 @@
     },
     "compare": {
       "title": "Compare profiles side-by-side",
-      "body": "Use the Compare tab to view two or three profiles next to each other. Click an apartment in one column to highlight its rank in the others — handy for spotting agreements and disagreements between preferences."
+      "body": "Use the Compare tab to view several profiles next to each other (up to 4 on desktop). Click an apartment in one column to highlight its rank in the others — handy for spotting agreements and disagreements between preferences."
     },
     "combine": {
       "title": "Combine profiles into one ranking",

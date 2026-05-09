@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../../context/AppContext";
 import { SideBySideRanking } from "./SideBySideRanking";
+import { CompareDetailModal } from "./CompareDetailModal";
 import { InfoTooltip } from "../Layout/InfoTooltip";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 
@@ -34,11 +35,12 @@ export function CompareView() {
   const { t } = useTranslation();
   const { profiles, apartments, buckets } = useApp();
   const isDesktop = useIsDesktop();
-  // Mobile screens can't fit 3 columns of side-by-side ranking comfortably,
-  // so cap selection at 2 there. Desktop keeps the original 3-profile cap.
-  const maxSelected = isDesktop ? 3 : 2;
+  // Mobile screens can't fit 3+ columns of side-by-side ranking comfortably,
+  // so cap selection at 2 there. Desktop fits up to 4 columns.
+  const maxSelected = isDesktop ? 4 : 2;
 
   const [state, setState] = useState<CompareState>(loadCompareState);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   // Persist on every change
   useEffect(() => {
@@ -86,6 +88,29 @@ export function CompareView() {
   };
 
   const selectedProfiles = profiles.filter((p) => selectedIds.has(p.id));
+
+  // Resolve the currently focused apartment by slug (same one drawn in the
+  // side-by-side bezier connectors). The detail button below is gated on
+  // this being non-null.
+  const selectedApartment = useMemo(
+    () =>
+      state.selectedSlug
+        ? apartments.find((a) => a.property_slug === state.selectedSlug) ?? null
+        : null,
+    [apartments, state.selectedSlug],
+  );
+
+  // Map: profileId → that profile's note for the focused apartment. Built
+  // here (rather than inside the modal) so we don't have to thread the raw
+  // profiles list of `notes` records through.
+  const notesForSelected = useMemo(() => {
+    const map: Record<string, string | undefined> = {};
+    if (!selectedApartment) return map;
+    for (const p of selectedProfiles) {
+      map[p.id] = p.notes?.[selectedApartment.property_slug];
+    }
+    return map;
+  }, [selectedProfiles, selectedApartment]);
 
   if (profiles.length < 2) {
     return (
@@ -177,10 +202,43 @@ export function CompareView() {
         </div>
       )}
 
+      {selectedProfiles.length >= 2 && (
+        <div className="flex-shrink-0 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setDetailOpen(true)}
+            disabled={!selectedApartment}
+            title={
+              selectedApartment
+                ? undefined
+                : t("compare.showDetailsTooltipDisabled")
+            }
+            className="px-4 py-2 text-sm rounded-md border transition-colors
+                       enabled:bg-blue-50 enabled:border-blue-300 enabled:text-blue-700
+                       enabled:hover:bg-blue-100
+                       disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400
+                       disabled:cursor-not-allowed"
+          >
+            {t("compare.showDetails")}
+          </button>
+        </div>
+      )}
+
       {selectedProfiles.length === 1 && (
         <p className="text-sm text-gray-400 text-center">
           {t("compare.selectProfiles")}
         </p>
+      )}
+
+      {detailOpen && selectedApartment && selectedProfiles.length >= 2 && (
+        <CompareDetailModal
+          apartment={selectedApartment}
+          apartments={apartments}
+          profiles={selectedProfiles}
+          buckets={buckets}
+          notes={notesForSelected}
+          onClose={() => setDetailOpen(false)}
+        />
       )}
     </div>
   );
