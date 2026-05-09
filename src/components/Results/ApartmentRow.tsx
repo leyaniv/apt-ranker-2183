@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { RankedApartment } from "../../types";
 import { TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
 import { ApartmentDetail } from "./ApartmentDetail";
+import { RankChip, ANNOTATION_STYLE } from "./RankChip";
 
 interface ApartmentRowProps {
   ranked: RankedApartment;
@@ -32,6 +33,15 @@ interface ApartmentRowProps {
    */
   excludedReason?: "manual" | "scoring" | null;
   originalRank?: number;
+  /**
+   * True when at least one row in the visible list has been manually
+   * reordered (display rank ≠ score rank). On desktop, drives whether
+   * the row reserves an extra column for the `(originalRank)` annotation
+   * and tightens its horizontal padding to compensate. The mobile layout
+   * always renders the annotation inline next to the chip and ignores
+   * this flag.
+   */
+  anyManualReorder?: boolean;
   dropTargetSlug?: string | null;
   onDragStart?: (slug: string) => void;
   onDragOver?: (slug: string) => void;
@@ -56,7 +66,8 @@ function scoreColor(score: number): string {
  */
 export const ApartmentRow = memo(function ApartmentRow({
   ranked, rank, isOpen, onToggle, isDesktop, tier = 1,
-  hasNote, note, onNoteChange, adjustment = 0, excludedReason = null, originalRank, dropTargetSlug,
+  hasNote, note, onNoteChange, adjustment = 0, excludedReason = null, originalRank,
+  anyManualReorder = false, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: ApartmentRowProps) {
   const { t } = useTranslation();
@@ -73,6 +84,15 @@ export const ApartmentRow = memo(function ApartmentRow({
   const excludedTooltipKey =
     excludedReason === "scoring" ? "results.filteredOutTooltip" : "results.excludedTooltip";
   const rankLabel = rank == null ? "—" : String(rank);
+  const isReordered =
+    rank != null && originalRank != null && originalRank !== rank;
+  // Desktop reserves a separate column for the `(originalRank)` annotation
+  // when any displayed row diverges from the scored order; mobile keeps it
+  // inline next to the chip to save horizontal space.
+  const showReorderColumn = isDesktop && anyManualReorder;
+  const tierLayout = TIER_LAYOUTS[tier];
+  const gridClass = showReorderColumn ? tierLayout.gridWithReorder : tierLayout.grid;
+  const padXClass = showReorderColumn ? tierLayout.padXWithReorder : tierLayout.padX;
 
   const handleOpenChange = useCallback(() => onToggle(slug), [onToggle, slug]);
 
@@ -90,7 +110,7 @@ export const ApartmentRow = memo(function ApartmentRow({
         >
           {isDesktop ? (
             <div
-              className={`grid ${TIER_LAYOUTS[tier].grid} ${TIER_LAYOUTS[tier].padX}
+              className={`grid ${gridClass} ${padXClass}
                           items-center gap-1 py-2.5 hover:bg-gray-50 transition-colors text-sm
                           ${isOpen ? "bg-gray-50" : ""}`}
             >
@@ -130,17 +150,26 @@ export const ApartmentRow = memo(function ApartmentRow({
                       <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clipRule="evenodd" />
                     </svg>
                   </span>
+                ) : rank != null ? (
+                  <RankChip rank={rank} />
                 ) : (
-                  <span className="text-gray-400 font-mono text-xs">
-                    {rankLabel}
-                    {rank != null && originalRank != null && originalRank !== rank && (
-                      <span className="text-gray-300 ms-0.5" title={t("results.originalRank", { rank: originalRank })}>
-                        ({originalRank})
-                      </span>
-                    )}
-                  </span>
+                  <span className="text-gray-400 font-mono text-xs">{rankLabel}</span>
                 )}
               </Collapsible.Trigger>
+
+              {showReorderColumn && (
+                <Collapsible.Trigger className="text-center">
+                  {isReordered ? (
+                    <span
+                      className="font-mono text-[10px] tabular-nums"
+                      style={ANNOTATION_STYLE}
+                      title={t("results.originalRank", { rank: originalRank })}
+                    >
+                      ({originalRank})
+                    </span>
+                  ) : null}
+                </Collapsible.Trigger>
+              )}
 
               <Collapsible.Trigger className="text-center">
                 <span className="text-gray-700">{apartment.buildingKey}</span>
@@ -180,14 +209,14 @@ export const ApartmentRow = memo(function ApartmentRow({
                 <span className="text-gray-600 text-xs truncate">{apartment.type}</span>
               </Collapsible.Trigger>
 
-              <Collapsible.Trigger className="text-end">
+              <Collapsible.Trigger className="text-center">
                 <span className="text-gray-700 text-xs">
                   {apartment.area_sqm} {t("results.areaUnit")}
                 </span>
               </Collapsible.Trigger>
 
               {TIER_LAYOUTS[tier].showBalcony && (
-                <Collapsible.Trigger className="text-end">
+                <Collapsible.Trigger className="text-center">
                   <span className="text-gray-700 text-xs">
                     {apartment.balcony_area_sqm > 0
                       ? `${apartment.balcony_area_sqm} ${t("results.areaUnit")}`
@@ -196,7 +225,7 @@ export const ApartmentRow = memo(function ApartmentRow({
                 </Collapsible.Trigger>
               )}
 
-              <Collapsible.Trigger className="text-end">
+              <Collapsible.Trigger className="text-center">
                 <span className="font-mono text-gray-700 text-xs">
                   ₪{apartment.price.toLocaleString("en")}
                 </span>
@@ -204,17 +233,17 @@ export const ApartmentRow = memo(function ApartmentRow({
 
               <Collapsible.Trigger className="text-center">
                 <span className="inline-flex items-center gap-1">
+                  <span className="w-3.5 inline-flex justify-center shrink-0">
+                    {hasNote && <NoteIcon title={t("detail.hasNote")} />}
+                  </span>
                   <span
                     className={`text-xs font-bold rounded-full px-2 py-0.5 ${scoreColor(totalScore)}`}
                   >
                     {totalScore.toFixed(2)}
                   </span>
-                  {adjustment !== 0 && (
-                    <AdjustmentArrow adjustment={adjustment} />
-                  )}
-                  {hasNote && (
-                    <NoteIcon title={t("detail.hasNote")} />
-                  )}
+                  <span className="w-3.5 inline-flex justify-center shrink-0">
+                    {adjustment !== 0 && <AdjustmentArrow adjustment={adjustment} />}
+                  </span>
                 </span>
               </Collapsible.Trigger>
             </div>
@@ -252,12 +281,22 @@ export const ApartmentRow = memo(function ApartmentRow({
                       <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clipRule="evenodd" />
                     </svg>
                   </span>
-                ) : (
-                  <span className="font-mono shrink-0 text-center tabular-nums flex items-baseline justify-center gap-0.5">
-                    <span className="text-sm font-semibold text-gray-600 min-w-[1.25rem] text-center">{rankLabel}</span>
-                    {rank != null && originalRank != null && originalRank !== rank && (
-                      <span className="text-[10px] font-normal text-gray-300">({originalRank})</span>
+                ) : rank != null ? (
+                  <span className="shrink-0 inline-flex items-baseline gap-0.5">
+                    <RankChip rank={rank} />
+                    {isReordered && (
+                      <span
+                        className="font-mono text-[10px] font-normal tabular-nums"
+                        style={ANNOTATION_STYLE}
+                        title={t("results.originalRank", { rank: originalRank })}
+                      >
+                        ({originalRank})
+                      </span>
                     )}
+                  </span>
+                ) : (
+                  <span className="text-sm font-semibold text-gray-600 min-w-[1.25rem] text-center font-mono shrink-0">
+                    {rankLabel}
                   </span>
                 )}
                 <span className="font-medium text-sm text-gray-800 truncate min-w-0">

@@ -26,6 +26,9 @@ interface RowData {
   scoreRankMap: Map<string, number | null>;
   rankLabelMap: Map<string, number | null>;
   userExcludedSet: Set<string>;
+  /** True if any visible row has been manually reordered. Drives the
+   *  desktop layout's optional `(originalRank)` column. */
+  anyManualReorder: boolean;
   dropTargetSlug: string | null;  onDragStart: (slug: string) => void;
   onDragOver: (slug: string) => void;
   onDrop: (slug: string) => void;
@@ -33,7 +36,8 @@ interface RowData {
 
 const VirtualRow = function VirtualRow({
   index, style, displayed, openSlugs, toggleOpen, isDesktop, tier,
-  notes, setNote, manualAdjustments, manualOrder, scoreRankMap, rankLabelMap, userExcludedSet, dropTargetSlug,
+  notes, setNote, manualAdjustments, manualOrder, scoreRankMap, rankLabelMap, userExcludedSet,
+  anyManualReorder, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: RowComponentProps<RowData>) {
   const ranked = displayed[index];
@@ -64,6 +68,7 @@ const VirtualRow = function VirtualRow({
         onNoteChange={setNote}
         adjustment={manualAdjustments[slug] ?? 0}
         originalRank={scoreRank ?? undefined}
+        anyManualReorder={anyManualReorder}
         excludedReason={excludedReason}
         dropTargetSlug={dropTargetSlug}
         onDragStart={onDragStart}
@@ -410,6 +415,25 @@ export function ResultsTable() {
     }
     return map;
   }, [displayed, userExcludedSet]);
+
+  // Whether at least one visible row has been manually reordered (display
+  // rank ≠ original score rank). Drives the desktop layout's optional
+  // `(originalRank)` column on both the header and each row, and the
+  // tighter horizontal padding that goes with it. Skipped entirely when
+  // the user hasn't touched the order — no need to scan in the common
+  // case where rows trivially match the scored sequence.
+  const anyManualReorder = useMemo(() => {
+    if (!manualOrder) return false;
+    for (const r of displayed) {
+      const slug = r.apartment.property_slug;
+      const displayRank = rankLabelMap.get(slug);
+      const scoreRank = scoreRankMap.get(slug);
+      if (displayRank != null && scoreRank != null && displayRank !== scoreRank) {
+        return true;
+      }
+    }
+    return false;
+  }, [displayed, manualOrder, rankLabelMap, scoreRankMap]);
 
   // After a manual adjustment edit (slider in the apartment detail), follow
   // the apartment to its new position so the user can see where their nudge
@@ -941,12 +965,19 @@ export function ResultsTable() {
           the rows (fixed-px grid) AND its own scrollbar without overflow. */}
       {isDesktop && (
       <div
-        className={`flex-shrink-0 grid ${TIER_LAYOUTS[tier].grid} ${TIER_LAYOUTS[tier].padX}
-                    items-center gap-1 py-2 bg-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wider`}
+        className={`flex-shrink-0 grid ${
+          anyManualReorder ? TIER_LAYOUTS[tier].gridWithReorder : TIER_LAYOUTS[tier].grid
+        } ${
+          anyManualReorder ? TIER_LAYOUTS[tier].padXWithReorder : TIER_LAYOUTS[tier].padX
+        } items-center gap-1 py-2 bg-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wider`}
         style={{ paddingInlineEnd: "calc(0.5rem + 16px)" }}
       >
         <span></span>
         <span>{t("results.rank")}</span>
+        {/* Empty header cell for the optional `(originalRank)` column —
+            the parens on each row make its meaning obvious, and labelling
+            it "Score rank" would crowd the rank header next door. */}
+        {anyManualReorder && <span></span>}
         <span className="text-center">{t("results.building")}</span>
         <span className="text-center">{t("results.apt")}</span>
         <span className="text-center">{t("results.rooms")}</span>
@@ -995,6 +1026,7 @@ export function ResultsTable() {
               scoreRankMap,
               rankLabelMap,
               userExcludedSet,
+              anyManualReorder,
               dropTargetSlug,
               onDragStart: handleDragStart,
               onDragOver: handleDragOver,

@@ -21,11 +21,12 @@
  *    score chip; on desktop rows widen to show type / rooms too.
  */
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { useApp } from "../../context/AppContext";
 import { ApartmentDetail } from "./ApartmentDetail";
+import { RankChip } from "./RankChip";
 import { TabHeader } from "../Layout/TabHeader";
 import { track } from "../../utils/analytics";
 import {
@@ -37,16 +38,33 @@ import {
 } from "../../utils/buildingsLayout";
 import type { Apartment, RankedApartment } from "../../types";
 
-/** Map a 1–5 score to a Tailwind class pair (bg + text). Mirrors the chip
- *  style used elsewhere in the app and is dark-mode aware via the gray
- *  overrides in index.css. */
+/** Map a 1–5 score to a Tailwind class pair (bg + text). Matches the
+ *  `scoreColor` helper in `ApartmentRow.tsx` so the chip looks
+ *  identical across the results table and the buildings view. Dark
+ *  mode is handled implicitly: `index.css` redefines
+ *  `--color-{green,lime,yellow,orange,red}-{100,800}` under `.dark` so
+ *  these utilities flip to a sensible dark-on-bright pairing without
+ *  any per-utility `dark:` variant. */
 function scoreChipClass(score: number): string {
-  if (score >= 4.2) return "bg-green-100 text-green-800 dark:text-green-900";
-  if (score >= 3.5) return "bg-lime-100 text-lime-800 dark:text-lime-900";
-  if (score >= 2.8) return "bg-yellow-100 text-yellow-800 dark:text-yellow-900";
-  if (score >= 2.0) return "bg-orange-100 text-orange-800 dark:text-orange-900";
-  return "bg-red-100 text-red-800 dark:text-red-900";
+  if (score >= 4.2) return "bg-green-100 text-green-800";
+  if (score >= 3.5) return "bg-lime-100 text-lime-800";
+  if (score >= 2.8) return "bg-yellow-100 text-yellow-800";
+  if (score >= 2.0) return "bg-orange-100 text-orange-800";
+  return "bg-red-100 text-red-800";
 }
+
+/**
+ * Returns the display rank for an apartment slug, or `null` when no
+ * rank chip should be shown (sold, excluded, or unknown). The rank is
+ * the active profile's manual rank when a saved `manualOrder` exists,
+ * falling back to the score-based rank otherwise. Computed once per
+ * `BuildingsView` render and threaded through the cell renderers.
+ *
+ * Unlike the results table, the buildings view doesn't surface the
+ * pre-reorder score rank — keeping each cell to a single number keeps
+ * the dense grid readable.
+ */
+type GetRank = (slug: string) => number | null;
 
 /* ─── Cell ────────────────────────────────────────────────────────────── */
 
@@ -60,9 +78,13 @@ interface CellRendererProps {
    *  window). Sold apts whose `status_changed_date` equals this get the
    *  brighter red hatch. `null` when no highlight applies. */
   highlightDate: string | null;
+  /** Rank info per slug for the small `RankChip` rendered in the cell
+   *  header (between apt number and score chip). Returns `null` for
+   *  open-market / sold / excluded apts so those cells stay chip-free. */
+  getRank: GetRank;
 }
 
-function ApartmentCell({ cell, rowSpan, columnCount, isUserExcluded, onOpenRanked, highlightDate }: CellRendererProps) {
+function ApartmentCell({ cell, rowSpan, columnCount, isUserExcluded, onOpenRanked, highlightDate, getRank }: CellRendererProps) {
   const { t } = useTranslation();
   if (cell.kind !== "apt") return null;
 
@@ -129,6 +151,7 @@ function ApartmentCell({ cell, rowSpan, columnCount, isUserExcluded, onOpenRanke
         columnCount={columnCount}
         isUserExcluded={isUserExcluded}
         onOpenRanked={onOpenRanked}
+        getRank={getRank}
       />
       {overflow.length > 0 && (
         <div className="border-t border-gray-100 dark:border-gray-200 px-2 py-1 flex flex-wrap gap-1">
@@ -149,6 +172,7 @@ interface CellPlacementProps {
   columnCount: number;
   isUserExcluded: (slug: string) => boolean;
   onOpenRanked: (ranked: RankedApartment) => void;
+  getRank: GetRank;
 }
 
 /** Desktop-only info block shown inside every apartment cell. Two
@@ -184,21 +208,42 @@ function CellInfoLine({ apt }: { apt: Apartment }) {
 /** Mobile-only compact info: rooms on its own line, area on a separate
  *  line (hidden if `hideArea` is set, e.g. for sold/excluded units).
  *  When `wide` is true (≤3 columns), rooms+area share a line and price
- *  is shown below. */
-function MobileRoomsArea({ apt, hideArea, wide }: { apt: Apartment; hideArea?: boolean; wide?: boolean }) {
+ *  is shown below.
+ *
+ *  `trailing` is an optional element (e.g. the rank chip) rendered
+ *  right-aligned on the *first* line. Keeping it on line 1 only lets
+ *  later lines (notably the area line in narrow mode) span the full
+ *  cell width, so values like "112.24 m²" don't lose ~30px to a chip
+ *  that actually only sits next to the rooms text. */
+function MobileRoomsArea({
+  apt,
+  hideArea,
+  wide,
+  trailing,
+}: {
+  apt: Apartment;
+  hideArea?: boolean;
+  wide?: boolean;
+  trailing?: ReactNode;
+}) {
   const { t } = useTranslation();
   const showArea = !hideArea && !!apt.area_sqm;
-  if (!apt.rooms && !showArea) return null;
   const priceStr = apt.price ? `₪${apt.price.toLocaleString()}` : "";
+  if (!apt.rooms && !showArea && !trailing) return null;
 
   if (wide) {
+    const main =
+      (apt.rooms ? `${apt.rooms} ${t("results.roomsShort")}` : "") +
+      (apt.rooms && showArea ? " \u00b7 " : "") +
+      (showArea ? `${apt.area_sqm} ${t("results.areaUnit")}` : "");
     return (
       <div className="sm:hidden text-[10px] opacity-80 leading-tight min-w-0">
-        <div className="truncate">
-          {apt.rooms ? `${apt.rooms} ${t("results.roomsShort")}` : ""}
-          {apt.rooms && showArea ? " \u00b7 " : ""}
-          {showArea ? `${apt.area_sqm} ${t("results.areaUnit")}` : ""}
-        </div>
+        {(main || trailing) && (
+          <div className="flex items-center justify-between gap-1">
+            <span className="truncate min-w-0">{main}</span>
+            {trailing}
+          </div>
+        )}
         {priceStr && <div className="truncate">{priceStr}</div>}
       </div>
     );
@@ -206,11 +251,14 @@ function MobileRoomsArea({ apt, hideArea, wide }: { apt: Apartment; hideArea?: b
 
   return (
     <div className="sm:hidden text-[10px] opacity-80 leading-tight min-w-0">
-      {apt.rooms ? (
-        <div className="truncate">
-          {apt.rooms} {t("results.roomsShort")}
+      {(apt.rooms || trailing) && (
+        <div className="flex items-center justify-between gap-1">
+          <span className="truncate min-w-0">
+            {apt.rooms ? `${apt.rooms} ${t("results.roomsShort")}` : ""}
+          </span>
+          {trailing}
         </div>
-      ) : null}
+      )}
       {showArea ? (
         <div className="truncate">
           {apt.area_sqm} {t("results.areaUnit")}
@@ -220,7 +268,7 @@ function MobileRoomsArea({ apt, hideArea, wide }: { apt: Apartment; hideArea?: b
   );
 }
 
-function CellPlacement({ placement, columnCount, isUserExcluded, onOpenRanked }: CellPlacementProps) {
+function CellPlacement({ placement, columnCount, isUserExcluded, onOpenRanked, getRank }: CellPlacementProps) {
   const { t } = useTranslation();
 
   if (placement.kind === "freeMarketing") {
@@ -256,6 +304,10 @@ function CellPlacement({ placement, columnCount, isUserExcluded, onOpenRanked }:
   const slug = apt.property_slug;
   const userExcluded = isUserExcluded(slug);
   const dimmed = apt.isSold || r.excluded === true || userExcluded;
+  // Rank chip is suppressed for sold / excluded / open-market apts
+  // (open-market is the other branch above). `dimmed` covers sold +
+  // both flavors of excluded, so we just gate on it.
+  const rank = dimmed ? null : getRank(slug);
 
   return (
     <button
@@ -267,19 +319,31 @@ function CellPlacement({ placement, columnCount, isUserExcluded, onOpenRanked }:
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400
                   ${dimmed ? "opacity-55" : ""}`}
     >
-      {/* Top row: apt number + score + state chip */}
+      {/* Top row: apt number on the start; right-side group bundles the
+          rank chip (desktop only) immediately to the left of the score
+          chip, with sold/excluded badges in between only when there's no
+          rank chip. Sold/excluded apts never render a rank chip, so the
+          right group reads chronologically as "you-are-here" → "verdict".
+          On mobile the chip is moved one line down to keep this top row
+          short and fit comfortably in the dense building grid (see the
+          "mobile rooms/area" wrapper below). */}
       <div className="flex items-center justify-between gap-1">
         <span className="font-semibold text-[11px] sm:text-xs text-gray-800">
           #{apt.apartment_number}
         </span>
         <div className="flex items-center gap-1 min-w-0">
+          {rank != null && (
+            <span className="hidden sm:inline-flex">
+              <RankChip rank={rank} size="compact" />
+            </span>
+          )}
           {apt.isSold && (
-            <span className="px-1 py-0.5 rounded bg-red-100 text-red-700 dark:text-red-800 text-[9px] sm:text-[10px] font-semibold whitespace-nowrap">
+            <span className="px-1 py-0.5 rounded bg-red-100 text-red-800 text-[9px] sm:text-[10px] font-semibold whitespace-nowrap">
               {t("results.sold")}
             </span>
           )}
           {(r.excluded === true || userExcluded) && !apt.isSold && (
-            <span className="px-1 py-0.5 rounded bg-amber-100 text-amber-800 dark:text-amber-900 text-[9px] sm:text-[10px] font-semibold whitespace-nowrap">
+            <span className="px-1 py-0.5 rounded bg-amber-100 text-amber-800 text-[9px] sm:text-[10px] font-semibold whitespace-nowrap">
               <span className="sm:hidden">{t("results.excludedShort")}</span>
               <span className="hidden sm:inline">{t("results.excluded")}</span>
             </span>
@@ -294,7 +358,22 @@ function CellPlacement({ placement, columnCount, isUserExcluded, onOpenRanked }:
           </span>
         </div>
       </div>
-      <MobileRoomsArea apt={apt} wide={columnCount <= 3} />
+      {/* On mobile, the rank chip rides on `MobileRoomsArea`'s first
+          line (right-aligned next to rooms in narrow mode, next to
+          rooms·area in wide mode). The area / price line below it
+          keeps full cell width — see the comment in `MobileRoomsArea`
+          for why this matters at narrow column widths. */}
+      <MobileRoomsArea
+        apt={apt}
+        wide={columnCount <= 3}
+        trailing={
+          rank != null ? (
+            <span className="shrink-0">
+              <RankChip rank={rank} size="compact" />
+            </span>
+          ) : undefined
+        }
+      />
       <CellInfoLine apt={apt} />
     </button>
   );
@@ -351,6 +430,7 @@ interface BuildingCardProps {
   onOpenChange: (open: boolean) => void;
   onOpenRanked: (ranked: RankedApartment) => void;
   isUserExcluded: (slug: string) => boolean;
+  getRank: GetRank;
 }
 
 /** "YYYY-MM-DD" → "DD/MM" (year stripped — chip space is tight, year is
@@ -408,7 +488,7 @@ function BuildingHeaderContent({
               </span>
             )}
             {counts.available > 0 && (
-              <span className="px-2 py-0.5 rounded bg-green-100 text-green-800 dark:text-green-900">
+              <span className="px-2 py-0.5 rounded bg-green-100 text-green-800">
                 {t("buildingsView.availableCount", { count: counts.available })}
               </span>
             )}
@@ -441,10 +521,12 @@ function BuildingBody({
   layout,
   isUserExcluded,
   onOpenRanked,
+  getRank,
 }: {
   layout: BuildingLayout;
   isUserExcluded: (slug: string) => boolean;
   onOpenRanked: (ranked: RankedApartment) => void;
+  getRank: GetRank;
 }) {
   return (
     <div className="p-2 sm:p-3 overflow-x-auto">
@@ -455,6 +537,7 @@ function BuildingBody({
           isUserExcluded={isUserExcluded}
           onOpenRanked={onOpenRanked}
           highlightDate={layout.highlightDate}
+          getRank={getRank}
         />
       ))}
     </div>
@@ -480,7 +563,7 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
-function BuildingCard({ layout, open, onOpenChange, onOpenRanked, isUserExcluded }: BuildingCardProps) {
+function BuildingCard({ layout, open, onOpenChange, onOpenRanked, isUserExcluded, getRank }: BuildingCardProps) {
   return (
     <Collapsible.Root
       open={open}
@@ -496,6 +579,7 @@ function BuildingCard({ layout, open, onOpenChange, onOpenRanked, isUserExcluded
           layout={layout}
           isUserExcluded={isUserExcluded}
           onOpenRanked={onOpenRanked}
+          getRank={getRank}
         />
       </Collapsible.Content>
     </Collapsible.Root>
@@ -509,10 +593,12 @@ function BuildingPanel({
   layout,
   onOpenRanked,
   isUserExcluded,
+  getRank,
 }: {
   layout: BuildingLayout;
   onOpenRanked: (ranked: RankedApartment) => void;
   isUserExcluded: (slug: string) => boolean;
+  getRank: GetRank;
 }) {
   return (
     <div className="bg-white dark:bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
@@ -523,6 +609,7 @@ function BuildingPanel({
         layout={layout}
         isUserExcluded={isUserExcluded}
         onOpenRanked={onOpenRanked}
+        getRank={getRank}
       />
     </div>
   );
@@ -572,6 +659,7 @@ interface LotSectionProps {
   onOpenChange: (open: boolean) => void;
   onOpenRanked: (ranked: RankedApartment) => void;
   isUserExcluded: (slug: string) => boolean;
+  getRank: GetRank;
 }
 
 function LotSection({
@@ -581,6 +669,7 @@ function LotSection({
   onOpenChange,
   onOpenRanked,
   isUserExcluded,
+  getRank,
 }: LotSectionProps) {
   const { t } = useTranslation();
 
@@ -637,7 +726,7 @@ function LotSection({
                 </span>
               )}
               {totals.available > 0 && (
-                <span className="px-2 py-0.5 rounded bg-green-100 text-green-800 dark:text-green-900">
+                <span className="px-2 py-0.5 rounded bg-green-100 text-green-800">
                   {t("buildingsView.availableCount", { count: totals.available })}
                 </span>
               )}
@@ -662,6 +751,7 @@ function LotSection({
                 layout={big}
                 onOpenRanked={onOpenRanked}
                 isUserExcluded={isUserExcluded}
+                getRank={getRank}
               />
             </div>
           )}
@@ -673,6 +763,7 @@ function LotSection({
                   layout={b}
                   onOpenRanked={onOpenRanked}
                   isUserExcluded={isUserExcluded}
+                  getRank={getRank}
                 />
               ))}
             </div>
@@ -683,6 +774,7 @@ function LotSection({
                   layout={b}
                   onOpenRanked={onOpenRanked}
                   isUserExcluded={isUserExcluded}
+                  getRank={getRank}
                 />
               ))}
             </div>
@@ -701,11 +793,13 @@ function FloorGroupTable({
   isUserExcluded,
   onOpenRanked,
   highlightDate,
+  getRank,
 }: {
   group: FloorGroup;
   isUserExcluded: (slug: string) => boolean;
   onOpenRanked: (ranked: RankedApartment) => void;
   highlightDate: string | null;
+  getRank: GetRank;
 }) {
   const { t } = useTranslation();
   const { columns, rows, cells } = group;
@@ -779,6 +873,7 @@ function FloorGroupTable({
                   isUserExcluded={isUserExcluded}
                   onOpenRanked={onOpenRanked}
                   highlightDate={highlightDate}
+                  getRank={getRank}
                 />
               );
             })}
@@ -873,6 +968,7 @@ export function BuildingsView() {
   const {
     rankedApartments,
     freeMarketingApartments,
+    activeProfile,
     userExcludedSet,
     notes,
     setNote,
@@ -880,6 +976,60 @@ export function BuildingsView() {
     updateSettings,
   } = useApp();
   const wideAvailable = useWideModeAvailable();
+
+  /**
+   * Per-slug rank lookup for the small chip rendered in each cell's
+   * top row. The active profile's saved `manualOrder` (if any) wins
+   * over score-based positioning so the buildings view stays in sync
+   * with the results table; the score-based rank is preserved as
+   * `originalRank` and surfaces as the inline `(Y)` annotation when
+   * the two diverge.
+   *
+   * Returns `null` for sold / scoring-excluded / user-excluded apts —
+   * `CellPlacement` also gates on `dimmed`, so this is belt-and-braces.
+   *
+   * Note that the *unsaved* manual order being live in `ResultsTable`
+   * never reaches here. That's by design: BuildingsView is a separate
+   * tab and the existing tab-switch guard makes the user save or
+   * discard before navigating, at which point either choice ends up
+   * reflected in `activeProfile.manualOrder`.
+   */
+  const getRank = useMemo<GetRank>(() => {
+    const scoreRankMap = new Map<string, number>();
+    let counter = 0;
+    for (const r of rankedApartments) {
+      const slug = r.apartment.property_slug;
+      const isExcluded = userExcludedSet.has(slug) || r.excluded === true;
+      if (!r.apartment.isSold && !isExcluded) {
+        counter += 1;
+        scoreRankMap.set(slug, counter);
+      }
+    }
+
+    const manualOrder = activeProfile?.manualOrder;
+    let manualRankMap: Map<string, number> | null = null;
+    if (manualOrder && manualOrder.length > 0) {
+      const apartmentBySlug = new Map(
+        rankedApartments.map((r) => [r.apartment.property_slug, r])
+      );
+      manualRankMap = new Map<string, number>();
+      let c = 0;
+      for (const slug of manualOrder) {
+        const r = apartmentBySlug.get(slug);
+        if (!r) continue;
+        const isExcluded = userExcludedSet.has(slug) || r.excluded === true;
+        if (r.apartment.isSold || isExcluded) continue;
+        c += 1;
+        manualRankMap.set(slug, c);
+      }
+    }
+
+    return (slug) => {
+      const score = scoreRankMap.get(slug);
+      if (score === undefined) return null;
+      return manualRankMap?.get(slug) ?? score;
+    };
+  }, [rankedApartments, userExcludedSet, activeProfile?.manualOrder]);
 
   const layouts = useMemo(
     () => buildBuildingsLayout(rankedApartments, freeMarketingApartments),
@@ -1067,6 +1217,7 @@ export function BuildingsView() {
                   }
                   onOpenRanked={handleOpenRanked}
                   isUserExcluded={isUserExcluded}
+                  getRank={getRank}
                 />
               ))}
             </div>
@@ -1087,6 +1238,7 @@ export function BuildingsView() {
                   }
                   onOpenRanked={handleOpenRanked}
                   isUserExcluded={isUserExcluded}
+                  getRank={getRank}
                 />
               ))}
             </div>

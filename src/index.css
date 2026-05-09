@@ -27,9 +27,41 @@
     --color-score-3: #eab308;
     --color-score-4: #84cc16;
     --color-score-5: #22c55e;
+
+    /*
+     * Rank chip palette — gradient endpoints. The chip's effective bg
+     * and fg are computed inline via `color-mix(in srgb, top X%, bot)`
+     * with X driven by the apartment's rank (rank 1 → 100% top, rank
+     * 25+ → 100% bot). Pinned as dedicated tokens (rather than reusing
+     * `--color-blue-*` / `--color-slate-*`) so the dark-mode override
+     * can land on calmer night-friendly values without affecting the
+     * rest of the app's blue/slate utilities.
+     */
+    --rank-chip-top-bg: #dbeafe; /* blue-100 */
+    --rank-chip-top-fg: #1e40af; /* blue-800 */
+    --rank-chip-bot-bg: #f1f5f9; /* slate-100 */
+    --rank-chip-bot-fg: #64748b; /* slate-500 */
+
+    /*
+     * Color of the small `(originalRank)` annotation. Using a token
+     * (rather than a Tailwind utility) lets dark mode lift it to a
+     * lighter gray without fighting the gray-300 override that the
+     * rest of the app uses for inactive borders.
+     */
+    --rank-annotation-color: #94a3b8; /* slate-400 */
   }
   .dark {
     color-scheme: dark;
+
+    /* Rank chip — deeper blue at the top, slate-800 at the plateau. */
+    --rank-chip-top-bg: #1e3a8a; /* blue-900 */
+    --rank-chip-top-fg: #dbeafe; /* blue-100 */
+    --rank-chip-bot-bg: #1e293b; /* slate-800 */
+    --rank-chip-bot-fg: #94a3b8; /* slate-400 */
+
+    /* Annotation — lift to gray-300 (#d1d5db) for readability against
+     * the dark row background. */
+    --rank-annotation-color: #d1d5db;
 
     /* Gray scale — GitHub Dark inspired */
     --color-gray-50: #0d1117;
@@ -68,6 +100,7 @@
     --color-yellow-800: #d4a017;
     --color-orange-800: #d4874d;
     --color-red-800: #e07070;
+    --color-amber-800: #fbbf24;
 
     /* Darker active score button colors */
     --color-score-1: #b91c1c;
