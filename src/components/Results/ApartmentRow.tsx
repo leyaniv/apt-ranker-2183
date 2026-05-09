@@ -1,7 +1,7 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, type ReactNode } from "react";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { useTranslation } from "react-i18next";
-import type { RankedApartment } from "../../types";
+import type { RankedApartment, ImportanceWeights } from "../../types";
 import { TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
 import { ApartmentDetail } from "./ApartmentDetail";
 import { RankChip, ANNOTATION_STYLE } from "./RankChip";
@@ -32,6 +32,21 @@ interface ApartmentRowProps {
    *  - `null` / undefined — not excluded.
    */
   excludedReason?: "manual" | "scoring" | null;
+  /**
+   * Effective importance weights of the active profile, used to derive each
+   * scored cell's "value score" (`breakdown[paramId] / weight`) and color
+   * its chip accordingly. Optional — when absent, scored cells fall back to
+   * unstyled text. Same default (3) as the scoring engine for missing keys.
+   */
+  weights?: ImportanceWeights;
+  /**
+   * Whether to render scored cells as colored chips. When `false` cells
+   * fall back to the plain-text styling that's used for unscored fields.
+   * Driven by the `colorByValueScore` user setting and toggled from the
+   * results header. Defaults to `true` so the chips remain on for callers
+   * that don't (yet) thread the setting through.
+   */
+  colorByValueScore?: boolean;
   originalRank?: number;
   /**
    * True when at least one row in the visible list has been manually
@@ -57,6 +72,34 @@ function scoreColor(score: number): string {
 }
 
 /**
+ * Tailwind chip palette for a per-cell value score (1–5). Mirrors the
+ * 5-bucket palette used by the scoring inputs (`.score-btn[data-score=…]`)
+ * so a row's column colors are recognizable as the same scores the user
+ * picked in the scoring panel.
+ *
+ * Fractional scores (e.g. averaged multi-direction) round to the nearest
+ * bucket via half-step thresholds. Excluded values (raw 0) read as the
+ * substituted-1 value and fall in the red bucket — fine since excluded
+ * apartments are already badged at the row level.
+ */
+function valueScoreColor(score: number): string {
+  if (score >= 4.5) return "bg-green-100 text-green-800";
+  if (score >= 3.5) return "bg-lime-100 text-lime-800";
+  if (score >= 2.5) return "bg-yellow-100 text-yellow-800";
+  if (score >= 1.5) return "bg-orange-100 text-orange-800";
+  return "bg-red-100 text-red-800";
+}
+
+/** Shared chip styling for scored cells. `inline-block max-w-full truncate`
+ *  keeps the chip pinned to the grid column's width with an ellipsis
+ *  fallback for long labels (e.g. "Garden Duplex"). Padding is kept tight
+ *  (`px-1 py-0.5`) so the chip steals as little horizontal room as
+ *  possible from the column — every extra pixel pushes a longer label
+ *  closer to ellipsing. */
+const CELL_CHIP_CLASS =
+  "inline-block max-w-full truncate align-middle text-xs font-medium rounded px-1 py-0.5";
+
+/**
  * A single row in the results table. Clicking expands to show full details.
  * Supports native HTML5 drag-and-drop via the grip handle.
  *
@@ -66,7 +109,8 @@ function scoreColor(score: number): string {
  */
 export const ApartmentRow = memo(function ApartmentRow({
   ranked, rank, isOpen, onToggle, isDesktop, tier = 1,
-  hasNote, note, onNoteChange, adjustment = 0, excludedReason = null, originalRank,
+  hasNote, note, onNoteChange, adjustment = 0, excludedReason = null,
+  weights, colorByValueScore = true, originalRank,
   anyManualReorder = false, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: ApartmentRowProps) {
@@ -95,6 +139,44 @@ export const ApartmentRow = memo(function ApartmentRow({
   const padXClass = showReorderColumn ? tierLayout.padXWithReorder : tierLayout.padX;
 
   const handleOpenChange = useCallback(() => onToggle(slug), [onToggle, slug]);
+
+  /**
+   * Render a desktop-row cell as either a colored chip (when
+   * `colorByValueScore` is on and the parameter contributes to scoring)
+   * or as a plain styled span otherwise.
+   *
+   * The chip's color is derived from the row's pre-normalized breakdown
+   * (`breakdown[paramId] / effectiveWeight`), matching what the apartment
+   * detail view shows in its Score column. `plainClass` carries the
+   * column-specific text styling that's used when the chip is suppressed
+   * (toggle off, weight 0, or a missing breakdown entry). `chipExtra`
+   * tacks extra Tailwind utilities onto the chip for cells that need
+   * tweaks even when colored — e.g. the price column's `font-mono`.
+   */
+  const cellChip = (
+    paramId: string,
+    content: ReactNode,
+    plainClass: string,
+    chipExtra = "",
+  ) => {
+    if (!colorByValueScore) {
+      return <span className={plainClass}>{content}</span>;
+    }
+    const w = weights?.[paramId] ?? 3;
+    const c = breakdown[paramId];
+    if (w <= 0 || c == null) {
+      return <span className={plainClass}>{content}</span>;
+    }
+    const score = c / w;
+    return (
+      <span
+        className={`${CELL_CHIP_CLASS} ${valueScoreColor(score)} ${chipExtra}`}
+        title={t("results.valueScoreTooltip", { score: score.toFixed(1) })}
+      >
+        {content}
+      </span>
+    );
+  };
 
   return (
     <div
@@ -130,8 +212,12 @@ export const ApartmentRow = memo(function ApartmentRow({
 
               <Collapsible.Trigger className="text-center">
                 {isSold ? (
+                  // `leading-4` pins the line-height to 16px (`text-[10px]`
+                  // only sets font-size, so the badge would otherwise inherit
+                  // the grid's `text-sm` 20px line and stand 4px taller than
+                  // the chips next to it — making sold rows visibly taller).
                   <span
-                    className={`inline-flex items-center justify-center text-[10px] font-semibold rounded px-1.5 py-0.5 ${
+                    className={`inline-flex items-center justify-center text-[10px] font-semibold leading-4 rounded px-1.5 py-0.5 ${
                       userOnlySold
                         ? "bg-red-100 text-red-700 dark:text-red-800"
                         : "bg-gray-200 text-gray-600 dark:text-gray-800"
@@ -141,8 +227,11 @@ export const ApartmentRow = memo(function ApartmentRow({
                     {t("results.sold")}
                   </span>
                 ) : showExcludedBadge ? (
+                  // Fixed `w-5 h-5` box so the 14px icon shares the same 20px
+                  // footprint as the chips in neighbouring columns, keeping
+                  // excluded rows the same height as everything else.
                   <span
-                    className="inline-flex items-center justify-center text-amber-600 dark:text-amber-700"
+                    className="inline-flex items-center justify-center w-5 h-5 text-amber-600 dark:text-amber-700"
                     title={t(excludedTooltipKey)}
                     aria-label={t(excludedLabelKey)}
                   >
@@ -172,7 +261,7 @@ export const ApartmentRow = memo(function ApartmentRow({
               )}
 
               <Collapsible.Trigger className="text-center">
-                <span className="text-gray-700">{apartment.buildingKey}</span>
+                {cellChip("building", apartment.buildingKey, "text-gray-700")}
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-center">
@@ -180,55 +269,66 @@ export const ApartmentRow = memo(function ApartmentRow({
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-center">
-                <span className="text-gray-700">{apartment.rooms}</span>
+                {cellChip("rooms", apartment.rooms, "text-gray-700")}
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-center">
-                <span className="text-gray-700">{apartment.floor}</span>
+                {cellChip("floor", apartment.floor, "text-gray-700")}
               </Collapsible.Trigger>
 
               {TIER_LAYOUTS[tier].showDirections && (
                 <Collapsible.Trigger className="text-center">
-                  <span className="text-gray-600 text-xs whitespace-nowrap">
-                    {apartment.directions.length > 0
+                  {cellChip(
+                    "air_direction",
+                    apartment.directions.length > 0
                       ? apartment.directions
                           .map((d) => t(`results.directionShort_${d}`))
                           .join("·")
-                      : "—"}
-                  </span>
+                      : "—",
+                    "text-gray-600 text-xs whitespace-nowrap",
+                  )}
                 </Collapsible.Trigger>
               )}
 
               <Collapsible.Trigger className="text-center">
-                <span className="text-gray-600 text-xs truncate">
-                  {t(`results.layout_${apartment.layout}`)}
-                </span>
+                {cellChip(
+                  "layout",
+                  t(`results.layout_${apartment.layout}`),
+                  "text-gray-600 text-xs truncate",
+                )}
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-center">
-                <span className="text-gray-600 text-xs truncate">{apartment.type}</span>
+                {cellChip("type", apartment.type, "text-gray-600 text-xs truncate")}
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-center">
-                <span className="text-gray-700 text-xs">
-                  {apartment.area_sqm} {t("results.areaUnit")}
-                </span>
+                {cellChip(
+                  "area_sqm",
+                  `${apartment.area_sqm} ${t("results.areaUnit")}`,
+                  "text-gray-700 text-xs",
+                )}
               </Collapsible.Trigger>
 
               {TIER_LAYOUTS[tier].showBalcony && (
                 <Collapsible.Trigger className="text-center">
-                  <span className="text-gray-700 text-xs">
-                    {apartment.balcony_area_sqm > 0
+                  {cellChip(
+                    "balcony_area_sqm",
+                    apartment.balcony_area_sqm > 0
                       ? `${apartment.balcony_area_sqm} ${t("results.areaUnit")}`
-                      : "—"}
-                  </span>
+                      : "—",
+                    "text-gray-700 text-xs",
+                  )}
                 </Collapsible.Trigger>
               )}
 
               <Collapsible.Trigger className="text-center">
-                <span className="font-mono text-gray-700 text-xs">
-                  ₪{apartment.price.toLocaleString("en")}
-                </span>
+                {cellChip(
+                  "price",
+                  `₪${apartment.price.toLocaleString("en")}`,
+                  "font-mono text-gray-700 text-xs",
+                  "font-mono",
+                )}
               </Collapsible.Trigger>
 
               <Collapsible.Trigger className="text-center">

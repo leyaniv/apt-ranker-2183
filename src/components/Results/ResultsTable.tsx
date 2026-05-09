@@ -10,7 +10,7 @@ import { MultiSelectPopover } from "../Layout/MultiSelectPopover";
 import { PrintModal } from "../Print/PrintModal";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { useTableTier, TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
-import type { RankedApartment } from "../../types";
+import type { ImportanceWeights, RankedApartment } from "../../types";
 
 /** Per-row props supplied to every virtualized row via `List.rowProps`. */
 interface RowData {
@@ -21,6 +21,13 @@ interface RowData {
   tier: TableTier;
   notes: Record<string, string>;
   setNote: (slug: string, text: string) => void;
+  /** Active profile's importance weights — used by `ApartmentRow` to color
+   *  each scored cell's chip by the user's value score. */
+  weights: ImportanceWeights;
+  /** When true, render each scored cell as a colored chip; when false fall
+   *  back to plain text. Driven by the `colorByValueScore` user setting and
+   *  toggled by the swatch button next to the print action. */
+  colorByValueScore: boolean;
   manualAdjustments: Record<string, number>;
   manualOrder: string[] | null;
   scoreRankMap: Map<string, number | null>;
@@ -36,7 +43,7 @@ interface RowData {
 
 const VirtualRow = function VirtualRow({
   index, style, displayed, openSlugs, toggleOpen, isDesktop, tier,
-  notes, setNote, manualAdjustments, manualOrder, scoreRankMap, rankLabelMap, userExcludedSet,
+  notes, setNote, weights, colorByValueScore, manualAdjustments, manualOrder, scoreRankMap, rankLabelMap, userExcludedSet,
   anyManualReorder, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
 }: RowComponentProps<RowData>) {
@@ -66,6 +73,8 @@ const VirtualRow = function VirtualRow({
         hasNote={!!notes[slug]}
         note={notes[slug]}
         onNoteChange={setNote}
+        weights={weights}
+        colorByValueScore={colorByValueScore}
         adjustment={manualAdjustments[slug] ?? 0}
         originalRank={scoreRank ?? undefined}
         anyManualReorder={anyManualReorder}
@@ -91,6 +100,7 @@ export function ResultsTable() {
     settings, setHasUnsavedManualOrder, registerManualOrderActions,
     notes, setNote, updateSettings,
     userExcludedSet,
+    weights,
     manualAdjustments,
   } = useApp();
 
@@ -649,13 +659,39 @@ export function ResultsTable() {
     >
       <div className="px-4 sm:px-6 pt-2 sm:pt-6 mb-2 flex-shrink-0 flex items-center gap-2">
         <TabHeader title={t("results.title")} titleShort={t("results.titleShort")} tooltip={t("results.howToUse")} />
+        {/* Toggle: paint each scored cell with a color matching the user's
+            value score. Desktop-only — the chips only render in the
+            desktop row layout, and the mobile row is too tight for an
+            extra header control. Active state mirrors the showSold /
+            showExcluded toggles' "blue tint" so all on/off chrome looks
+            consistent. */}
+        {isDesktop && (
+          <button
+            type="button"
+            role="switch"
+            aria-checked={settings.colorByValueScore}
+            onClick={() => updateSettings({ colorByValueScore: !settings.colorByValueScore })}
+            title={t("results.colorByScoreTooltip")}
+            aria-label={t("results.colorByScore")}
+            className={`ms-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-sm rounded-md border transition-colors ${
+              settings.colorByValueScore
+                ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0" aria-hidden="true">
+              <path d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2.5A2.25 2.25 0 0 0 4.25 9h2.5A2.25 2.25 0 0 0 9 6.75v-2.5A2.25 2.25 0 0 0 6.75 2h-2.5ZM4.25 11A2.25 2.25 0 0 0 2 13.25v2.5A2.25 2.25 0 0 0 4.25 18h2.5A2.25 2.25 0 0 0 9 15.75v-2.5A2.25 2.25 0 0 0 6.75 11h-2.5ZM11 4.25A2.25 2.25 0 0 1 13.25 2h2.5A2.25 2.25 0 0 1 18 4.25v2.5A2.25 2.25 0 0 1 15.75 9h-2.5A2.25 2.25 0 0 1 11 6.75v-2.5ZM13.25 11A2.25 2.25 0 0 0 11 13.25v2.5A2.25 2.25 0 0 0 13.25 18h2.5A2.25 2.25 0 0 0 18 15.75v-2.5A2.25 2.25 0 0 0 15.75 11h-2.5Z" />
+            </svg>
+            <span>{t("results.colorByScore")}</span>
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setShowPrintModal(true)}
           title={t("print.buttonTip")}
           aria-label={t("print.buttonAria")}
-          className="ms-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
-                     bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          className={`${isDesktop ? "" : "ms-auto "}inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
+                     bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
             <path fillRule="evenodd" d="M5 2.75A2.75 2.75 0 0 1 7.75 0h4.5A2.75 2.75 0 0 1 15 2.75V5h.75A2.25 2.25 0 0 1 18 7.25v5.5A2.25 2.25 0 0 1 15.75 15H15v2.25A2.75 2.75 0 0 1 12.25 20h-4.5A2.75 2.75 0 0 1 5 17.25V15h-.75A2.25 2.25 0 0 1 2 12.75v-5.5A2.25 2.25 0 0 1 4.25 5H5V2.75ZM6.5 5h7V2.75c0-.69-.56-1.25-1.25-1.25h-4.5c-.69 0-1.25.56-1.25 1.25V5Zm0 9.5v2.75c0 .69.56 1.25 1.25 1.25h4.5c.69 0 1.25-.56 1.25-1.25V14.5h-7Zm9-7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" clipRule="evenodd" />
@@ -1021,6 +1057,8 @@ export function ResultsTable() {
               tier,
               notes,
               setNote,
+              weights,
+              colorByValueScore: settings.colorByValueScore,
               manualAdjustments,
               manualOrder,
               scoreRankMap,
