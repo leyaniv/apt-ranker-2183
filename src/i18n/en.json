@@ -129,6 +129,7 @@
     "filteredOutTooltip": "This apartment was filtered out by the active profile's scoring (at least one of its values is marked ✕). Edit the scoring panel to undo.",
     "sold": "Sold",
     "soldTooltip": "This apartment has been sold (נמכר)",
+    "soldRecentlyTooltip": "Sold on the most recent status-change date in the project data (within the last week) — same batch highlighted in Buildings.",
     "userMarkedSold": "Sold · you",
     "userMarkedSoldTooltip": "You marked this apartment as sold. The contractor site hasn't reflected it yet.",
     "filtersActive": "{{count}} active",

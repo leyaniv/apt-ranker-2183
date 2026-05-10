@@ -194,8 +194,11 @@ function isoDaysAgo(n: number): string {
  *  apartments. Returns `{ date, kind }` describing the highlight to apply,
  *  or `null` when there is none (no sold apt has a date, or the max is
  *  older than the recent window). User-marked sold apts that lack a
- *  `status_changed_date` are intentionally ignored. */
-function computeHighlight(
+ *  `status_changed_date` are intentionally ignored.
+ *
+ * Exported so the Ranking table can reuse the same definition as the
+ * Buildings grid (darker hatch + sold chip for that batch). */
+export function computeSoldHighlight(
   ranked: RankedApartment[]
 ): { date: string; kind: "today" | "recently" } | null {
   let max: string | null = null;
@@ -278,7 +281,7 @@ export function buildBuildingsLayout(
 
   // Compute the global highlight once, before per-building accounting,
   // so every building shares the same `highlightDate` / `highlightKind`.
-  const highlight = computeHighlight(ranked);
+  const highlight = computeSoldHighlight(ranked);
 
   for (const [buildingKey, g] of buildingsMap) {
     if (g.records.length === 0) continue;

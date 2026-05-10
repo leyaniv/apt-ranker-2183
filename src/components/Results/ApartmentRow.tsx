@@ -77,6 +77,12 @@ interface ApartmentRowProps {
    *  disable the checkbox on rows that aren't already selected so the
    *  user can't blow past the limit. */
   compareAtMax?: boolean;
+  /**
+   * When set, sold apartments whose `status_changed_date` equals this
+   * string (YYYY-MM-DD) render the "recent batch" chip — same global rule as
+   * the Buildings tab's darker sold cells.
+   */
+  soldHighlightDate?: string | null;
 }
 
 function scoreColor(score: number): string {
@@ -131,6 +137,7 @@ export const ApartmentRow = memo(function ApartmentRow({
   onDragStart, onDragOver, onDrop,
   compareMode = false, isSelectedForCompare = false,
   onToggleCompareSelect, compareAtMax = false,
+  soldHighlightDate = null,
 }: ApartmentRowProps) {
   const { t } = useTranslation();
   const { apartment, totalScore, totalWeight, breakdown } = ranked;
@@ -138,6 +145,11 @@ export const ApartmentRow = memo(function ApartmentRow({
   const isDropTarget = dropTargetSlug === slug;
   const isSold = apartment.isSold;
   const userOnlySold = isSold && apartment.userMarkedSold && (apartment.status ?? "").trim() !== "נמכר";
+  const isSoldOnHighlightDate =
+    isSold &&
+    !userOnlySold &&
+    soldHighlightDate != null &&
+    apartment.status_changed_date === soldHighlightDate;
   const isExcluded = excludedReason != null;
   // Sold takes precedence over excluded in the rank-cell badge so the user
   // sees the strongest negative signal first.
@@ -166,6 +178,17 @@ export const ApartmentRow = memo(function ApartmentRow({
   // toggleable so the user can deselect to make room.
   const compareCheckboxDisabled =
     compareMode && compareAtMax && !isSelectedForCompare;
+
+  const soldChipClass = userOnlySold
+    ? "bg-red-100 text-red-700 dark:text-red-800"
+    : isSoldOnHighlightDate
+      ? "bg-rose-100 text-gray-600 dark:bg-rose-950/40 dark:text-gray-800"
+      : "bg-gray-200 text-gray-600 dark:text-gray-800";
+  const soldChipTitle = userOnlySold
+    ? t("results.userMarkedSoldTooltip")
+    : isSoldOnHighlightDate
+      ? t("results.soldRecentlyTooltip")
+      : t("results.soldTooltip");
 
   /**
    * Render a desktop-row cell as either a colored chip (when
@@ -277,12 +300,8 @@ export const ApartmentRow = memo(function ApartmentRow({
                   // the grid's `text-sm` 20px line and stand 4px taller than
                   // the chips next to it — making sold rows visibly taller).
                   <span
-                    className={`inline-flex items-center justify-center text-[10px] font-semibold leading-4 rounded px-1.5 py-0.5 ${
-                      userOnlySold
-                        ? "bg-red-100 text-red-700 dark:text-red-800"
-                        : "bg-gray-200 text-gray-600 dark:text-gray-800"
-                    }`}
-                    title={userOnlySold ? t("results.userMarkedSoldTooltip") : t("results.soldTooltip")}
+                    className={`inline-flex items-center justify-center text-[10px] font-semibold leading-4 rounded px-1.5 py-0.5 ${soldChipClass}`}
+                    title={soldChipTitle}
                   >
                     {t("results.sold")}
                   </span>
@@ -434,12 +453,8 @@ export const ApartmentRow = memo(function ApartmentRow({
               >
                 {isSold ? (
                   <span
-                    className={`inline-flex items-center justify-center w-7 text-[10px] font-semibold rounded px-1 py-0.5 shrink-0 text-center ${
-                      userOnlySold
-                        ? "bg-red-100 text-red-700 dark:text-red-800"
-                        : "bg-gray-200 text-gray-600 dark:text-gray-800"
-                    }`}
-                    title={userOnlySold ? t("results.userMarkedSoldTooltip") : t("results.soldTooltip")}
+                    className={`inline-flex items-center justify-center w-7 text-[10px] font-semibold rounded px-1 py-0.5 shrink-0 text-center ${soldChipClass}`}
+                    title={soldChipTitle}
                   >
                     {t("results.sold")}
                   </span>

@@ -12,6 +12,7 @@ import { CompareApartmentsModal } from "../Compare/CompareApartmentsModal";
 import { track } from "../../utils/analytics";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { useTableTier, TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
+import { computeSoldHighlight } from "../../utils/buildingsLayout";
 import type { ImportanceWeights, RankedApartment } from "../../types";
 
 /** Per-row props supplied to every virtualized row via `List.rowProps`. */
@@ -54,6 +55,9 @@ interface RowData {
    *  per-row checkboxes for not-yet-selected rows so the cap can't be
    *  exceeded. Selected rows stay toggleable for deselection. */
   compareAtMax: boolean;
+  /** Global most-recent sold `status_changed_date` within the recent window
+   *  (same rule as Buildings). `null` when nothing qualifies. */
+  soldHighlightDate: string | null;
 }
 
 const VirtualRow = function VirtualRow({
@@ -62,6 +66,7 @@ const VirtualRow = function VirtualRow({
   anyManualReorder, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
   compareMode, compareSelected, onToggleCompareSelect, compareAtMax,
+  soldHighlightDate,
 }: RowComponentProps<RowData>) {
   const ranked = displayed[index];
   if (!ranked) return null;
@@ -103,6 +108,7 @@ const VirtualRow = function VirtualRow({
         isSelectedForCompare={compareSelected.has(slug)}
         onToggleCompareSelect={onToggleCompareSelect}
         compareAtMax={compareAtMax}
+        soldHighlightDate={soldHighlightDate}
       />
     </div>
   );
@@ -343,6 +349,11 @@ export function ResultsTable() {
   // rows the toggle would hide without flipping it.
   const soldCount = useMemo(
     () => rankedApartments.reduce((n, r) => n + (r.apartment.isSold ? 1 : 0), 0),
+    [rankedApartments]
+  );
+
+  const soldHighlightDate = useMemo(
+    () => computeSoldHighlight(rankedApartments)?.date ?? null,
     [rankedApartments]
   );
 
@@ -1200,6 +1211,7 @@ export function ResultsTable() {
               compareSelected,
               onToggleCompareSelect: toggleCompareSelect,
               compareAtMax: compareSelected.size >= maxCompare,
+              soldHighlightDate,
             }}
             overscanCount={5}
             style={{ height: "100%", width: "100%" }}
