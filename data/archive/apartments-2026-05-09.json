@@ -22,10 +22,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13696.33,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 71,
     "parking_spot_2": 70,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100357",
@@ -90,11 +90,11 @@
     "lot": "208",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15270.23,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 112,
     "parking_spot_2": 111,
     "balcony_1_direction": "מערב",
-    "balcony_2_direction": "צפון",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "צפון"
   },
   {
     "property_slug": "100352",
@@ -146,10 +146,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13712.6,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 134,
     "parking_spot_2": 133,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100354",
@@ -201,10 +201,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14438.08,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 69,
     "parking_spot_2": 68,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100345",
@@ -364,10 +364,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13734.5,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 128,
     "parking_spot_2": 127,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100351",
@@ -509,14 +509,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100344/",
     "air_direction": "צפון-מערב-דרום",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13951.55,
     "parking_spot_1": 116,
     "parking_spot_2": 115,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100334",
@@ -682,10 +681,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14807.98,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 64,
     "parking_spot_2": 65,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100326",
@@ -846,11 +845,11 @@
     "lot": "208",
     "remarks": "דירת גן",
     "price_per_sqm": 15532.91,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 316,
     "parking_spot_2": 315,
     "balcony_1_direction": "צפון",
-    "balcony_2_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_2_direction": "דרום"
   },
   {
     "property_slug": "100333",
@@ -875,10 +874,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14639.46,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 314,
     "parking_spot_2": 313,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100324",
@@ -903,10 +902,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14438.08,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 31,
     "parking_spot_2": 32,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100317",
@@ -958,10 +957,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14457.69,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 19,
     "parking_spot_2": 20,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100319",
@@ -1040,10 +1039,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14473.01,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 25,
     "parking_spot_2": 26,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100322",
@@ -1064,14 +1063,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100322/",
     "air_direction": "צפון-מערב",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14818.84,
     "parking_spot_1": 27,
     "parking_spot_2": 28,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100323",
@@ -1092,14 +1090,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100323/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13696.33,
     "parking_spot_1": 29,
     "parking_spot_2": 30,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100308",
@@ -1184,11 +1181,11 @@
     "lot": "208",
     "remarks": "דירת גן",
     "price_per_sqm": 15854.83,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 5,
     "parking_spot_2": 6,
     "balcony_1_direction": "מזרח",
-    "balcony_2_direction": "דרום",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "דרום"
   },
   {
     "property_slug": "100312",
@@ -1213,11 +1210,11 @@
     "lot": "208",
     "remarks": "דירת גן",
     "price_per_sqm": 15897.27,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 7,
     "parking_spot_2": 8,
     "balcony_1_direction": "מערב",
-    "balcony_2_direction": "מזרח",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "מזרח"
   },
   {
     "property_slug": "100313",
@@ -1296,10 +1293,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14472.53,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 13,
     "parking_spot_2": 14,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100316",
@@ -1351,10 +1348,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14467.27,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 344,
     "parking_spot_2": 355,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100305",
@@ -1379,11 +1376,11 @@
     "lot": "208",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15338.86,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 343,
     "parking_spot_2": 356,
     "balcony_1_direction": "מזרח",
-    "balcony_2_direction": "דרום",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "דרום"
   },
   {
     "property_slug": "100306",
@@ -1475,10 +1472,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14450.52,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 337,
     "parking_spot_2": 336,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100299",
@@ -1503,10 +1500,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13696.33,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 350,
     "parking_spot_2": 349,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100300",
@@ -1531,10 +1528,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14807.98,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 348,
     "parking_spot_2": 351,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100301",
@@ -1559,10 +1556,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14438.08,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 347,
     "parking_spot_2": 352,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100302",
@@ -1587,10 +1584,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13712.6,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 346,
     "parking_spot_2": 353,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100303",
@@ -1615,10 +1612,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14837.22,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 345,
     "parking_spot_2": 354,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100292",
@@ -1643,11 +1640,11 @@
     "lot": "208",
     "remarks": "דירת גן",
     "price_per_sqm": 16004.0,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 302,
     "parking_spot_2": 301,
     "balcony_1_direction": "מערב",
-    "balcony_2_direction": "מזרח",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "מזרח"
   },
   {
     "property_slug": "100293",
@@ -1672,10 +1669,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13983.55,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 304,
     "parking_spot_2": 303,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100294",
@@ -1727,10 +1724,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14450.99,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 328,
     "parking_spot_2": 327,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100296",
@@ -1751,14 +1748,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100296/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13713.22,
     "parking_spot_1": 330,
     "parking_spot_2": 329,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100283",
@@ -1783,10 +1779,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14845.57,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 61,
     "parking_spot_2": 60,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100284",
@@ -1811,10 +1807,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13725.74,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 39,
     "parking_spot_2": 38,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100285",
@@ -1879,11 +1875,11 @@
     "lot": "208",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15249.55,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 37,
     "parking_spot_2": 36,
     "balcony_1_direction": "צפון",
-    "balcony_2_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "מערב"
   },
   {
     "property_slug": "100288",
@@ -2002,10 +1998,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14505.07,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 47,
     "parking_spot_2": 46,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100277",
@@ -2030,10 +2026,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14845.15,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 49,
     "parking_spot_2": 48,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100278",
@@ -2085,10 +2081,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14518.48,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 53,
     "parking_spot_2": 52,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100280",
@@ -2113,10 +2109,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14873.55,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 55,
     "parking_spot_2": 54,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100281",
@@ -2141,10 +2137,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13830.24,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 57,
     "parking_spot_2": 56,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100282",
@@ -2169,10 +2165,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14459.13,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 59,
     "parking_spot_2": 58,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100274",
@@ -2224,10 +2220,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13940.89,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 45,
     "parking_spot_2": 44,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100269",
@@ -2633,10 +2629,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14599.76,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 244,
     "parking_spot_2": 243,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100245",
@@ -2661,10 +2657,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14626.02,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 246,
     "parking_spot_2": 245,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100246",
@@ -2770,10 +2766,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14080.03,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 256,
     "parking_spot_2": 255,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100250",
@@ -2798,10 +2794,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14584.34,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 258,
     "parking_spot_2": 257,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100251",
@@ -2826,10 +2822,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14732.02,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 260,
     "parking_spot_2": 259,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100252",
@@ -2968,10 +2964,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13949.2,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 230,
     "parking_spot_2": 229,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100238",
@@ -2996,10 +2992,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14689.25,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 232,
     "parking_spot_2": 231,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100239",
@@ -3024,10 +3020,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14658.12,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 234,
     "parking_spot_2": 233,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100240",
@@ -3133,10 +3129,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14046.7,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 242,
     "parking_spot_2": 241,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100228",
@@ -3242,10 +3238,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 13910.7,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 218,
     "parking_spot_2": 217,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100232",
@@ -3270,10 +3266,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14413.54,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 220,
     "parking_spot_2": 219,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100233",
@@ -3298,10 +3294,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14396.94,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 222,
     "parking_spot_2": 221,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100234",
@@ -3407,10 +3403,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14308.72,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 200,
     "parking_spot_2": 199,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100227",
@@ -3435,10 +3431,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14330.18,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 202,
     "parking_spot_2": 201,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100214",
@@ -3490,10 +3486,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14200.25,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 196,
     "parking_spot_2": 195,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100216",
@@ -3626,10 +3622,10 @@
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14360.45,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 288,
     "parking_spot_2": 287,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100221",
@@ -3650,14 +3646,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100221/",
     "air_direction": "צפון-מערב",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14407.24,
     "parking_spot_1": 290,
     "parking_spot_2": 289,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100222",
@@ -4593,9 +4588,9 @@
     "lot": "207",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15263.87,
+    "status_changed_date": "2026-05-06",
     "balcony_1_direction": "מערב",
-    "balcony_2_direction": "צפון",
-    "status_changed_date": "2026-05-06"
+    "balcony_2_direction": "צפון"
   },
   {
     "property_slug": "100182",
@@ -4674,8 +4669,8 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14000.38,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "status_changed_date": "2026-05-06",
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100173",
@@ -4749,8 +4744,8 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13996.72,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "status_changed_date": "2026-05-06",
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100176",
@@ -4795,9 +4790,9 @@
     "lot": "207",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15270.23,
+    "status_changed_date": "2026-05-06",
     "balcony_1_direction": "דרום",
-    "balcony_2_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_2_direction": "מערב"
   },
   {
     "property_slug": "100162",
@@ -4916,10 +4911,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14038.21,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 9,
     "parking_spot_2": 8,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100167",
@@ -4998,10 +4993,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13969.26,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 25,
     "parking_spot_2": 24,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100170",
@@ -5152,10 +5147,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13957.2,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 366,
     "parking_spot_2": 365,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100153",
@@ -5234,10 +5229,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13822.09,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 360,
     "parking_spot_2": 359,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100156",
@@ -5285,14 +5280,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100157/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14589.78,
     "parking_spot_1": 323,
     "parking_spot_2": 322,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100158",
@@ -5317,8 +5311,8 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13720.11,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-06"
+    "status_changed_date": "2026-05-06",
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100145",
@@ -5339,12 +5333,11 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100145/",
     "air_direction": "דרום-מערב-מזרח",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14438.08,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100146",
@@ -5394,9 +5387,9 @@
     "lot": "207",
     "remarks": "דופלקס גג",
     "price_per_sqm": 15443.22,
+    "status_changed_date": "2026-05-03",
     "balcony_1_direction": "מזרח",
-    "balcony_2_direction": "צפון",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "צפון"
   },
   {
     "property_slug": "100148",
@@ -5619,8 +5612,8 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14467.27,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "status_changed_date": "2026-05-06",
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100130",
@@ -5778,11 +5771,11 @@
     "lot": "207",
     "remarks": "דירת גן",
     "price_per_sqm": 15759.08,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 110,
     "parking_spot_2": 109,
     "balcony_1_direction": "מערב",
-    "balcony_2_direction": "מזרח",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "מזרח"
   },
   {
     "property_slug": "100137",
@@ -5830,14 +5823,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100138/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13912.67,
     "parking_spot_1": 114,
     "parking_spot_2": 113,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100139",
@@ -6095,11 +6087,11 @@
     "lot": "207",
     "remarks": "דירת גן",
     "price_per_sqm": 15785.88,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 327,
     "parking_spot_2": 326,
     "balcony_1_direction": "מערב",
-    "balcony_2_direction": "מזרח",
-    "status_changed_date": "2026-05-03"
+    "balcony_2_direction": "מזרח"
   },
   {
     "property_slug": "100113",
@@ -6238,10 +6230,10 @@
     "lot": "207",
     "remarks": "דירת גן",
     "price_per_sqm": 15287.97,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 331,
     "parking_spot_2": 330,
-    "balcony_1_direction": "מזרח",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מזרח"
   },
   {
     "property_slug": "100119",
@@ -6591,15 +6583,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100109/",
     "air_direction": "צפון-מערב-דרום",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "207",
     "remarks": "דירת גן",
     "price_per_sqm": 15531.29,
     "parking_spot_1": 103,
     "parking_spot_2": 102,
     "balcony_1_direction": "דרום",
-    "balcony_2_direction": "צפון",
-    "status_changed_date": "2026-05-10"
+    "balcony_2_direction": "צפון"
   },
   {
     "property_slug": "100097",
@@ -6764,10 +6755,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14218.07,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 45,
     "parking_spot_2": 44,
-    "balcony_1_direction": "דרום",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "דרום"
   },
   {
     "property_slug": "100087",
@@ -6792,10 +6783,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14753.54,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 47,
     "parking_spot_2": 46,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100088",
@@ -6820,10 +6811,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14902.66,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 49,
     "parking_spot_2": 48,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100089",
@@ -6895,10 +6886,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14769.93,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 257,
     "parking_spot_2": 202,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100082",
@@ -6923,10 +6914,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14796.45,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 37,
     "parking_spot_2": 36,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100083",
@@ -7086,10 +7077,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14655.65,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 293,
     "parking_spot_2": 292,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100076",
@@ -7114,10 +7105,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14701.13,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 295,
     "parking_spot_2": 294,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100077",
@@ -7358,10 +7349,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14569.03,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 281,
     "parking_spot_2": 280,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100070",
@@ -7386,10 +7377,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14589.7,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 283,
     "parking_spot_2": 282,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100071",
@@ -7414,10 +7405,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14219.1,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 285,
     "parking_spot_2": 284,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100072",
@@ -7523,10 +7514,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14533.02,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 269,
     "parking_spot_2": 268,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100064",
@@ -7551,10 +7542,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14498.55,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 271,
     "parking_spot_2": 270,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100019",
@@ -8497,10 +8488,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14478.26,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 244,
     "parking_spot_2": 243,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100052",
@@ -8525,10 +8516,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14360.45,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 246,
     "parking_spot_2": 245,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100053",
@@ -8661,10 +8652,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14405.79,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 256,
     "parking_spot_2": 255,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100058",
@@ -8689,10 +8680,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14393.62,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 259,
     "parking_spot_2": 258,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100059",
@@ -8717,10 +8708,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13875.36,
+    "status_changed_date": "2026-05-03",
     "parking_spot_1": 261,
     "parking_spot_2": 260,
-    "balcony_1_direction": "צפון",
-    "status_changed_date": "2026-05-03"
+    "balcony_1_direction": "צפון"
   },
   {
     "property_slug": "100060",
@@ -8772,10 +8763,10 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14264.33,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 232,
     "parking_spot_2": 231,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100031",
@@ -9012,14 +9003,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100039/",
     "air_direction": "דרום-מערב",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14168.32,
     "parking_spot_1": 218,
     "parking_spot_2": 217,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100040",
@@ -9040,14 +9030,13 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100040/",
     "air_direction": "צפון-מערב",
-    "status": "נמכר",
+    "status": "פנוי",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14166.14,
     "parking_spot_1": 220,
     "parking_spot_2": 219,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-10"
+    "balcony_1_direction": "מערב"
   },
   {
     "property_slug": "100041",
@@ -9180,9 +9169,9 @@
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14169.03,
+    "status_changed_date": "2026-05-06",
     "parking_spot_1": 230,
     "parking_spot_2": 229,
-    "balcony_1_direction": "מערב",
-    "status_changed_date": "2026-05-06"
+    "balcony_1_direction": "מערב"
   }
 ]
