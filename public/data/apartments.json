@@ -115,13 +115,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100352/",
     "air_direction": "דרום-מזרח-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14473.01,
     "parking_spot_1": 132,
     "parking_spot_2": 131,
-    "balcony_1_direction": "מזרח"
+    "balcony_1_direction": "מזרח",
+    "status_changed_date": "2026-05-10"
   },
   {
     "property_slug": "100353",
