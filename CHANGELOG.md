@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- Ranking tab: new Compare button — pick up to 4 apartments (2 on mobile) and open a side-by-side popup.
+
 ## [1.5.2] - 2026-05-09
 
 - Ranking table cells can be color-coded by your value score (toggle next to the Print button).

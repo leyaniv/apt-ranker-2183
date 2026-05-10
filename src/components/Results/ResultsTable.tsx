@@ -8,6 +8,8 @@ import { TabHeader } from "../Layout/TabHeader";
 import { ConfirmDialog } from "../Layout/ConfirmDialog";
 import { MultiSelectPopover } from "../Layout/MultiSelectPopover";
 import { PrintModal } from "../Print/PrintModal";
+import { CompareApartmentsModal } from "../Compare/CompareApartmentsModal";
+import { track } from "../../utils/analytics";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { useTableTier, TIER_LAYOUTS, type TableTier } from "../../hooks/useTableTier";
 import type { ImportanceWeights, RankedApartment } from "../../types";
@@ -39,6 +41,19 @@ interface RowData {
   dropTargetSlug: string | null;  onDragStart: (slug: string) => void;
   onDragOver: (slug: string) => void;
   onDrop: (slug: string) => void;
+  /** When true, the table is in compare-selection mode: rows render
+   *  checkboxes (desktop swaps the drag grip; mobile prepends one) and
+   *  taps toggle membership in `compareSelected` instead of expanding
+   *  the apartment detail. */
+  compareMode: boolean;
+  /** Slugs currently selected for comparison. Wrapped here so per-row
+   *  selection lookup is O(1). */
+  compareSelected: Set<string>;
+  onToggleCompareSelect: (slug: string) => void;
+  /** True when `compareSelected.size === maxCompare` — used to disable
+   *  per-row checkboxes for not-yet-selected rows so the cap can't be
+   *  exceeded. Selected rows stay toggleable for deselection. */
+  compareAtMax: boolean;
 }
 
 const VirtualRow = function VirtualRow({
@@ -46,6 +61,7 @@ const VirtualRow = function VirtualRow({
   notes, setNote, weights, colorByValueScore, manualAdjustments, manualOrder, scoreRankMap, rankLabelMap, userExcludedSet,
   anyManualReorder, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
+  compareMode, compareSelected, onToggleCompareSelect, compareAtMax,
 }: RowComponentProps<RowData>) {
   const ranked = displayed[index];
   if (!ranked) return null;
@@ -83,6 +99,10 @@ const VirtualRow = function VirtualRow({
         onDragStart={onDragStart}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        compareMode={compareMode}
+        isSelectedForCompare={compareSelected.has(slug)}
+        onToggleCompareSelect={onToggleCompareSelect}
+        compareAtMax={compareAtMax}
       />
     </div>
   );
@@ -127,11 +147,24 @@ export function ResultsTable() {
     return () => registerManualOrderSetter(null);
   }, [registerManualOrderSetter]);
 
-  // Sync manualOrder when switching profiles
+  // Compare-selection state. `compareMode` toggles the rows from drag/expand
+  // affordances to checkboxes; `compareSelected` holds the slugs the user
+  // has picked. The viewport-dependent cap and helpers that close over it
+  // are declared further below, after `isDesktop`.
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareSelected, setCompareSelected] = useState<Set<string>>(() => new Set());
+  const [showCompareModal, setShowCompareModal] = useState(false);
+
+  // Sync manualOrder when switching profiles. Compare selection is also
+  // tied to the active profile (its breakdown / scores power the popup),
+  // so reset both the selection and selection-mode on profile switch.
   const prevProfileId = useRef(activeProfile?.id);
   if (activeProfile?.id !== prevProfileId.current) {
     prevProfileId.current = activeProfile?.id;
     setManualOrder(activeProfile?.manualOrder ?? null);
+    setCompareMode(false);
+    setCompareSelected(new Set());
+    setShowCompareModal(false);
   }
 
   // Native drag state — stored in refs to avoid re-renders during drag
@@ -145,6 +178,75 @@ export function ResultsTable() {
 
   // Virtualization state
   const isDesktop = useIsDesktop();
+
+  // Compare-mode cap and helpers (see compare state declarations above).
+  // Cap is per-viewport because the popup table grows by 2 columns per
+  // selected apartment — desktop comfortably fits 4 apts; mobile only 2.
+  const maxCompare = isDesktop ? 4 : 2;
+
+  // When the device shrinks below the desktop breakpoint, trim the
+  // selection so we don't blow past the new (lower) cap. Mirrors the
+  // breakpoint-trim effect in `CompareView`. The setState-in-effect lint
+  // is silenced here because (a) breakpoint changes are user-initiated
+  // and rare, so cascading-render risk is negligible, and (b) deriving
+  // a clamped view in render would mean `compareSelected` (the source of
+  // truth) and what's actually used downstream could disagree, which
+  // would surface as stale checkboxes after a viewport shrink.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCompareSelected((prev) => {
+      if (prev.size <= maxCompare) return prev;
+      const next = new Set<string>();
+      for (const s of prev) {
+        if (next.size >= maxCompare) break;
+        next.add(s);
+      }
+      return next;
+    });
+  }, [maxCompare]);
+
+  const toggleCompareSelect = useCallback(
+    (slug: string) => {
+      setCompareSelected((prev) => {
+        const next = new Set(prev);
+        if (next.has(slug)) {
+          next.delete(slug);
+        } else if (next.size < maxCompare) {
+          next.add(slug);
+        }
+        return next;
+      });
+    },
+    [maxCompare],
+  );
+
+  const exitCompareMode = useCallback(() => {
+    setCompareMode(false);
+    setCompareSelected(new Set());
+    setShowCompareModal(false);
+  }, []);
+
+  const toggleCompareMode = useCallback(() => {
+    setCompareMode((prev) => {
+      const next = !prev;
+      if (!next) {
+        // Leaving compare mode also clears the working selection so users
+        // get a clean slate next time they enter it.
+        setCompareSelected(new Set());
+        setShowCompareModal(false);
+      } else {
+        track("compare_apts_mode_entered", {});
+      }
+      return next;
+    });
+  }, []);
+
+  const openCompareModal = useCallback(() => {
+    if (compareSelected.size < 2) return;
+    track("compare_apts_opened", { count: compareSelected.size });
+    setShowCompareModal(true);
+  }, [compareSelected]);
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   // Measure the parent's width (the tab panel) since the wrapper itself uses
   // `sm:w-fit` and would shrink-wrap to the table's fixed-px columns.
@@ -685,13 +787,38 @@ export function ResultsTable() {
             <span>{t("results.colorByScore")}</span>
           </button>
         )}
+        {/* Compare-mode toggle. Active state mirrors the blue tint used by
+            the existing `colorByValueScore` / `showSold` toggles so all
+            on/off chrome reads consistently. Clicking it again exits the
+            mode (and clears the working selection via `toggleCompareMode`).
+            On mobile this picks up `ms-auto` since `colorByScore` is
+            desktop-only and Compare is the first action button on the row. */}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={compareMode}
+          onClick={toggleCompareMode}
+          title={t("results.compareTooltip")}
+          aria-label={t("results.compare")}
+          data-tour-id="compare-button"
+          className={`${isDesktop ? "" : "ms-auto "}inline-flex items-center gap-1.5 px-2.5 py-1 text-sm rounded-md border transition-colors ${
+            compareMode
+              ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
+              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0" aria-hidden="true">
+            <path fillRule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h6.5a.75.75 0 0 1 0 1.5h-6.5A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5A.75.75 0 0 1 2 15.25ZM12.5 4a.75.75 0 0 1 .75.75v.25h.25a.75.75 0 0 1 0 1.5h-.25v.25a.75.75 0 0 1-1.5 0v-.25h-.25a.75.75 0 0 1 0-1.5h.25v-.25A.75.75 0 0 1 12.5 4Zm4 5.25a.75.75 0 0 1 .75.75v.25h.25a.75.75 0 0 1 0 1.5h-.25v.25a.75.75 0 0 1-1.5 0V11.75h-.25a.75.75 0 0 1 0-1.5h.25V10a.75.75 0 0 1 .75-.75Zm-2 5.25a.75.75 0 0 1 .75.75v.25h.25a.75.75 0 0 1 0 1.5h-.25v.25a.75.75 0 0 1-1.5 0v-.25h-.25a.75.75 0 0 1 0-1.5h.25v-.25a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
+          </svg>
+          <span>{t("results.compare")}</span>
+        </button>
         <button
           type="button"
           onClick={() => setShowPrintModal(true)}
           title={t("print.buttonTip")}
           aria-label={t("print.buttonAria")}
-          className={`${isDesktop ? "" : "ms-auto "}inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
-                     bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors`}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-gray-700
+                     bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-500">
             <path fillRule="evenodd" d="M5 2.75A2.75 2.75 0 0 1 7.75 0h4.5A2.75 2.75 0 0 1 15 2.75V5h.75A2.25 2.25 0 0 1 18 7.25v5.5A2.25 2.25 0 0 1 15.75 15H15v2.25A2.75 2.75 0 0 1 12.25 20h-4.5A2.75 2.75 0 0 1 5 17.25V15h-.75A2.25 2.25 0 0 1 2 12.75v-5.5A2.25 2.25 0 0 1 4.25 5H5V2.75ZM6.5 5h7V2.75c0-.69-.56-1.25-1.25-1.25h-4.5c-.69 0-1.25.56-1.25 1.25V5Zm0 9.5v2.75c0 .69.56 1.25 1.25 1.25h4.5c.69 0 1.25-.56 1.25-1.25V14.5h-7Zm9-7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" clipRule="evenodd" />
@@ -1069,6 +1196,10 @@ export function ResultsTable() {
               onDragStart: handleDragStart,
               onDragOver: handleDragOver,
               onDrop: handleDrop,
+              compareMode,
+              compareSelected,
+              onToggleCompareSelect: toggleCompareSelect,
+              compareAtMax: compareSelected.size >= maxCompare,
             }}
             overscanCount={5}
             style={{ height: "100%", width: "100%" }}
@@ -1077,6 +1208,53 @@ export function ResultsTable() {
         )}
       </div>
       </div>
+
+      {/* Compare-mode action banner. Sits below the table so it doesn't
+          push the rows down when the user toggles selection mode (the
+          rows-list is the focal area; chrome above it would also fight
+          the manual-reorder banner that lives at the top). The Compare
+          button is disabled until ≥2 apartments are checked; Cancel exits
+          selection mode and clears the working set. */}
+      {compareMode && (
+        <div className="flex-shrink-0 mt-2 flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 bg-blue-50 border border-blue-200 rounded-md">
+          <span className="text-sm font-medium text-blue-700 flex-shrink-0">
+            {t("results.compareSelectedCount", { count: compareSelected.size })}
+          </span>
+          <span className="text-xs text-blue-600/80 flex-shrink-0">
+            {t("results.compareMaxHint", { max: maxCompare })}
+          </span>
+          {compareSelected.size < 2 && (
+            <span className="text-xs text-blue-500/70 hidden sm:inline">
+              · {t("results.compareDisabledHint")}
+            </span>
+          )}
+          <div className="flex flex-wrap gap-2 ms-auto">
+            <button
+              onClick={exitCompareMode}
+              className="px-3 py-1 text-xs font-medium text-gray-600 bg-white
+                         border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              {t("results.compareCancel")}
+            </button>
+            <button
+              onClick={openCompareModal}
+              disabled={compareSelected.size < 2}
+              title={
+                compareSelected.size < 2
+                  ? t("results.compareDisabledHint")
+                  : undefined
+              }
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                compareSelected.size < 2
+                  ? "bg-gray-200 text-gray-400 cursor-default"
+                  : "text-white bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {t("results.compareOpen")}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Save as new profile modal */}
       {showSaveAsModal && (
@@ -1154,6 +1332,35 @@ export function ResultsTable() {
           ranked={rankedAfterToggles}
           visible={displayed}
           onClose={() => setShowPrintModal(false)}
+        />
+      )}
+
+      {/* Compare-apartments popup. Only mounts when the user has explicitly
+          opened it AND has at least 2 selections — the open button in the
+          banner enforces the minimum, but we double-check here so any
+          stale state never renders an empty/single-column table. The slug
+          set is intersected with `rankedApartments` so apartments hidden
+          by filters or sold/excluded toggles still appear (they remain
+          ranked under the active profile), while slugs that have been
+          deleted entirely just drop out. */}
+      {showCompareModal && compareSelected.size >= 2 && (
+        <CompareApartmentsModal
+          selected={(() => {
+            const slugMap = new Map(
+              rankedApartments.map((r) => [r.apartment.property_slug, r]),
+            );
+            const ordered: RankedApartment[] = [];
+            for (const slug of compareSelected) {
+              const r = slugMap.get(slug);
+              if (r) ordered.push(r);
+            }
+            return ordered;
+          })()}
+          ranks={rankLabelMap}
+          weights={weights}
+          manualAdjustments={manualAdjustments}
+          notes={notes}
+          onClose={() => setShowCompareModal(false)}
         />
       )}
     </div>

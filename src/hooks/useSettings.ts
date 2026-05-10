@@ -34,11 +34,10 @@ export interface AppSettings {
    */
   buildingsViewMode: "wide" | "narrow";
   /**
-   * When `true` (default), each scored cell in the results table is rendered
-   * as a colored chip whose hue reflects the user's value score for that
-   * apartment-parameter pair. When `false` the table falls back to plain
-   * text — useful for printing-style readability or when the user just
-   * wants a calmer view.
+   * When `true`, each scored cell in the results table is rendered as a colored
+   * chip whose hue reflects the user's value score for that apartment-parameter
+   * pair. When `false` (default) the table falls back to plain text — useful for
+   * printing-style readability or when the user wants a calmer view.
    */
   colorByValueScore: boolean;
 }
@@ -52,7 +51,7 @@ const DEFAULTS: AppSettings = {
   showSold: true,
   showExcluded: false,
   buildingsViewMode: "wide",
-  colorByValueScore: true,
+  colorByValueScore: false,
 };
 
 function load(): AppSettings {

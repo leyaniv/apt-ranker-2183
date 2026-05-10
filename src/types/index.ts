@@ -159,6 +159,14 @@ export interface ParameterConfig {
   /** Display-friendly labels keyed by locale: { en: "...", he: "..." } */
   label: { en: string; he: string };
   /**
+   * Optional shorter label for tight-space contexts (mobile compare
+   * popup, etc.). When omitted, callers should fall back to `label`.
+   * Keep these meaningfully distinct — abbreviations like "Air Dir"
+   * vs "Balc Dir" are intentional so neighboring rows don't collide
+   * visually.
+   */
+  shortLabel?: { en: string; he: string };
+  /**
    * For categorical: the possible value keys (e.g. ["3", "4", "4.5", "5", "6"] for rooms).
    * For bucketed: the bucket labels (e.g. ["₪1.08M–1.30M", ...]).
    */

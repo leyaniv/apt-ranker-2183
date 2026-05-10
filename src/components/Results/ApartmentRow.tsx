@@ -61,6 +61,22 @@ interface ApartmentRowProps {
   onDragStart?: (slug: string) => void;
   onDragOver?: (slug: string) => void;
   onDrop?: (slug: string) => void;
+  /**
+   * When true the row is in compare-selection mode: the drag affordance
+   * is suspended, and the row's primary tap/click target toggles whether
+   * the apartment is included in the compare set instead of expanding
+   * the detail. Driven by the "Compare" button on the Ranking tab.
+   */
+  compareMode?: boolean;
+  /** True when the row is currently in the compare set. Tints the row
+   *  background and checks the per-row checkbox. */
+  isSelectedForCompare?: boolean;
+  /** Toggle this row's membership in the compare set. */
+  onToggleCompareSelect?: (slug: string) => void;
+  /** True when the compare set is at the per-viewport cap — used to
+   *  disable the checkbox on rows that aren't already selected so the
+   *  user can't blow past the limit. */
+  compareAtMax?: boolean;
 }
 
 function scoreColor(score: number): string {
@@ -113,6 +129,8 @@ export const ApartmentRow = memo(function ApartmentRow({
   weights, colorByValueScore = true, originalRank,
   anyManualReorder = false, dropTargetSlug,
   onDragStart, onDragOver, onDrop,
+  compareMode = false, isSelectedForCompare = false,
+  onToggleCompareSelect, compareAtMax = false,
 }: ApartmentRowProps) {
   const { t } = useTranslation();
   const { apartment, totalScore, totalWeight, breakdown } = ranked;
@@ -139,6 +157,15 @@ export const ApartmentRow = memo(function ApartmentRow({
   const padXClass = showReorderColumn ? tierLayout.padXWithReorder : tierLayout.padX;
 
   const handleOpenChange = useCallback(() => onToggle(slug), [onToggle, slug]);
+  const handleCompareToggle = useCallback(
+    () => onToggleCompareSelect?.(slug),
+    [onToggleCompareSelect, slug],
+  );
+  // True when the per-row checkbox should be disabled: the compare set is
+  // full AND this row isn't already in it. Selected rows must always remain
+  // toggleable so the user can deselect to make room.
+  const compareCheckboxDisabled =
+    compareMode && compareAtMax && !isSelectedForCompare;
 
   /**
    * Render a desktop-row cell as either a colored chip (when
@@ -180,37 +207,70 @@ export const ApartmentRow = memo(function ApartmentRow({
 
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); onDragOver?.(slug); }}
-      onDrop={(e) => { e.preventDefault(); onDrop?.(slug); }}
-      className={isDropTarget ? "border-t-2 border-blue-500" : ""}
+      onDragOver={compareMode ? undefined : (e) => { e.preventDefault(); onDragOver?.(slug); }}
+      onDrop={compareMode ? undefined : (e) => { e.preventDefault(); onDrop?.(slug); }}
+      className={!compareMode && isDropTarget ? "border-t-2 border-blue-500" : ""}
     >
       <Collapsible.Root open={isOpen} onOpenChange={handleOpenChange}>
         <div
           className={`border-b border-gray-100 last:border-b-0 ${
             isSold || isExcluded ? "opacity-60" : ""
+          } ${
+            isSelectedForCompare ? "bg-blue-50/60" : ""
           }`}
         >
           {isDesktop ? (
-            <div
-              className={`grid ${gridClass} ${padXClass}
-                          items-center gap-1 py-2.5 hover:bg-gray-50 transition-colors text-sm
-                          ${isOpen ? "bg-gray-50" : ""}`}
-            >
-              <span
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.effectAllowed = "move";
-                  e.dataTransfer.setData("text/plain", slug);
-                  onDragStart?.(slug);
-                }}
-                className="flex items-center justify-center cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500"
-                title={t("results.dragHint")}
-                aria-label={t("results.dragHint")}
+            <Collapsible.Trigger asChild>
+              <div
+                className={`grid ${gridClass} ${padXClass}
+                            items-center gap-1 py-2.5 hover:bg-gray-50 transition-colors text-sm cursor-pointer
+                            ${isOpen ? "bg-gray-50" : ""}
+                            ${isSelectedForCompare ? "!bg-blue-50/80 hover:!bg-blue-100/70" : ""}`}
               >
-                ⠿
-              </span>
+              {compareMode ? (
+                // <label> wrapping the checkbox makes the whole cell a hit
+                // target for compare-selection — a native click anywhere in
+                // the label is forwarded to the wrapped <input>, firing its
+                // onChange exactly once. `w-full h-full` stretches the label
+                // to fill the grid cell so the entire column width/height
+                // toggles selection. stopPropagation prevents the click from
+                // bubbling up to the row-wide Collapsible.Trigger.
+                <label
+                  className={`flex items-center justify-center w-full h-full ${
+                    compareCheckboxDisabled ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+                  title={compareCheckboxDisabled ? undefined : t("results.compare")}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelectedForCompare}
+                    disabled={compareCheckboxDisabled}
+                    onChange={handleCompareToggle}
+                    aria-label={t("results.compare")}
+                    className="h-4 w-4 rounded accent-blue-600 cursor-pointer disabled:cursor-not-allowed"
+                  />
+                </label>
+              ) : (
+                // Stop propagation so a click on the drag grip doesn't bubble
+                // up and toggle the row's expanded state.
+                <span
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "move";
+                    e.dataTransfer.setData("text/plain", slug);
+                    onDragStart?.(slug);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center justify-center cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500"
+                  title={t("results.dragHint")}
+                  aria-label={t("results.dragHint")}
+                >
+                  ⠿
+                </span>
+              )}
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 {isSold ? (
                   // `leading-4` pins the line-height to 16px (`text-[10px]`
                   // only sets font-size, so the badge would otherwise inherit
@@ -244,10 +304,10 @@ export const ApartmentRow = memo(function ApartmentRow({
                 ) : (
                   <span className="text-gray-400 font-mono text-xs">{rankLabel}</span>
                 )}
-              </Collapsible.Trigger>
+              </div>
 
               {showReorderColumn && (
-                <Collapsible.Trigger className="text-center">
+                <div className="text-center">
                   {isReordered ? (
                     <span
                       className="font-mono text-[10px] tabular-nums"
@@ -257,27 +317,27 @@ export const ApartmentRow = memo(function ApartmentRow({
                       ({originalRank})
                     </span>
                   ) : null}
-                </Collapsible.Trigger>
+                </div>
               )}
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 {cellChip("building", apartment.buildingKey, "text-gray-700")}
-              </Collapsible.Trigger>
+              </div>
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 <span className="text-gray-700">{apartment.apartment_number}</span>
-              </Collapsible.Trigger>
+              </div>
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 {cellChip("rooms", apartment.rooms, "text-gray-700")}
-              </Collapsible.Trigger>
+              </div>
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 {cellChip("floor", apartment.floor, "text-gray-700")}
-              </Collapsible.Trigger>
+              </div>
 
               {TIER_LAYOUTS[tier].showDirections && (
-                <Collapsible.Trigger className="text-center">
+                <div className="text-center">
                   {cellChip(
                     "air_direction",
                     apartment.directions.length > 0
@@ -287,31 +347,31 @@ export const ApartmentRow = memo(function ApartmentRow({
                       : "—",
                     "text-gray-600 text-xs whitespace-nowrap",
                   )}
-                </Collapsible.Trigger>
+                </div>
               )}
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 {cellChip(
                   "layout",
                   t(`results.layout_${apartment.layout}`),
                   "text-gray-600 text-xs truncate",
                 )}
-              </Collapsible.Trigger>
+              </div>
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 {cellChip("type", apartment.type, "text-gray-600 text-xs truncate")}
-              </Collapsible.Trigger>
+              </div>
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 {cellChip(
                   "area_sqm",
                   `${apartment.area_sqm} ${t("results.areaUnit")}`,
                   "text-gray-700 text-xs",
                 )}
-              </Collapsible.Trigger>
+              </div>
 
               {TIER_LAYOUTS[tier].showBalcony && (
-                <Collapsible.Trigger className="text-center">
+                <div className="text-center">
                   {cellChip(
                     "balcony_area_sqm",
                     apartment.balcony_area_sqm > 0
@@ -319,19 +379,19 @@ export const ApartmentRow = memo(function ApartmentRow({
                       : "—",
                     "text-gray-700 text-xs",
                   )}
-                </Collapsible.Trigger>
+                </div>
               )}
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 {cellChip(
                   "price",
                   `₪${apartment.price.toLocaleString("en")}`,
                   "font-mono text-gray-700 text-xs",
                   "font-mono",
                 )}
-              </Collapsible.Trigger>
+              </div>
 
-              <Collapsible.Trigger className="text-center">
+              <div className="text-center">
                 <span className="inline-flex items-center gap-1">
                   <span className="w-3.5 inline-flex justify-center shrink-0">
                     {hasNote && <NoteIcon title={t("detail.hasNote")} />}
@@ -345,21 +405,33 @@ export const ApartmentRow = memo(function ApartmentRow({
                     {adjustment !== 0 && <AdjustmentArrow adjustment={adjustment} />}
                   </span>
                 </span>
-              </Collapsible.Trigger>
-            </div>
+              </div>
+              </div>
+            </Collapsible.Trigger>
           ) : (
             <div
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.effectAllowed = "move";
-                e.dataTransfer.setData("text/plain", slug);
-                onDragStart?.(slug);
-              }}
-              className={`@container/row flex items-center gap-1.5 px-3 py-2 hover:bg-gray-50 transition-colors cursor-grab active:cursor-grabbing
-                          ${isOpen ? "bg-gray-50" : ""}`}
-              title={t("results.dragHint")}
+              draggable={!compareMode}
+              onDragStart={
+                compareMode
+                  ? undefined
+                  : (e) => {
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("text/plain", slug);
+                      onDragStart?.(slug);
+                    }
+              }
+              className={`@container/row flex items-center gap-1.5 px-3 py-2 hover:bg-gray-50 transition-colors
+                          ${compareMode ? "" : "cursor-grab active:cursor-grabbing"}
+                          ${isOpen ? "bg-gray-50" : ""}
+                          ${isSelectedForCompare ? "!bg-blue-50/80 hover:!bg-blue-100/70" : ""}`}
+              title={compareMode ? undefined : t("results.dragHint")}
             >
-              <Collapsible.Trigger className="flex items-center gap-1.5 flex-1 min-w-0 cursor-pointer">
+              <MobileRowSurface
+                compareMode={compareMode}
+                onCompareToggle={handleCompareToggle}
+                disabled={compareCheckboxDisabled}
+                isSelectedForCompare={isSelectedForCompare}
+              >
                 {isSold ? (
                   <span
                     className={`inline-flex items-center justify-center w-7 text-[10px] font-semibold rounded px-1 py-0.5 shrink-0 text-center ${
@@ -425,7 +497,7 @@ export const ApartmentRow = memo(function ApartmentRow({
                 {hasNote && (
                   <NoteIcon title={t("detail.hasNote")} />
                 )}
-              </Collapsible.Trigger>
+              </MobileRowSurface>
             </div>
           )}
 
@@ -447,6 +519,47 @@ export const ApartmentRow = memo(function ApartmentRow({
     </div>
   );
 });
+
+/**
+ * Wraps the inner content of the mobile row layout. In normal browsing mode
+ * this stays a `Collapsible.Trigger` (preserving Radix's open/close wiring
+ * for the apartment detail). In compare-selection mode it becomes a plain
+ * `<button>` whose click toggles the row's membership in the compare set
+ * — the detail panel is intentionally suppressed there because the user is
+ * picking apartments, not browsing them.
+ */
+function MobileRowSurface({
+  compareMode,
+  onCompareToggle,
+  disabled,
+  isSelectedForCompare,
+  children,
+}: {
+  compareMode: boolean;
+  onCompareToggle: () => void;
+  disabled: boolean;
+  isSelectedForCompare: boolean;
+  children: ReactNode;
+}) {
+  if (compareMode) {
+    return (
+      <button
+        type="button"
+        onClick={onCompareToggle}
+        disabled={disabled}
+        aria-pressed={isSelectedForCompare}
+        className="flex items-center gap-1.5 flex-1 min-w-0 text-start cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {children}
+      </button>
+    );
+  }
+  return (
+    <Collapsible.Trigger className="flex items-center gap-1.5 flex-1 min-w-0 cursor-pointer">
+      {children}
+    </Collapsible.Trigger>
+  );
+}
 
 /**
  * Inline marker showing that the apartment has a free-text note in the

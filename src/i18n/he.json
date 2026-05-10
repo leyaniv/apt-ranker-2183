@@ -153,6 +153,14 @@
     "title": "דירות מדורגות",
     "titleShort": "דירות מדורגות",
     "howToUse": "עיינו ברשימת הדירות המדורגת. השתמשו בסינון לצמצום הרשימה, לחצו על שורה כדי לראות פרטים מלאים ולהוסיף הערות, או גררו שורות לסידור ידני.",
+    "compare": "השוואה",
+    "compareTooltip": "בחרו דירות להשוואה זו לצד זו",
+    "compareCancel": "ביטול",
+    "compareOpen": "השווה",
+    "compareSelectedCount": "{{count}} נבחרו",
+    "compareMaxHint": "(עד {{max}})",
+    "compareDisabledHint": "בחרו לפחות 2 כדי להשוות",
+    "compareMaxReached": "ניתן להשוות עד {{max}} דירות בבת אחת.",
     "viewMode": "מצב תצוגה",
     "viewModeWide": "רחב",
     "viewModeNarrow": "צר",
@@ -247,6 +255,16 @@
     "showDetailsTooltipDisabled": "לחצו תחילה על דירה באחד הטורים.",
     "notesPerProfile": "הערות לפי פרופיל",
     "noNote": "אין הערה"
+  },
+  "compareApts": {
+    "title": "השוואת דירות",
+    "colValue": "ערך",
+    "colScore": "ציון",
+    "noSelection": "לא נבחרו דירות.",
+    "notesPerApt": "הערות",
+    "noNote": "אין הערה",
+    "bestScoreTooltip": "הציון הגבוה ביותר מבין הדירות המושוות",
+    "worstScoreTooltip": "הציון הנמוך ביותר מבין הדירות המושוות"
   },
   "combine": {
     "profileImportance": "חשיבות פרופיל",
