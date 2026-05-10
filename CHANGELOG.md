@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.5.3] - 2026-05-10
 
 - Ranking tab: new Compare button — pick up to 4 apartments (2 on mobile) and open a side-by-side popup.
 
