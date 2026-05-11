@@ -24,6 +24,7 @@ export type PrintColumnId =
   | "balcony_area_sqm"
   | "storage_area_sqm"
   | "parking_count"
+  | "parking_spots"
   | "price"
   | "score"
   | "status";
@@ -56,6 +57,14 @@ function fmtDirections(dirs: string[] | undefined, locale: "en" | "he"): string 
     ? { N: "צ", E: "מז", S: "ד", W: "מע" }
     : { N: "N", E: "E", S: "S", W: "W" };
   return dirs.map((d) => (map as Record<string, string>)[d] ?? d).join("/");
+}
+
+/** Assigned parking spot numbers from the contractor PDFs (detail view parity). */
+function fmtParkingSpots(r: RankedApartment): string {
+  const spots = [r.apartment.parking_spot_1, r.apartment.parking_spot_2].filter(
+    (n): n is number => n != null && typeof n === "number" && !Number.isNaN(n),
+  );
+  return spots.join(", ");
 }
 
 /** All columns the user can choose from, keyed by id. Order = display order. */
@@ -141,6 +150,12 @@ export const PRINT_COLUMNS: PrintColumn[] = [
     label: { en: "Parking", he: "חניות" },
     align: "center",
     get: (r) => String(r.apartment.parking_count ?? ""),
+  },
+  {
+    id: "parking_spots",
+    label: { en: "Parking spots", he: "מספרי חניה" },
+    align: "center",
+    get: (r) => fmtParkingSpots(r),
   },
   {
     id: "price",
