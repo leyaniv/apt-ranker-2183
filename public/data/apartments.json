@@ -253,13 +253,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100346/",
     "air_direction": "דרום-מזרח-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14472.53,
     "parking_spot_1": 120,
     "parking_spot_2": 119,
-    "balcony_1_direction": "מזרח"
+    "balcony_1_direction": "מזרח",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100347",
@@ -2302,13 +2303,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100271/",
     "air_direction": "דרום-מערב",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14886.07,
     "parking_spot_1": 93,
     "parking_spot_2": 92,
-    "balcony_1_direction": "מערב"
+    "balcony_1_direction": "מערב",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100272",
@@ -2727,13 +2729,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/208/208-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100247/",
     "air_direction": "צפון-מזרח",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "208",
     "remarks": "דירה",
     "price_per_sqm": 14799.56,
     "parking_spot_1": 250,
     "parking_spot_2": 249,
-    "balcony_1_direction": "מזרח"
+    "balcony_1_direction": "מזרח",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100248",
@@ -5063,13 +5066,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100170/",
     "air_direction": "צפון-מזרח",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14872.23,
     "parking_spot_1": 27,
     "parking_spot_2": 26,
-    "balcony_1_direction": "צפון"
+    "balcony_1_direction": "צפון",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100171",
@@ -5923,13 +5927,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100139/",
     "air_direction": "דרום-מערב-מזרח",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14527.57,
     "parking_spot_1": 116,
     "parking_spot_2": 115,
-    "balcony_1_direction": "מערב"
+    "balcony_1_direction": "מערב",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100121",
@@ -5950,13 +5955,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100121/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13755.77,
     "parking_spot_1": 325,
     "parking_spot_2": 324,
-    "balcony_1_direction": "מזרח"
+    "balcony_1_direction": "מזרח",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100122",
@@ -6369,13 +6375,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100110/",
     "air_direction": "צפון-מזרח-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14421.35,
     "parking_spot_1": 101,
     "parking_spot_2": 100,
-    "balcony_1_direction": "דרום"
+    "balcony_1_direction": "דרום",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100111",
@@ -6396,13 +6403,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100111/",
     "air_direction": "צפון-מערב-דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14631.27,
     "parking_spot_1": 99,
     "parking_spot_2": 98,
-    "balcony_1_direction": "דרום"
+    "balcony_1_direction": "דרום",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100112",
@@ -7029,13 +7037,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100083/",
     "air_direction": "צפון",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14138.66,
     "parking_spot_1": 39,
     "parking_spot_2": 38,
-    "balcony_1_direction": "צפון"
+    "balcony_1_direction": "צפון",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100084",
@@ -7251,13 +7260,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100078/",
     "air_direction": "צפון-מזרח",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 14677.04,
     "parking_spot_1": 299,
     "parking_spot_2": 298,
-    "balcony_1_direction": "מזרח"
+    "balcony_1_direction": "מזרח",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100079",
@@ -7334,13 +7344,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100065/",
     "air_direction": "צפון",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13924.53,
     "parking_spot_1": 273,
     "parking_spot_2": 272,
-    "balcony_1_direction": "צפון"
+    "balcony_1_direction": "צפון",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100066",
@@ -7415,13 +7426,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100068/",
     "air_direction": "דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13974.71,
     "parking_spot_1": 279,
     "parking_spot_2": 278,
-    "balcony_1_direction": "דרום"
+    "balcony_1_direction": "דרום",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100069",
@@ -8724,13 +8736,14 @@
     "pdf_development_url": "https://haifa.eshelltd.co.il/files/2183/207/207-DC.pdf",
     "detail_url": "https://haifa.eshelltd.co.il/property/100056/",
     "air_direction": "דרום",
-    "status": "פנוי",
+    "status": "נמכר",
     "lot": "207",
     "remarks": "דירה",
     "price_per_sqm": 13862.78,
     "parking_spot_1": 254,
     "parking_spot_2": 253,
-    "balcony_1_direction": "דרום"
+    "balcony_1_direction": "דרום",
+    "status_changed_date": "2026-05-11"
   },
   {
     "property_slug": "100057",
