@@ -946,6 +946,19 @@ def enrich_only_update() -> None:
     print(f"Updated {OUTPUT_JSON}")
 
 
+def sync_public_data():
+    """Copy data/apartments.json to public/data/apartments.json."""
+    import shutil
+    src = OUTPUT_JSON
+    dest = REPO_ROOT / "public" / "data" / "apartments.json"
+    if not src.exists():
+        print(f"ERROR: Source file not found: {src}")
+        sys.exit(1)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dest)
+    print(f"Synced {src} -> {dest}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Eshel Haifa Apartment Scraper - Lottery 771")
     parser.add_argument("--skip-pdfs", action="store_true", help="Skip PDF downloading (Phase 4), only export JSON")
@@ -953,14 +966,19 @@ def main():
     parser.add_argument("--skip-balcony-directions", action="store_true", help="Skip balcony-direction enrichment (Phase 5b)")
     parser.add_argument("--status-only", action="store_true", help="Quick status check — only fetch statuses from API and compare against existing data")
     parser.add_argument("--enrich-only", action="store_true", help="Re-enrich existing apartments.json with all curated local data (parking + balcony directions); no network scrape")
+    parser.add_argument("--sync", action="store_true", help="Copy data/apartments.json to public/data/apartments.json (can combine with other flags)")
     args = parser.parse_args()
 
     if args.status_only:
         status_only_check()
+        if args.sync:
+            sync_public_data()
         return
 
     if args.enrich_only:
         enrich_only_update()
+        if args.sync:
+            sync_public_data()
         return
 
     print("=" * 60)
@@ -1045,6 +1063,9 @@ def main():
     export_json(apartments)
 
     print_summary(apartments, len(url_to_local), new_downloads)
+
+    if args.sync:
+        sync_public_data()
 
 
 if __name__ == "__main__":
